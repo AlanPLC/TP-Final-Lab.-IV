@@ -1,8 +1,18 @@
-# React + Vite
+# Frontend del Minimarket (WEB)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Frontend del proyecto educativo sobre Minimarket, desarrollado con React y Vite por el grupo Bitward.
 
-Currently, two official plugins are available:
+## Estructura de Carpetas y explicación.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+public/                   # Archivos estáticos accesibles en toda la aplicación.
+src/
+ ├── components/          # Componentes reutilizables en toda la aplicación.
+ ├── features/            # Cada funcionalidad de la aplicación, como login, carrito, etc.
+ │    └── Login-Register/ # Ejemplo de una funcionalidad específica (Login y Registro).
+ │         ├── styles/    # Estilos específicos para el componente Login-Register.
+ │         └── hooks/     # Hooks específicos de un componente React para encapsular lógica y solicitudes a 
+ │                          la API.
+ ├── hooks/               # Hooks generales de React para encapsular lógica y solicitudes a la API.
+ ├── styles/              # Estilos globales de la aplicación.
+ ├── App.jsx              # Componente principal de la aplicación.
+ └── main.jsx             # Punto de entrada principal de la aplicación.
