@@ -1,4 +1,5 @@
 import { db } from "../../config/db.js";
+import bcrypt from "bcrypt";
 
 export const getAllUsers = async(req, res) => {
   try {
@@ -26,7 +27,8 @@ export const getUserByID = async(req, res) => {
 export const createUser = async(req, res) => {
   try {
     const { user, password } = req.body;
-    const [result] = await db.execute("INSERT INTO usuarios (user, password) VALUES (?,?)", [user, password]);
+    const hashedPassword = await bcrypt.hash(password, 10)
+    const [result] = await db.execute("INSERT INTO usuarios (user, password) VALUES (?,?)", [user, hashedPassword]);
     res.status(201).send({ message: "Usuario creado.", result: result });
   } catch (error) {
     res.status(500).send({error});
