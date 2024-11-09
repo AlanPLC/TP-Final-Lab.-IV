@@ -16,6 +16,7 @@ app.use(express.json());
 // Habilito cors
 app.use(cors());
 
+// Rutas
 app.use(usuariosRouter);
 
 app.listen(port, () => {
