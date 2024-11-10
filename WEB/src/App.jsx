@@ -1,15 +1,18 @@
-import { useState } from 'react'
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Lobby from "./features/Lobby/lobby.jsx"
+import Login from "./features/Login-Register/login.jsx"
 import './styles/App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
     <>
-      <h1>Minimarket Bitward</h1>
-      <button onClick={() => setCount(count + 1)}>Incrementar</button>
-      <button onClick={() => setCount(count - 1)}>Decrementar</button>
-      <p>{count}</p>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Lobby />}/>
+          <Route path="/login" element={<Login/>}/>
+        </Routes>
+      </Router>
     </>
   )
 }
