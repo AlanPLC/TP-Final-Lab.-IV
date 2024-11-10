@@ -1,7 +1,7 @@
 import { db } from "../../config/db.js";
 import bcrypt from "bcrypt";
 
-export const getAllUsers = async(req, res) => {
+export const getAllUsers = async(_, res) => {
   try {
     const [usuarios] = await db.execute("select * from usuarios");
     res.status(200).send({ usuarios });
@@ -52,7 +52,8 @@ export const updateUser = async(req, res) => {
   try {
     const id = req.params.id;
     const { user, password, rol} = req.body;
-    const [result] = await db.execute("UPDATE usuarios SET user =?, password =?, rol=? WHERE id =?", [user, password, rol, id]);
+    const hashedPassword = await bcrypt.hash(password, 10)
+    const [result] = await db.execute("UPDATE usuarios SET user =?, password =?, rol=? WHERE id =?", [user, hashedPassword, rol, id]);
     if (result.affectedRows === 0) {
       return res.status(404).send({ message: "Usuario no encontrado." });
     }
