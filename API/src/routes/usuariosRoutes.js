@@ -17,8 +17,6 @@ usuariosRouter.get('/usuarios/:id',
     getUserByID);
 
 usuariosRouter.post('/usuarios', 
-    passport.authenticate("jwt", { session: false }), 
-    authorizeAdmin, 
     validateBody, 
     createUser);
 

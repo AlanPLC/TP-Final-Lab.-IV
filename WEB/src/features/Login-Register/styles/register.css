@@ -4,7 +4,7 @@ body{
     align-items: center;
 }
 
-.login-form-container{
+.register-form-container{
     width: 26rem;
     display: flex;
     flex-direction: column;
@@ -18,7 +18,7 @@ body{
     padding-bottom: 2.5rem;
     padding-top: 2.5rem;
 }
-.login-form{
+.register-form{
     display: flex;
     flex: 1;
     flex-direction: column;
@@ -69,15 +69,16 @@ button{
     background-color: #001029;
     cursor: pointer;
 }
-.error{
-    padding-left: 1rem;
-    padding-right: 1rem;
-    text-align: center;
-}
 p{
     color: white;
 }
 
 a{
     color:#5c9aff;
+}
+
+.error{
+    padding-left: 1rem;
+    padding-right: 1rem;
+    text-align: center;
 }

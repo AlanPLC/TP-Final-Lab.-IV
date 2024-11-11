@@ -1,17 +1,30 @@
 import './styles/login.css'
 import useLogin from '../../hooks/Login-Register/useLogin'
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from 'react-router-dom';
 
 function Login() {
     const { login, loading, error } = useLogin()
     const [user, setUser] = useState('')
     const [password, setPassword] = useState('')
 
+    const navigate = useNavigate();
+
+    // Si el usuario ya inició sesión redirige al lobby
+    useEffect(() => {
+      const token = localStorage.getItem('token')
+      if(token) {
+        navigate("/")
+      }
+    }, [navigate])
+
+    // Disparador de Login, cuando inicia sesión redirige al Lobby
     const handleSubmit = async(e) => {
         e.preventDefault()
         const result = await login(user, password)
         if(result.success){
-            console.log("Inicio de sesión exitoso.")
+          console.log("Inicio de sesión exitoso.")
+          navigate("/")
         }
     }
   return (
@@ -44,7 +57,13 @@ function Login() {
           {loading ? 'Iniciando sesión...' : 'Iniciar sesión'}
         </button>
       </form>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {Array.isArray(error) && error.length > 0 && (
+            <div>
+              {error.map((err, index) => (
+                <p className="error" key={index} style={{ color: 'red' }}>{err.msg}</p>
+              ))}
+            </div>
+          )}
       <p>¿No tienes cuenta? <a href="/register">Regístrate</a></p>
     </div>
   )

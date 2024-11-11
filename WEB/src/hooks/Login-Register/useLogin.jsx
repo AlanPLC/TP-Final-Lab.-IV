@@ -1,13 +1,13 @@
 import { useState } from "react";
 
 export default function useLogin(){
-    const [error, setError] = useState(null)
+    const [error, setError] = useState([])
     const [loading, setLoading] = useState(false)
 
     const login = async (user, password) => {
         
         setLoading(true)
-        setError(null)
+        setError([])
         try {
             const response = await fetch("http://localhost:3000/login/",{
                 method: "POST",
@@ -19,8 +19,9 @@ export default function useLogin(){
             const data = await response.json()
             if (!response.ok) {
                 if (data.errors) {
-                  console.error(data.errors);
-                  return data.errors;
+                    setError(Array.isArray(data.errors) ? data.errors : [data.errors]);
+                    console.error(data.errors);
+                    return {success: false, errors: data.errors} 
                 }
                 throw new Error(data.message || 'Error en la solicitud.');
             }

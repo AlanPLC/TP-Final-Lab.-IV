@@ -4,7 +4,7 @@ function Lobby() {
 
   return (
     <>
-      <h1>Minimarket Bitward</h1>
+      <h1 className='titulo'>Minimarket Bitward</h1>
       <a href="/login">Login</a>
     </>
   )
