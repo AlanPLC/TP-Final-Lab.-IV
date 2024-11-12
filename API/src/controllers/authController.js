@@ -25,7 +25,7 @@ export const loginUser = async (req, res) => {
         }
 
         // Generar y enviar el token JWT
-        const payload = { id: usuario[0].id, user: usuario[0].user };
+        const payload = { id: usuario[0].id, user: usuario[0].user, rol: usuario[0].rol};
         const token = jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: '1h' });
 
         res.json({ token });

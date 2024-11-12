@@ -1,18 +1,24 @@
 import './styles/navbar.css';
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { jwtDecode } from "jwt-decode";
 
 const Navbar = () => {
     const [autenticado, setAutenticado] = useState(false)
+    const [rol, setRol] = useState(null)
     const navigate = useNavigate()
     const location = useLocation()
 
     useEffect(()=>{
         const token = localStorage.getItem('token')
         if(token){
+            const decoded = jwtDecode(token);
             setAutenticado(true)
+            console.log(decoded)
+            setRol(decoded.rol)
         } else {
             setAutenticado(false)
+            setRol(null)
         }
     },[location])
 
@@ -38,9 +44,11 @@ const Navbar = () => {
                 <li><Link className="items" to="/">
                     <p>Ventas</p>
                 </Link></li>
-                <li><Link className="items" to="/">
-                    <p>Administrar</p>
-                </Link></li>
+                {rol === 'administrador' && (
+                    <li><Link className="items" to="/">
+                        <p>Administrar</p>
+                    </Link></li>
+                )}
 
 
             </ul>
