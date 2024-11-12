@@ -1,6 +1,8 @@
 import { Navigate } from "react-router-dom";
 
-const ProtectedRoute = (children) => {
+// Componente con finalida de proteger las rutas 
+// si no el usuario no inicia sesión.
+const ProtectedRoute = ({children}) => {
   const token = localStorage.getItem("token");
 
   if (!token) {

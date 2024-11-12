@@ -1,11 +1,12 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Navbar from "./components/navbar.jsx"
 import Lobby from "./features/Lobby/lobby.jsx"
 import Login from "./features/Login-Register/login.jsx"
 import Register from "./features/Login-Register/register.jsx"
-import Navbar from "./components/navbar.jsx"
+import Productos from './features/Productos/productos.jsx';
 
 // Componente para proteger rutas sin estar logueado.
-// import ProtectedRoute from './components/protecRoute.jsx';
+import ProtectedRoute from './components/protecRoute.jsx';
 import './styles/App.css'
 
 function App() {
@@ -20,11 +21,11 @@ function App() {
           <Route path="/register" element={<Register/>}/>
 
           {/* Ejemplo de como se debería utilizar protectedRoute */}
-          {/* <Route path="/productos" element={
+          <Route path="/productos" element={
             <ProtectedRoute>
               <Productos />
             </ProtectedRoute>
-          }/> */}
+          }/>
         </Routes>
       </Router>
     </>

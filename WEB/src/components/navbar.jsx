@@ -9,6 +9,8 @@ const Navbar = () => {
     const navigate = useNavigate()
     const location = useLocation()
 
+    // Se ejecuta una vez que se renderiza el componente Navbar 
+    // y actualiza el estado de rol y autenticado según el token
     useEffect(()=>{
         const token = localStorage.getItem('token')
         if(token){
@@ -22,12 +24,14 @@ const Navbar = () => {
         }
     },[location])
 
+    // Funcion para cerrar sesión, elimina el token de localStorage
     const logout = () => {
         localStorage.removeItem('token')
         setAutenticado(false)
         navigate('/')
     }
 
+    // Componente Navbar
   return(
     <div className='navbar-container'> 
         <nav>
@@ -35,7 +39,7 @@ const Navbar = () => {
                 <li><Link className="items" to="/">
                     <p >Inicio</p>
                 </Link></li>
-                <li><Link className="items" to="/">
+                <li><Link className="items" to="/productos">
                     <p>Productos</p>
                 </Link></li>
                 <li><Link className="items" to="/">
@@ -49,7 +53,6 @@ const Navbar = () => {
                         <p>Administrar</p>
                     </Link></li>
                 )}
-
 
             </ul>
             {autenticado && (
