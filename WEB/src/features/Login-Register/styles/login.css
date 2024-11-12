@@ -1,11 +1,10 @@
-body{
+.login-main-container{
     display: flex;
     justify-content: center;
     align-items: center;
 }
-
 .login-form-container{
-    width: 26rem;
+    width: 30rem;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -24,10 +23,10 @@ body{
     flex-direction: column;
     justify-content: center;
     align-items: center; 
-    gap: 1rem;
+    gap: 1.5rem;
 }
 
-h1{
+.login-form-h1{
     color: white;
     font-size: 2rem;
     font-weight: bolder;
@@ -52,17 +51,17 @@ h1{
     font-weight: bold;
 }
 
-input{
+.login-input{
     border: 1px, solid, #fafafa;
     border-radius: 5px;
     text-align: center;
-    height: 1.5rem;
-    width: 18rem;
+    height: 2rem;
+    width: 22rem;
 }
 
-button{
+.form-button{
     height: 2rem;
-    width: 18.5rem;
+    width: 22.5rem;
     border: 1px, solid, #fafafa;
     border-radius: 5px;
     color: white;
@@ -74,10 +73,6 @@ button{
     padding-right: 1rem;
     text-align: center;
 }
-p{
+form-p{
     color: white;
-}
-
-a{
-    color:#5c9aff;
 }

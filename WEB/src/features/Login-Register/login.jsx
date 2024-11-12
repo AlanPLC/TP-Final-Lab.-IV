@@ -28,43 +28,47 @@ function Login() {
         }
     }
   return (
-    <div className="login-form-container">
-      <h1>Inicia Sesión</h1>
-      <form className="login-form" onSubmit={handleSubmit}>
-        <div className='user'>
-            <label htmlFor="user">Nombre de Usuario</label>
-            <input 
-                type="text" 
-                name='user'
-                id='user' 
-                placeholder='Ingrese su nombre de usuario'
-                value={user}
-                onChange={(e) => setUser(e.target.value)}
-                required/>
-        </div>
-        <div className='pass'>
-            <label htmlFor="password">Contraseña</label>
-            <input 
-                type="password" 
-                name='password'
-                id='password' 
-                placeholder='Ingrese su contraseña'
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required/>
-        </div>
-        <button type="submit" disabled={loading}>
-          {loading ? 'Iniciando sesión...' : 'Iniciar sesión'}
-        </button>
-      </form>
-      {Array.isArray(error) && error.length > 0 && (
-            <div>
-              {error.map((err, index) => (
-                <p className="error" key={index} style={{ color: 'red' }}>{err.msg}</p>
-              ))}
-            </div>
-          )}
-      <p>¿No tienes cuenta? <a href="/register">Regístrate</a></p>
+    <div className="login-main-container">
+      <div className="login-form-container">
+        <h1>Inicia Sesión</h1>
+        <form className="login-form" onSubmit={handleSubmit}>
+          <div className='user'>
+              <label htmlFor="user">Nombre de Usuario</label>
+              <input 
+                  className='login-input'
+                  type="text" 
+                  name='user'
+                  id='user' 
+                  placeholder='Ingrese su nombre de usuario'
+                  value={user}
+                  onChange={(e) => setUser(e.target.value)}
+                  required/>
+          </div>
+          <div className='pass'>
+              <label htmlFor="password">Contraseña</label>
+              <input 
+                  className='login-input'
+                  type="password" 
+                  name='password'
+                  id='password' 
+                  placeholder='Ingrese su contraseña'
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required/>
+          </div>
+          <button type="submit" disabled={loading} className='form-button'>
+            {loading ? 'Iniciando sesión...' : 'Iniciar sesión'}
+          </button>
+        </form>
+        {Array.isArray(error) && error.length > 0 && (
+              <div>
+                {error.map((err, index) => (
+                  <p className="error" key={index} style={{ color: 'red' }}>{err.msg}</p>
+                ))}
+              </div>
+            )}
+        <p>¿No tienes cuenta? <a href="/register" className='redireccion'>Regístrate</a></p>
+      </div>
     </div>
   )
 }

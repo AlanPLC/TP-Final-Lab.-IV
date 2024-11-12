@@ -1,11 +1,10 @@
-body{
+.register-main-container{
     display: flex;
     justify-content: center;
     align-items: center;
 }
-
 .register-form-container{
-    width: 26rem;
+    width: 30rem;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -24,7 +23,7 @@ body{
     flex-direction: column;
     justify-content: center;
     align-items: center; 
-    gap: 1rem;
+    gap: 1.5rem;
 }
 
 h1{
@@ -52,31 +51,30 @@ h1{
     font-weight: bold;
 }
 
-input{
+.register-input{
     border: 1px, solid, #fafafa;
     border-radius: 5px;
     text-align: center;
-    height: 1.5rem;
-    width: 18rem;
+    height: 2rem;
+    width: 22rem;
 }
 
-button{
+.register-button{
     height: 2rem;
-    width: 18.5rem;
+    width: 22.5rem;
     border: 1px, solid, #fafafa;
     border-radius: 5px;
     color: white;
     background-color: #001029;
     cursor: pointer;
 }
-p{
+form-p{
     color: white;
 }
 
-a{
+.redireccion{
     color:#5c9aff;
 }
-
 .error{
     padding-left: 1rem;
     padding-right: 1rem;

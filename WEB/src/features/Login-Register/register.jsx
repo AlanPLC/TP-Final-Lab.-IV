@@ -10,6 +10,7 @@ function Register() {
 
     const navigate = useNavigate();
 
+    // Si el usuario ya inició sesión redirige al lobby
     useEffect(() => {
       const token = localStorage.getItem('token')
       if(token) {
@@ -28,43 +29,47 @@ function Register() {
     }
 
   return (
-    <div className="register-form-container">
-      <h1>Regístrate</h1>
-      <form className="register-form" onSubmit={handleSubmit}>
-        <div className='user'>
-            <label htmlFor="user">Nombre de Usuario</label>
-            <input 
-                type="text" 
-                name='user'
-                id='user' 
-                placeholder='Ingrese su nombre de usuario'
-                value={user}
-                onChange={(e) => setUser(e.target.value)}
-                required/>
-        </div>
-        <div className='pass'>
-            <label htmlFor="password">Contraseña</label>
-            <input 
-                type="password" 
-                name='password'
-                id='password' 
-                placeholder='Ingrese su contraseña'
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required/>
-        </div>
-        <button type="submit" disabled={loading}>
-          {loading ? 'Registrandote...' : 'Registrarme'}
-        </button>
-      </form>
-      {Array.isArray(error) && error.length > 0 && (
-            <div>
-              {error.map((err, index) => (
-                <p className="error" key={index} style={{ color: 'red' }}>{err.msg}</p>
-              ))}
-            </div>
-      )}
-      <p>¿Ya tienes una cuenta? <a href="/login">Inicia sesión aquí...</a></p>
+    <div className='register-main-container'>
+      <div className="register-form-container">
+        <h1>Regístrate</h1>
+        <form className="register-form" onSubmit={handleSubmit}>
+          <div className='user'>
+              <label htmlFor="user">Nombre de Usuario</label>
+              <input 
+                  className='register-input'
+                  type="text" 
+                  name='user'
+                  id='user' 
+                  placeholder='Ingrese su nombre de usuario'
+                  value={user}
+                  onChange={(e) => setUser(e.target.value)}
+                  required/>
+          </div>
+          <div className='pass'>
+              <label htmlFor="password">Contraseña</label>
+              <input 
+                  className='register-input'
+                  type="password" 
+                  name='password'
+                  id='password' 
+                  placeholder='Ingrese su contraseña'
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required/>
+          </div>
+          <button type="submit" disabled={loading} className='register-button'>
+            {loading ? 'Registrandote...' : 'Registrarme'}
+          </button>
+        </form>
+        {Array.isArray(error) && error.length > 0 && (
+              <div>
+                {error.map((err, index) => (
+                  <p className="error" key={index} style={{ color: 'red' }}>{err.msg}</p>
+                ))}
+              </div>
+        )}
+        <p>¿Ya tienes una cuenta? <a href="/login" className='redireccion'>Inicia sesión aquí...</a></p>
+      </div>
     </div>
   )
 }
