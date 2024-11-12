@@ -29,16 +29,32 @@ const Navbar = () => {
                 <li><Link className="items" to="/">
                     <p >Inicio</p>
                 </Link></li>
+                <li><Link className="items" to="/">
+                    <p>Productos</p>
+                </Link></li>
+                <li><Link className="items" to="/">
+                    <p>Proveedores</p>
+                </Link></li>
+                <li><Link className="items" to="/">
+                    <p>Ventas</p>
+                </Link></li>
+                <li><Link className="items" to="/">
+                    <p>Administrar</p>
+                </Link></li>
 
-                {!autenticado && location.pathname !== "/login" && (
-                    <li><Link className="items" to="/login">
-                        <p >Iniciar Sesión</p>
-                    </Link></li>
-                )}
 
             </ul>
             {autenticado && (
                 <button className="logout-button"onClick={logout}>Cerrar Sesión</button>
+            )}
+
+            {!autenticado && location.pathname !== "/login" && (
+                <div className='cont-login'>
+                    <img src='/user.png' alt="Logo" className='user-logo'/>
+                    <Link className="login" to="/login">
+                        <p>Iniciar Sesión</p>
+                    </Link>
+                </div>
             )}
         </nav>
     </div>
