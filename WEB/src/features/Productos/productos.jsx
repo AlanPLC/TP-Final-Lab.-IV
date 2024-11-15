@@ -4,9 +4,11 @@ import './styles/productos.css';
 const Productos = () => {
  
   return(
-    <>
-     <h1 style={{color:'black', display:"flex", justifyContent:"center", alignItems:"center"}}>Productos</h1>
-    </>
+    <div className='productos-main-container'>
+        <div>
+            <h1 className='productos-titulo'>Productos</h1>
+        </div>
+    </div>
   );
 };
 

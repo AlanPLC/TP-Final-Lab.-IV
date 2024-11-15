@@ -5,6 +5,7 @@ import { conectarDB } from "./config/db.js";
 import { authConfig } from "./src/middlewares/authConfig.js";
 import usuariosRouter from "./src/routes/usuariosRoutes.js";
 import loginRouter from "./src/routes/authRoutes.js";
+import ventasRouter from "./src/routes/ventasRoutes.js"
 
 // Conectar a DB
 conectarDB();
@@ -27,6 +28,7 @@ app.use(passport.initialize());
 // Rutas
 app.use(loginRouter);
 app.use(usuariosRouter);
+app.use(ventasRouter)
 
 app.listen(port, () => {
   console.log(`La aplicacion esta funcionando en: ${port}`);
