@@ -45,7 +45,7 @@ const Navbar = () => {
                 <li><Link className="items" to="/">
                     <p>Proveedores</p>
                 </Link></li>
-                <li><Link className="items" to="/">
+                <li><Link className="items" to="/ventas">
                     <p>Ventas</p>
                 </Link></li>
                 {rol === 'administrador' && (

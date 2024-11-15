@@ -4,6 +4,7 @@ import Lobby from "./features/Lobby/lobby.jsx"
 import Login from "./features/Login-Register/login.jsx"
 import Register from "./features/Login-Register/register.jsx"
 import Productos from './features/Productos/productos.jsx';
+import Ventas from './features/Ventas/ventas.jsx'
 
 // Componente para proteger rutas sin estar logueado.
 import ProtectedRoute from './components/protecRoute.jsx';
@@ -20,10 +21,16 @@ function App() {
           <Route path="/login" element={<Login/>}/>
           <Route path="/register" element={<Register/>}/>
 
-          {/* Ejemplo de como se debería utilizar protectedRoute */}
+          {/*como debería utilizarse protectedRoute */}
           <Route path="/productos" element={
             <ProtectedRoute>
               <Productos />
+            </ProtectedRoute>
+          }/>
+
+          <Route path="/ventas" element={
+            <ProtectedRoute>
+              <Ventas />
             </ProtectedRoute>
           }/>
         </Routes>
