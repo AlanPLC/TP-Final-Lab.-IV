@@ -21,15 +21,12 @@ export const validateID = (req,res,next) => {
 // Validar Body Usuarios
 export const validateBody = [
     body('fecha')
-    .notEmpty().withMessage('la fecha de compra debe ser cargada')
-    .isNumeric().withMessage('la fecha de compra debe ser numero')
-    .isLength({min: 7, max: 10}).withMessage('La fecha debe contener de 7 a 10 carácteres.'),
+    .notEmpty().withMessage('la fecha de compra debe ser cargada'),
 
     body('estado')    
         .notEmpty().withMessage('el estado no puede estar vacio')
         .isBoolean().withMessage('No coloco el estado')
-        .isBoolean({ loose: true ,convertString: true}).withMessage("input true")
-        .isIn(),
+        .isIn(["En proceso","Completado"]),
 
     (req,res,next)=>{
         const errors = validationResult(req);

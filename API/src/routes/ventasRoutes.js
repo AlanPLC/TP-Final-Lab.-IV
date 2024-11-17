@@ -1,13 +1,15 @@
 import express from 'express';
-import {getAllVentas,ventasById,updateVentas,createVentas} from '../controllers/VentasControllers.js';
+import {ventasById,updateVentas,createVentas,deleteVentas} from '../controllers/VentasControllers.js';
+import { validateID, validateBody } from '../validations/ventasValidations.js';
+
 
 const ventasRouter = express.Router();
 
 // Rutas para ventas
 
-ventasRouter.get('/ventas', getAllVentas)
-ventasRouter.get('/ventas/id', ventasById)
-ventasRouter.put('/ventas/id',updateVentas)
-ventasRouter.post('/ventas', createVentas)
+ventasRouter.get('/ventas/:id', ventasById,validateID)
+ventasRouter.put('/ventas/:id',updateVentas,validateID,validateBody)
+ventasRouter.post('/ventas', createVentas,validateBody)
+ventasRouter.delete('/ventas/:id',deleteVentas,validateID)
 
 export default ventasRouter;
