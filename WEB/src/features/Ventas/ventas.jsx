@@ -2,7 +2,7 @@ import './styles/ventas.css';
 import { useState, useEffect } from "react";
 import useVentas from "../../hooks/Ventas/useVentas.jsx";
 
-const Productos = () => {
+const Ventas = () => {
     const {ventas, error, loading} = useVentas()
     const [ventasList, setVentasList] = useState([])
 
@@ -93,4 +93,4 @@ const Productos = () => {
   );
 };
 
-export default Productos;
+export default Ventas;

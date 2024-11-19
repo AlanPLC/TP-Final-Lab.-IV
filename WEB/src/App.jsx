@@ -6,9 +6,9 @@ import Register from "./features/Login-Register/register.jsx"
 import Productos from './features/Productos/productos.jsx';
 import Ventas from './features/Ventas/ventas.jsx'
 
+import './styles/App.css'
 // Componente para proteger rutas sin estar logueado.
 import ProtectedRoute from './components/protecRoute.jsx';
-import './styles/App.css'
 
 function App() {
 
