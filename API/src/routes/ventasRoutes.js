@@ -7,7 +7,6 @@ const ventasRouter = express.Router();
 
 ventasRouter.get("/ventas", 
     passport.authenticate("jwt", { session: false }),
-    authorizeAdmin, 
     getVentas);
 
 

@@ -9,20 +9,40 @@ const Navbar = () => {
     const navigate = useNavigate()
     const location = useLocation()
 
-    // Se ejecuta una vez que se renderiza el componente Navbar 
-    // y actualiza el estado de rol y autenticado según el token
+
     useEffect(()=>{
         const token = localStorage.getItem('token')
-        if(token){
-            const decoded = jwtDecode(token);
-            setAutenticado(true)
-            // console.log(decoded)
-            setRol(decoded.rol)
+        if (token) {
+            try {
+                const decoded = jwtDecode(token);
+                console.log(decoded)
+
+                // Verificar si el token ha expirado
+                const currentTime = Math.floor(Date.now() / 1000); // Convertir tiempo actual a segundos
+                if (decoded.exp < currentTime) {
+                    localStorage.removeItem('token');
+                    setAutenticado(false);
+                    setRol(null);
+
+                    alert('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
+                    navigate('/login'); 
+                } else {
+                    setAutenticado(true);
+                    setRol(decoded.rol);
+                }
+            } catch (err) {
+                // Redirige si el token es inválido
+                localStorage.removeItem('token');
+                console.error("Error al decodificar el token:", err);
+                setAutenticado(false);
+                setRol(null);
+                navigate('/login'); 
+            }
         } else {
-            setAutenticado(false)
-            setRol(null)
+            setAutenticado(false);
+            setRol(null);
         }
-    },[location])
+    },[location, navigate])
 
     // Funcion para cerrar sesión, elimina el token de localStorage
     const logout = () => {
