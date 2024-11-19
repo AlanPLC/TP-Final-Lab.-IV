@@ -1,5 +1,4 @@
 import { db } from '../../config/db.js';
-import { validationResult } from "express-validator";
 
 // Get ventas (id, fecha), ventadetallada (producto_id, cantidad_producto, precio_unitario)
 // y productos (según id de producto: nombre, precio) | Date: año-mes-dias
