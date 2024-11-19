@@ -16,7 +16,7 @@ const Navbar = () => {
         if(token){
             const decoded = jwtDecode(token);
             setAutenticado(true)
-            console.log(decoded)
+            // console.log(decoded)
             setRol(decoded.rol)
         } else {
             setAutenticado(false)

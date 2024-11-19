@@ -16,14 +16,16 @@ const Productos = () => {
             // Agrupar por venta_id y unificar productos
             const agrupadas = response.data.ventas.reduce((acc, venta) => {
                 const existingVenta = acc.find(item => item.venta_id === venta.venta_id);
+                const precioProducto = Number(venta.producto_precio);
                 if (existingVenta) {
                     // Si ya existe, añadir los detalles del producto
                     existingVenta.productos.push({
                         producto_id: venta.producto_id,
                         producto_nombre: venta.producto_nombre,
                         cantidad_producto: venta.cantidad_producto,
-                        precio: venta.producto_precio
+                        precio: precioProducto
                     });
+                    existingVenta.precio_total += precioProducto;
                 } else {
                     // Si no existe, crear una nueva entrada
                     acc.push({
@@ -34,8 +36,9 @@ const Productos = () => {
                             producto_id: venta.producto_id,
                             producto_nombre: venta.producto_nombre,
                             cantidad_producto: venta.cantidad_producto,
-                            precio: venta.producto_precio
+                            precio: precioProducto
                         }],
+                        precio_total: precioProducto
                     });
                 }
                 return acc;
@@ -57,20 +60,27 @@ const Productos = () => {
         <div className='lista-container'>
             <ul className='lista'>
                 {ventasList.map((venta) => (
-                    <li key={venta.venta_id} >
+                    <li className='li-main' key={venta.venta_id} >
                         <div className='venta'>
-                            <p>Venta ID: {venta.venta_id}</p>
-                            <p>Fecha: {new Date(venta.fecha).toLocaleDateString()}</p>
-                            <p>Usuario: {venta.usuario}</p>
+                            <p className='p1'>#{venta.venta_id}</p>
+                            <p className='p2'>{new Date(venta.fecha).toLocaleDateString()}</p>
+                            <p className='p3'>{venta.usuario}</p>
+                            <div>
+                                <p className='p4'>Total</p>
+                                <p className='p5'>${venta.precio_total}</p>
+                            </div>
                         </div>
                         <div>
                             <ul className='lista-productos'>
                                 {venta.productos.map((producto, index) => (
                                     <li key={index} className='producto'>
-                                        <p>#{producto.producto_id}</p>
+                                        <p className='p-id'>ID #{producto.producto_id}</p>
+                                        <hr />
                                         <p>{producto.producto_nombre}</p>
+                                        <hr />
                                         <p>Cant.: {producto.cantidad_producto}</p>
-                                        <p>${producto.precio}</p>
+                                        <hr />
+                                        <p>${producto.precio} c/u</p>   
                                     </li>
                                 ))}
                             </ul>
