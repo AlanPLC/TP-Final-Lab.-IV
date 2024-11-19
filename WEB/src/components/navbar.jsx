@@ -62,7 +62,7 @@ const Navbar = () => {
                 <li><Link className="items" to="/productos">
                     <p>Productos</p>
                 </Link></li>
-                <li><Link className="items" to="/">
+                <li><Link className="items" to="/proveedores">
                     <p>Proveedores</p>
                 </Link></li>
                 <li><Link className="items" to="/ventas">

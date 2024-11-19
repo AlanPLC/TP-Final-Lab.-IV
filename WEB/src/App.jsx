@@ -5,6 +5,7 @@ import Login from "./features/Login-Register/login.jsx"
 import Register from "./features/Login-Register/register.jsx"
 import Productos from './features/Productos/productos.jsx';
 import Ventas from './features/Ventas/ventas.jsx'
+import Proveedores from './features/Proveedores/proveedores.jsx';
 
 import './styles/App.css'
 // Componente para proteger rutas sin estar logueado.
@@ -31,6 +32,12 @@ function App() {
           <Route path="/ventas" element={
             <ProtectedRoute>
               <Ventas />
+            </ProtectedRoute>
+          }/>
+
+          <Route path="/proveedores" element={
+            <ProtectedRoute>
+              <Proveedores />
             </ProtectedRoute>
           }/>
         </Routes>
