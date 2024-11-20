@@ -1,5 +1,26 @@
 import {db} from "../../config/db.js"
-import { validationResult } from "express-validator";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -7,16 +28,35 @@ import { validationResult } from "express-validator";
 // Obtener ventas por id
 
 export const ventasById = async (req, res) => {
-  const id  = req.params.id; 
-  const [ventas] = await db.execute("select * from Ventas where ventas_id = ?", id);
-  
-  if (ventas.length === 0) {
-      return res.status(404).send({ message: "Venta no encontrado" });
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
   }
-  
-  res.send({ ventas });
+
+  try {
+    const id = req.params.id;
+    const [ventas] = await db.execute("SELECT * FROM ventas WHERE id = ?", [id]);
+
+    if (ventas.length === 0) {
+      return res.status(404).json({ errors: [{ msg: "ventas no encontrado." }] });
+    }
+
+    res.status(200).json(ventas[0]);
+  } catch (error) {
+    res.status(500).json({ errors: [{ msg: "Error de servidor al obtener el ventas." }] });
+  }
 };
 
+export const obtenerFechaActual = () => {
+  const fechaActual = new Date();
+  const año = fechaActual.getFullYear();
+  const mes = String(fechaActual.getMonth() + 1).padStart(2, '0'); //le suma 1 porque enero es 0 lo convierte en cadena y completa con 0 hasta que tenga 2 digitos
+  const dias = String(fechaActual.getDate()).padStart(2, '0');
+  const hora = String(fechaActual.getHours()).padStart(2, '0');
+  const minutos = String(fechaActual.getMinutes()).padStart(2, '0');
+
+  return `${año}.${mes}.${dias} ${hora}:${minutos}:00`; 
+}
 
 // Crear ventas
 
@@ -27,18 +67,12 @@ export const createVentas = async (req,res ) => {
       }
     
       try {
-        const fechaActual= new Date()
-        const hora = fechaActual.getHours()
-        const minutos = fechaActual.getMinutes()
-        const año = fechaActual.getFullYear()
-        const mes = String(fechaActual.getMonth()+1).padStart(2,'0') //le suma 1 porque enero es 0 lo convierte en cadena y completa con 0 hasta que tenga 2 digitos
-        const dias =String(fechaActual.getDate()).padStart(2,'0')
-
-        const fecha = `${dias}.${mes}.${año}-${hora}:${minutos}hs`
-        const estado  = req.body;
+        const fecha = obtenerFechaActual()
+        const {estado}  = req.body; 
+        const usuario_id = req.body.user   
       
-        const [result] = await db.execute("INSERT INTO ventas (`fecha_pedido`, `estado_pedido`) VALUES (?, ?)", [fecha, estado]);
-    
+        const [result] = await db.execute("INSERT INTO `ventas` (`usuario_id`, `fecha_pedido`, `estado_pedido`) VALUES (?, ?, ?)", [usuario_id, fecha, estado]);
+        
         res.status(201).json({ message: "venta creada.", result });
       } catch (error) {
         res.status(500).json({ errors: [{ msg: "Error de servidor al crear el ventas." }] });
@@ -54,14 +88,16 @@ export const updateVentas = async (req,res) => {
     return res.status(400).json({ errors: errors.array() });
   }
   try {
+    const fecha = obtenerFechaActual()
+    const estado  = req.body;
     const id  = req.params.id;
-    const {fecha, estado } = req.body;
-    const [result] = await db.execute("UPDATE ventas set fecha_pedido=?, estado_pedido=? where ventas_id=?", 
-      [fecha.getTime(), estado = "En proceso", id]);
+    
+    const [result] = await db.execute("UPDATE ventas set fecha_pedido=?, estado_pedido=? where id=?", 
+      [fecha, estado , id]);
 
-    res.status(201).json({ message: "venta creada.", result });
+    res.status(201).json({ message: "venta actualizada.", result });
   } catch (error) {
-    res.status(500).json({ errors: [{ msg: "Error de servidor al crear el usuario." }] });
+    res.status(500).json({ errors: [{ msg: "Error de servidor al crear el ventas." }] });
   }
 
 
@@ -74,8 +110,11 @@ export const deleteVentas = async (req,res) =>{
   if (!errors.isEmpty()) {
     return res.status(400).json({errors:errors.array()})
   }
+  try{
   const id  = req.params.id;
-  const {fecha, estado}=req.body;
   const [result] = await db.execute("DELETE FROM ventas WHERE ventas_id=?", [id])
   res.send({ result });
+  }catch(error){
+    res.status(500).json({errors:[{msg:"Error de servidor al eliminar el ventas. "}]})
+  }
 }

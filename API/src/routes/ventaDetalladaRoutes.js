@@ -6,9 +6,9 @@ const ventaDetalladaRouter = express.Router();
 
 // Rutas para ventaDetallada
 
-ventaDetalladaRouter.get('/ventas/:id', ventasById,validateID)
-ventaDetalladaRouter.put('/ventas/:id',updateVentas)
-ventaDetalladaRouter.post('/ventas', createVentas,validateBody)
-ventaDetalladaRouter.delete('/ventas/:id',validateID)
+ventaDetalladaRouter.get('/ventaDetallada/:id', ventasById,validateID)
+ventaDetalladaRouter.put('/ventaDetallada/:id',updateVentas,validateID,validateBody)
+ventaDetalladaRouter.post('/ventaDetallada', createVentas,validateBody)
+ventaDetalladaRouter.delete('/ventaDetallada/:id',validateID)
 
 export default ventaDetalladaRouter;

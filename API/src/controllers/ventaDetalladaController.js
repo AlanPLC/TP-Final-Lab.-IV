@@ -1,5 +1,5 @@
 import {db} from "../../config/db.js"
-import { validationResult } from "express-validator";
+
 
 // Obtener todas las ventaDetallada
 export const getAllVentaDetallada= async(req, res) => {
