@@ -14,11 +14,11 @@
 }
 
 .lista-container{
-    padding-top: 2rem;
-    padding-bottom: 0.5rem;
+    padding-top: 7rem;
+    padding-bottom: 1rem;
     display: flex;
     flex-direction: column;
-    width: 48rem;
+    width: 44rem;
     align-items: center;
     justify-content: center;
     max-height: 30rem;
@@ -26,7 +26,6 @@
     border: 1px solid #ccc;
     border-radius: 5px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin-bottom: 1rem;
     background-color: #252B42;
 }
 /* 1er UL */

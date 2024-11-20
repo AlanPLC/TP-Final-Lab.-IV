@@ -23,7 +23,7 @@ const Proveedores = () => {
                     // Si no existe, crear una nueva entrada
                     acc.push({
                         proveedor_id: prov.proveedor_id,
-                        nombre: prov.nombre,
+                        nombre: prov.proveedor_nombre,
                         productos: [{
                             producto_id: prov.producto_id,
                             producto_nombre: prov.producto_nombre,
@@ -48,7 +48,33 @@ const Proveedores = () => {
 
     return (
         <div>
-            <h1 style={{color: "black"}}>Proveedores</h1>
+            <div className='proveedor-main-container'>
+                <h1 className='prov-titulo'>Proveedores</h1>
+                <div className='prov-lista-container'>
+                    <ul className='prov-lista'>
+                        {listaProveedores.map((prov) => (
+                            <li className='prov-li-main' key={prov.proveedor_id} >
+                                <div className='proveedor'>
+                                    <p className='p1'>#{prov.proveedor_id}</p>
+                                    <p className='p3'>{prov.nombre}</p>
+                                </div>
+                                <div>
+                                    <h4>Productos</h4>
+                                    <ul className='prov-lista-productos'>
+                                        {prov.productos.map((producto, index) => (
+                                            <li key={index} className='prov-producto'>
+                                                <p className='p-id'>ID #{producto.producto_id}</p>
+                                                <hr />
+                                                <p>{producto.producto_nombre}</p>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            </div>
         </div>
     )
 };

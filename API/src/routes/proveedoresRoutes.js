@@ -2,11 +2,11 @@ import express from 'express';
 import { getProveedores } from '../controllers/proveedoresController.js';
 import passport from "passport"
 
-const proveedoresRoutes = express.Router();
+const proveedoresRouter = express.Router();
 
-proveedoresRoutes.get("/proveedores", 
+proveedoresRouter.get("/proveedores", 
     passport.authenticate("jwt", { session: false }),
     getProveedores);
 
 
-export default proveedoresRoutes;
+export default proveedoresRouter;
