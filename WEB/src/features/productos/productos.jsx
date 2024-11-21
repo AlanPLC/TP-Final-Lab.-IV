@@ -4,78 +4,86 @@ import useProductos from '../../hooks/productos/useProductos';
 
 function Productos() {
     const [productos, setProducto] = useState([
-        {
-          "id": 1,
-          "nombre": "Laptop Gamer",
-          "categoria": "Electrónica",
-          "proveedor": "TechWorld",
-          "descripcion": "Laptop de alto rendimiento con tarjeta gráfica NVIDIA GTX 3050.",
-          "cantidad": 15,
-          "precio": 1200.99
-        },
-        {
-          "id": 2,
-          "nombre": "Silla Ergonómica",
-          "categoria": "Muebles",
-          "proveedor": "ComfortPlus",
-          "descripcion": "Silla de oficina ajustable con soporte lumbar.",
-          "cantidad": 50,
-          "precio": 199.99
-        },
-        {
-          "id": 3,
-          "nombre": "Auriculares Bluetooth",
-          "categoria": "Accesorios",
-          "proveedor": "SoundMax",
-          "descripcion": "Auriculares inalámbricos con cancelación de ruido.",
-          "cantidad": 100,
-          "precio": 79.99
-        },
-        {
-          "id": 4,
-          "nombre": "Mesa de Centro",
-          "categoria": "Muebles",
-          "proveedor": "DecoHome",
-          "descripcion": "Mesa moderna de madera con acabado mate.",
-          "cantidad": 20,
-          "precio": 149.99
-        },
-        {
-          "id": 5,
-          "nombre": "Smartphone X20",
-          "categoria": "Electrónica",
-          "proveedor": "MobileTech",
-          "descripcion": "Teléfono inteligente con cámara de 108 MP y pantalla AMOLED.",
-          "cantidad": 30,
-          "precio": 899.99
-        },
-        {
-          "id": 6,
-          "nombre": "Botella Térmica",
-          "categoria": "Hogar",
-          "proveedor": "EcoLife",
-          "descripcion": "Botella de acero inoxidable que mantiene la temperatura por 12 horas.",
-          "cantidad": 200,
-          "precio": 24.99
-        },
-        {
-          "id": 7,
-          "nombre": "Mochila Impermeable",
-          "categoria": "Accesorios",
-          "proveedor": "AdventureGear",
-          "descripcion": "Mochila resistente al agua con múltiples compartimentos.",
-          "cantidad": 80,
-          "precio": 59.99
-        },
-        {
-          "id": 8,
-          "nombre": "Cámara Reflex",
-          "categoria": "Fotografía",
-          "proveedor": "PhotoPro",
-          "descripcion": "Cámara DSLR con lente intercambiable y grabación en 4K.",
-          "cantidad": 10,
-          "precio": 1299.99
-        }
+      {
+        "id": 1,
+        "nombre": "Arroz Blanco",
+        "categoria": "Alimentos",
+        "proveedor": "Granos del Valle",
+        "descripcion": "Arroz blanco de grano largo",
+        "cantidad": 100,
+        "precio": 1.50,
+        "imagen": "https://static.cotodigital3.com.ar/sitios/fotos/full/00002200/00002270.jpg?3.0.176"
+      },
+      {
+        "id": 2,
+        "nombre": "Aceite de Oliva",
+        "categoria": "Alimentos",
+        "proveedor": "Oro Verde",
+        "descripcion": "500ml",
+        "cantidad": 50,
+        "precio": 5.99,
+        "imagen": "https://acdn.mitiendanube.com/stores/001/058/870/products/zuel03_1-19205db104702fb1fd16964495714682-640-0.jpg"
+      },
+      {
+        "id": 3,
+        "nombre": "Leche Entera",
+        "categoria": "Lácteos",
+        "proveedor": "Lácteos Frescos",
+        "descripcion": "1L Serenisima",
+        "cantidad": 80,
+        "precio": 0.99,
+        "imagen": "https://acdn.mitiendanube.com/stores/093/780/products/serenisima-clasica-751-95fea92d1a27f8e9ab15710914346750-480-0.png"
+      },
+      {
+        "id": 4,
+        "nombre": "Pan de Molde",
+        "categoria": "Panadería",
+        "proveedor": "Panadería Artesanal",
+        "descripcion": "Pan para sandwiches.",
+        "cantidad": 60,
+        "precio": 2.49,
+        "imagen": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTY4lFT9HBMR4IvJ_3tqzY_kqhFCY-VRhfnlA&s"
+      },
+      {
+        "id": 5,
+        "nombre": "Jugo de Naranja",
+        "categoria": "Bebidas",
+        "proveedor": "Frutas del Sol",
+        "descripcion": "500ml citric.",
+        "cantidad": 40,
+        "precio": 3.29,
+        "imagen": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRlk4o6hcXBcMisHTlNLGPtkUBfatxESE6kKa7LoFhvWZyMFQJnsoLnSoL_NfoGARwOx1g&usqp=CAU"
+      },
+      {
+        "id": 6,
+        "nombre": "Galletas de Chocolate",
+        "categoria": "Snacks",
+        "proveedor": "Dulces Delicias",
+        "descripcion": "Rumba",
+        "cantidad": 150,
+        "precio": 1.99,
+        "imagen": "https://www.distribuidorapop.com.ar/wp-content/uploads/2016/09/galletitas-rumba-venta.jpg"
+      },
+      {
+        "id": 7,
+        "nombre": "Cereal",
+        "categoria": "Desayuno",
+        "proveedor": "NutriCereal",
+        "descripcion": "Mix frutal",
+        "cantidad": 70,
+        "precio": 4.99,
+        "imagen": "https://acdn.mitiendanube.com/stores/002/625/145/products/cereal-mix-infantil1-afc350c7d6e490f91a16792663950445-1024-1024.jpg"
+      },
+      {
+        "id": 8,
+        "nombre": "Pasta Espagueti",
+        "categoria": "Alimentos",
+        "proveedor": "Pasta Fresca",
+        "descripcion": "Espagueti de trigo duro",
+        "cantidad": 90,
+        "precio": 1.75,
+        "imagen": "https://img.freepik.com/fotos-premium/paquete-transparente-pasta-espagueti-o-capellini-aislado-sobre-fondo-blanco_461160-2596.jpg?w=360"
+      }
     ])
 
     const [nombre, setNombre] = useState(" ")
@@ -113,10 +121,6 @@ function Productos() {
           });
     
           if (response.ok) {
-            // Pedir todas las sumas a la api
-            // getSumas();
-    
-            // Quitamos la suma de sumas
             setProducto(productos.filter((producto) => producto.id !== id));
           }
         }
@@ -138,20 +142,18 @@ function Productos() {
     <div className='almacen-container'>
       <h1 className='titulo'>Listado del almacen</h1><br />
       <div className='contenedor-listado'>
-        <ul>
-            {productos.map(producto => (
-                <li key={producto.id}>
-                    {`${producto.nombre} - ${producto.descripcion} - ${producto.precio}`} 
-                    <button onClick={()=>modificarProducto(producto)}>Modificar</button>
-                    <button onClick={()=>eliminarProducto(producto.id)}>Eliminar</button> <br />
-                    
-                </li>
-            ))} 
-        </ul>
+          {productos.map(producto => (
+              <div key={producto.id}>
+                  <img src={producto.imagen} alt={producto.nombre} />
+                  <p>{`${producto.id} - ${producto.nombre} - ${producto.categoria} - P: ${producto.proveedor} - ${producto.descripcion} - ${producto.cantidad}U - ${producto.precio}$`}</p>
+                  <button className="modificar" onClick={() => modificarProducto(producto)}>Modificar</button>
+                  <button className="eliminar" onClick={() => eliminarProducto(producto.id)}>Eliminar</button>
+              </div>
+          ))}
       </div>
       <div className='contenedor-entradas'>
             <form onSubmit={handleSubmit}>
-                <label >Nombre:</label><input  id="nombre" type="text"  value={nombre}
+                <label >Nombre:</label><input maxLength={10}  id="nombre" type="text"  value={nombre}
                 onChange={(e) => setNombre(parseFloat(e.target.value))}/> <br />
                 <label>Descripcion:</label> <input id="descripcion" type="text" value={descripcion}
                 onChange={(e) => setDescripcion(parseFloat(e.target.value))}/> <br />
@@ -161,13 +163,13 @@ function Productos() {
                 onChange={(e) => setProveedor(parseFloat(e.target.value))} /><br />
                 <label >Precio:</label><input   id="precio" type="number" value={precio}
                 onChange={(e) => setPrecio(parseFloat(e.target.value))} /><br />
-                <label >Cantidad:</label><input type="number" name="" id="cantidad" value={cantidad}
+                <label >Cantidad:</label><input maxLength="2"type="number" name="" id="cantidad" value={cantidad}
                 onChange={(e) => setCantidad(parseFloat(e.target.value))}/><br />
-                <label >Imagen URL:</label><input  id="imagen" type="url" value={imagen}
+                <label >Imagen URL:</label><input maxLength={255} id="imagen" type="url" value={imagen}
                 onChange={(e) => setImagen(parseFloat(e.target.value))} /><br />
                 <div class="contenedor-botones">
                     <button>Guardar</button>
-                    <button onClick={() => {setNombre(""); setDescripcion("");setCategoria("");setProveedor("");setPrecio(0);setCantidad(0);setImagen("")}}>Cancelar</button>
+                    <button onClick={() => {setNombre(""); setDescripcion("");setCategoria("");setProveedor("");setPrecio("");setCantidad("");setImagen("")}}>Cancelar</button>
                 </div>
             </form>
       </div>
