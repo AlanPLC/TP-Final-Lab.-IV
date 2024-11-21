@@ -17,10 +17,35 @@ export const getProductosConDetalles = async(req, res)=>{
       ORDER BY productos.id;')
       res.status(200).json({ productosConDetalles });
     } catch (error) {
-      res.status(500).json({ errors: [{ msg: "Error de servidor." }], error});
+      res.status(500).json( {error: error.message} );
     }
 }
 
+export const getProductosConDetallesByID = async(req, res)=>{
+  try {
+      const id = req.params.id;
+      const response = await db.execute('SELECT \
+          productos.id AS producto_id, \
+          productos.nombre AS producto_nombre, \
+          productos.descripcion, \
+          productos.precio, \
+          productos.imagen_url, \
+          productos_categorias.nombre AS categoria_nombre, \
+          producto_stock.cantidad_disponible, \
+          producto_stock.fecha_ultima_actualizacion \
+      FROM productos \
+      LEFT JOIN productos_categorias ON productos.categoria_id = productos_categorias.id \
+      LEFT JOIN producto_stock ON productos.id = producto_stock.producto_id \
+      WHERE productos.id =? \
+      ORDER BY productos.id;',[id])
+      if (response === 0) {
+        return res.status(404).json({ errors: [{ msg: "Usuario no encontrado." }] });
+      }
+      res.status(200).json(response[0])
+  } catch (error) {
+    res.status(500).json( {error: error.message} );
+  }
+}
 
 export const createProductoConDetalles = async (req, res) => {
   try {
