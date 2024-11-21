@@ -37,7 +37,7 @@ export const getProveedorByID = async(req,res)=>{
 export const createProveedores = async(req, res)=>{
     const {nombre, descripcion} = req.body
     try {
-        const [result] = await db.execute(
+        await db.execute(
         'INSERT INTO proveedores (nombre, descripcion) VALUES (?,?)',
         [nombre, descripcion]);
         res.status(201).json({ message: "Proveedor creado." });

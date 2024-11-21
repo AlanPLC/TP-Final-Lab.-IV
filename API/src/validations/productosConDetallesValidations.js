@@ -10,7 +10,7 @@ export const validateBody = [
     .isLength({min: 3, max: 20  }).withMessage('El nombre debe contener de 3 a 20 carácteres.')
     // Verifica si el producto ya existe, lógica pensada para que en un PUT se pueda mantener el mismo nombre.
     .custom(async (product, {req})=>{
-        const [existente] = await db.execute("SELECT * FROM productos WHERE nombre = ?",[product]);
+        const [existente] = await db.execute("SELECT id FROM productos WHERE nombre = ?",[product]);
 
         if (existente.length > 0 && existente[0].id !== parseInt(req.params.id)) {
             throw new Error('Este producto ya existe.');
@@ -21,7 +21,7 @@ export const validateBody = [
     body('descripcion')
     .notEmpty().withMessage('La descripción del producto es obligatoria.')
     .isString().withMessage('La descripción del producto solo puede contener letras y números.')
-    .isLength({min: 3, max: 50}).withMessage('El nombre debe contener de 3 a 20 carácteres.'),
+    .isLength({min: 3, max: 50}).withMessage('La descripción debe contener de 3 a 50 carácteres.'),
 
     body('precio')
     .notEmpty().withMessage('El precio del producto es obligatorio.')

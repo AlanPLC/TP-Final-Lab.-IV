@@ -1,8 +1,8 @@
 import express from 'express';
 import { getProveedoresConProductos, getProveedorByID, createProveedores, deleteProveedor, updateProveedor } from '../controllers/proveedoresController.js';
 import { validateID } from '../middlewares/idValidator.js'
+import { validateBody } from '../validations/proveedoresValidations.js';
 import passport from "passport"
-import { updateProductoConDetalles } from '../controllers/productosConDetallesController.js';
 
 const proveedoresRouter = express.Router();
 
@@ -17,6 +17,7 @@ proveedoresRouter.get("/proveedores/:id",
 
 proveedoresRouter.post("/proveedores", 
     passport.authenticate("jwt", { session: false }),
+    validateBody,
     createProveedores);
 
 proveedoresRouter.delete("/proveedores/:id", 
@@ -26,6 +27,7 @@ proveedoresRouter.delete("/proveedores/:id",
 
 proveedoresRouter.put("/proveedores/:id", 
     passport.authenticate("jwt", { session: false }),
+    validateBody,
     validateID,
     updateProveedor); //
 
