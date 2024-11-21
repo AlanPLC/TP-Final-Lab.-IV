@@ -78,7 +78,6 @@ const Navbar = () => {
             {autenticado && (
                 <button className="logout-button"onClick={logout}>Cerrar Sesión</button>
             )}
-
             {!autenticado && location.pathname !== "/login" && (
                 <div className='cont-login'>
                     <img src='/user.png' alt="Logo" className='user-logo'/>
