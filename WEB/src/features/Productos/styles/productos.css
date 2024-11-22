@@ -1,11 +1,12 @@
-.lobby-container{
+.productos-main-container{
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 3rem;
 }
 
-.titulo{
+.productos-titulo{
+    margin-top: 4rem;
     color: black;
     font-weight: bolder;
+    text-align: center;
 }
