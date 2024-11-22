@@ -185,7 +185,7 @@ const Proveedores = () => {
                     onChange={(e)=>setDescripcion(e.target.value)}/>
                     {onEdit ? 
                     (<div className="buttons">
-                        <button type="button" onClick={()=> actualizarProv()}>Editar</button>
+                        <button type="button" onClick={()=> actualizarProv()} disabled={!nombre?.trim() || !descripcion?.trim()}>Editar</button>
                         <button type="button"
                         onClick={()=> {
                             setNombre('')
@@ -195,7 +195,6 @@ const Proveedores = () => {
                         }}>Cancelar</button>
                     </div>) :
                     (<button type='submit' disabled={!nombre.trim() || !descripcion.trim()}>Agregar Proveedor</button>)}
-                    
                 </form>
                 <img src="/proveedor.png" alt="proveedor" />
             </div>
