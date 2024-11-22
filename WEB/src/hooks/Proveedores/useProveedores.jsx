@@ -7,9 +7,8 @@ export default function useProveedores(){
     // Get a Proveedores con sus Productos
     const getProveedor = async() =>{
         setLoading(true)
-
+        const token = localStorage.getItem('token')
         try {
-            const token = localStorage.getItem('token')
             const response = await fetch("http://localhost:3000/proveedores/",{
                 headers: {
                     Authorization: "Bearer " + token,
