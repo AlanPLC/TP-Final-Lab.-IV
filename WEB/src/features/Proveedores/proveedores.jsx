@@ -2,12 +2,12 @@ import './styles/proveedores.css';
 import useProveedores from '../../hooks/Proveedores/useProveedores.jsx';
 import {useState, useEffect} from 'react';
 const Proveedores = () => {
-    const { getProveedor, postProveedor, deleteProveedor, error, loading } = useProveedores();
+    const { getProveedor, postProveedor, deleteProveedor, updateProveedor, error, loading } = useProveedores();
     const [listaProveedores, setListaProveedores] = useState([])
     const [nombre, setNombre] = useState('')
     const [descripcion, setDescripcion] = useState('')
     const [onEdit, setOnEdit] = useState(false)
-    const [proveedorID, setProveedorID] = useState('')
+    const [proveedorID, setProveedorID] = useState(null)
     const [reload, setReload] = useState(false)  
 
     const mostrarProveedores = async() =>{
@@ -77,6 +77,30 @@ const Proveedores = () => {
             console.log("Proveedor creado con éxito.", result.data)
         } else{
             console.error("Error al crear el proveedor.", result.message)
+        }
+    }
+
+    // Fetch tipo PUT proveedores modificando con el nuevo objeto creado. 
+    const actualizarProv = async()=>{
+        const nuevoProveedor = {
+            id: proveedorID,
+            nombre: nombre,
+            descripcion: descripcion,
+        }
+        const result = await updateProveedor(nuevoProveedor)
+        if(result.success){
+            setReload(!reload)
+            console.log("Proveedor actualizado con éxito.", result.data)
+            setNombre('')
+            setDescripcion('')
+            setOnEdit(false)
+            setProveedorID(null)
+        } else{
+            console.error("Error al actualizar el proveedor.", result.message)
+            setNombre('')
+            setDescripcion('')
+            setOnEdit(false)
+            setProveedorID(null)
         }
     }
 
@@ -161,12 +185,13 @@ const Proveedores = () => {
                     onChange={(e)=>setDescripcion(e.target.value)}/>
                     {onEdit ? 
                     (<div className="buttons">
-                        <button>Editar</button>
-                        <button
+                        <button type="button" onClick={()=> actualizarProv()}>Editar</button>
+                        <button type="button"
                         onClick={()=> {
                             setNombre('')
                             setDescripcion('')
                             setOnEdit(false)
+                            setProveedorID(null)
                         }}>Cancelar</button>
                     </div>) :
                     (<button type='submit' disabled={!nombre.trim() || !descripcion.trim()}>Agregar Proveedor</button>)}
