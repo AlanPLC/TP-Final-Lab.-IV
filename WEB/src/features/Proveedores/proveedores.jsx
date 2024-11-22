@@ -2,7 +2,7 @@ import './styles/proveedores.css';
 import useProveedores from '../../hooks/Proveedores/useProveedores.jsx';
 import {useState, useEffect} from 'react';
 const Proveedores = () => {
-    const { getProveedor, postProveedor, error, loading } = useProveedores();
+    const { getProveedor, postProveedor, deleteProveedor, error, loading } = useProveedores();
     const [listaProveedores, setListaProveedores] = useState([])
     const [nombre, setNombre] = useState('')
     const [descripcion, setDescripcion] = useState('')
@@ -49,6 +49,19 @@ const Proveedores = () => {
         setDescripcion(prov.descripcion)
         setProveedorID(prov.proveedor_id)
         setOnEdit(true)
+    }
+
+    const eliminarProveedor = async(id) =>{
+        if(confirm(`¿Quieres eliminar el proveedor Nº${id}?`)){
+            const result = await deleteProveedor(id)
+            if(result.success){
+                setReload(!reload)
+                console.log("Proveedor eliminado con éxito.", result.data)
+            } else{
+                console.error("Error al eliminar el proveedor.", result.message)
+            }
+        }
+       
     }
 
     // Fetch a Proveedores pasandole el nuevo proveedor como objeto.
@@ -99,7 +112,7 @@ const Proveedores = () => {
                                         className="delete-pic" 
                                         src="/delete.png" 
                                         alt="borrar" 
-                                        onClick={()=>handleEdit(prov)}
+                                        onClick={()=>eliminarProveedor(prov.proveedor_id)}
                                         style={{
                                             opacity: onEdit ? 0.5 : 1,
                                             cursor: onEdit ? "not-allowed" : "pointer",
@@ -156,13 +169,12 @@ const Proveedores = () => {
                             setOnEdit(false)
                         }}>Cancelar</button>
                     </div>) :
-                    (<button type='submit'>Agregar Proveedor</button>)}
+                    (<button type='submit' disabled={!nombre.trim() || !descripcion.trim()}>Agregar Proveedor</button>)}
                     
                 </form>
                 <img src="/proveedor.png" alt="proveedor" />
             </div>
         </div>
-
     )
 };
 
