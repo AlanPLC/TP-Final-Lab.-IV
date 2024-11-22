@@ -12,7 +12,7 @@ export const getAllProductos = async (_, res) => {
 };
 
 //Obtener productos por ID
-export const getAllProductos_id = async (req, res) => {
+export const productosById = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
@@ -28,7 +28,7 @@ export const getAllProductos_id = async (req, res) => {
 
     res.status(200).json(usuario[0]);
   } catch (error) {
-    res.status(500).json({ errors: [{ msg: "Error de servidor al obtener el Porducto." }] });
+    res.status(500).json({ errors: [{ msg: "Error de servidor al obtener el Producto." }] });
   }
 };
 
