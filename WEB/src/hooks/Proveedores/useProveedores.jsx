@@ -4,7 +4,8 @@ export default function useProveedores(){
     const [error, setError] = useState([])
     const [loading, setLoading] = useState(false)
 
-    const proveedor = async() =>{
+    // Get a Proveedores con sus Productos
+    const getProveedor = async() =>{
         setLoading(true)
 
         try {
@@ -28,5 +29,31 @@ export default function useProveedores(){
         }
     }  
 
-    return {proveedor, error, loading}
+    // Post a Proveedores
+    const postProveedor = async(proveedor) =>{
+        setLoading(true)
+        try {
+            const token = localStorage.getItem('token')
+            const response = await fetch("http://localhost:3000/proveedores/",{
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: "Bearer " + token
+                },
+                body: JSON.stringify(proveedor)
+            })
+            const data = await response.json()
+            if(!response.ok){
+                throw new Error(data.message || 'Error en la solicitud.');
+            }
+            return {success: true, data}
+        } catch (error) {
+            setError(error.message)
+            return {success: false, message: error.message}
+        } finally{
+            setLoading(false)
+        }
+    }
+
+    return {getProveedor, postProveedor, error, loading}
 }
