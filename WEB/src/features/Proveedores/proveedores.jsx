@@ -2,7 +2,7 @@ import './styles/proveedores.css';
 import useProveedores from '../../hooks/Proveedores/useProveedores.jsx';
 import {useState, useEffect} from 'react';
 const Proveedores = () => {
-    const { getProveedor, postProveedor, deleteProveedor, updateProveedor, error, loading } = useProveedores();
+    const { getProveedor, postProveedor, deleteProveedor, updateProveedor, setError, error, loading } = useProveedores();
     const [listaProveedores, setListaProveedores] = useState([])
     const [nombre, setNombre] = useState('')
     const [descripcion, setDescripcion] = useState('')
@@ -74,7 +74,9 @@ const Proveedores = () => {
         const result = await postProveedor(nuevoProveedor)
         if(result.success){
             setReload(!reload)
+            console.log("Errores:", error)
             console.log("Proveedor creado con éxito.", result.data)
+            setError(null)
         } else{
             console.error("Error al crear el proveedor.", result.message)
         }
@@ -95,6 +97,7 @@ const Proveedores = () => {
             setDescripcion('')
             setOnEdit(false)
             setProveedorID(null)
+            setError(null)
         } else{
             console.error("Error al actualizar el proveedor.", result.message)
             setNombre('')
@@ -196,7 +199,15 @@ const Proveedores = () => {
                     </div>) :
                     (<button type='submit' disabled={!nombre.trim() || !descripcion.trim()}>Agregar Proveedor</button>)}
                 </form>
-                <img src="/proveedor.png" alt="proveedor" />
+                
+                {Array.isArray(error) && error.length > 0 ? (
+                <div>
+                    {error.map((err, index) => (
+                    <p className="error" key={index} style={{ color: 'red' }}>{err.msg}</p>
+                    ))}
+                </div>
+                ) : (<img src="/proveedor.png" alt="proveedor" />)
+                }
             </div>
         </div>
     )
