@@ -14,7 +14,6 @@ const Productos = () => {
     } catch (error) {
       console.error(error);
     }
-    
   }
 
   useEffect(() => {

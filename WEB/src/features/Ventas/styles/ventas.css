@@ -14,18 +14,18 @@
 }
 
 .lista-container{
-    padding-top: 7rem;
-    padding-bottom: 1rem;
     display: flex;
     flex-direction: column;
     width: 44rem;
     align-items: center;
-    justify-content: center;
-    max-height: 30rem;
+    justify-content: flex-start;
+    height: 36rem;
+    padding-top: 2rem;
     overflow-y: auto; /* Habilita el scroll vertical */
     border: 1px solid #ccc;
     border-radius: 5px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1rem;
     background-color: #252B42;
 }
 /* 1er UL */
