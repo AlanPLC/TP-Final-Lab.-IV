@@ -1,7 +1,8 @@
 import express from 'express';
 import {getAllUsers, getUserByID, createUser, deleteUser, updateUser} from '../controllers/usuariosController.js';
-import { validateID, validateBody } from '../validations/usuariosValidations.js';
+import { validateBody } from '../validations/usuariosValidations.js';
 import { authorizeAdmin } from '../middlewares/authorize.js';
+import { validateID } from '../middlewares/idValidator.js'
 import passport from "passport"
 
 const usuariosRouter = express.Router();
