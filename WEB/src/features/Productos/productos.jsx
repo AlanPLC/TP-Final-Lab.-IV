@@ -22,20 +22,27 @@ const Productos = () => {
 
   return(
     <div className='productos-main-container'>
-        <div className='lista-productos'>
-            <h1 className='productos-titulo'>Productos</h1>
-            <ul className='lista'>
+        <div className='productos-lista-container'>
+            <h1>Productos</h1>
+            <ul>
               {listaProductos.map((prod)=>(
                 <li key={prod.producto_id}>
-                  <p>ID #{prod.producto_id}</p>
-                  {/* <img src={prod.imagen_url} alt="imagen" /> */}
-                  <p>{prod.producto_nombre}</p>
-                  <p>Categoría: {prod.categoria_nombre}</p>
-                  <p>Descripción: {prod.descripcion}</p>
-                  <p>${prod.precio}</p>
+                  <div className='img-container'>
+                    <img src="/coca.jpeg" alt="imagen" className='imagen'/>
+                  </div>
+                  <div className='p-container'>
+                    <p className='P1'>{prod.producto_nombre}</p>
+                    <p className='P2'>{prod.categoria_nombre}</p>
+                    <p className='P3'>{prod.descripcion}</p>
+                    <p className='P4'>${prod.precio}</p>
+                  </div>
+                  <button>AGREGAR</button>
                 </li>
               ))}              
             </ul>
+        </div>
+        <div className='productos-venta-container'>
+          <h1>Boleta de Precio</h1>
         </div>
     </div>
   );

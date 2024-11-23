@@ -1,11 +1,151 @@
+/* Sección lista de productos */
 .productos-main-container{
     display: flex;
+    flex-direction: row;
     justify-content: center;
     align-items: center;
+    margin: 0 2rem;
 }
 
-.productos-titulo{
-    margin-top: 4rem;
+.productos-lista-container{
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border: 2px solid #252B42;
+    border-radius: 5px;
+    padding: 1rem;
+    width: 51.5rem;
+    height: 38rem;
+    overflow-y: auto;
+    align-items: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+}
+/* Estilo Scrollbar en container Productos  */
+.productos-lista-container::-webkit-scrollbar {
+    width: 1rem;      
+}
+
+.productos-lista-container::-webkit-scrollbar-thumb {
+    border: 2px solid #ffff;
+    background-color: #252B42;
+    border-radius: 4px;   
+}
+
+.productos-lista-container::-webkit-scrollbar-thumb:hover {
+    background-color: #8d8d8d; 
+}
+
+.productos-lista-container::-webkit-scrollbar-track {
+    background-color: #ccc; 
+}
+
+/* Estilo resto de elementos list productos  */
+.productos-lista-container h1{
+    margin: 0.5rem;
+    color: black;
+    font-weight: bolder;
+    text-align:left; 
+}
+
+.productos-lista-container ul{
+    display: flex;
+    flex-direction: row;
+    padding: 0;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+}
+
+.productos-lista-container ul li{
+    display: flex;
+    border: 2px solid #252B42;
+    border-radius: 5px;
+    padding-top: 0.2rem;
+    height: 20rem;
+    width: 15rem;
+    align-items: center;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 0;
+}
+
+.p-container{
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    width: 100%;
+}
+
+.productos-lista-container p{
+    margin: 0.5rem;
+}
+
+.P1{
+    border-top: #ccc solid 1px;
+    border-bottom: #ccc solid 1px;
+    text-align: center;
+    font-size: medium;
+    font-weight: bold;
+    text-transform: uppercase;
+    padding: 0.3rem;
+    letter-spacing: 0.2rem;
+}
+.P2{
+    font-size: medium;
+    font-weight: bold;
+    text-align: left;
+}
+.P3{
+    font-size: small;
+    font-style: italic;
+    margin: 0;
+    padding:0;
+    white-space: nowrap;     
+    overflow: hidden;       
+    text-overflow: ellipsis; 
+    max-width: 14rem;       
+}
+.P4{
+    font-size: large;
+    font-weight: bolder;
+    text-align: center;
+}
+
+.img-container{
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+}
+.img-container img{
+    height: 150px;
+    width: auto;
+}
+
+.productos-lista-container button{
+    width: 100%;
+    border: none;
+    background-color: #252B42;
+    height: 2rem;
+    color: #ffff;
+    font-weight: bolder;
+    font-size: large;
+    letter-spacing: 0.1rem;
+    cursor: pointer;
+}
+
+/* Sección Venta */
+
+.productos-venta-container{
+    margin-top: 1rem;
+    margin-left: 2rem;
+    width: 20rem;
+    height: 38rem;
+    border: 2px solid #252B42;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+
+}
+
+.productos-venta-container h1{
     color: black;
     font-weight: bolder;
     text-align: center;

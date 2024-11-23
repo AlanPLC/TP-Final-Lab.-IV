@@ -7,14 +7,8 @@
     width: 100%;
 }
 
-/* H1 */
-.prov-titulo{
-    color: #ffffff;
-    margin-bottom: 1rem;
-    border-bottom: 3px solid #ffffff;
 
-}
-
+/* Contenedor Lista de Proveedores */
 .prov-lista-container{
     margin-top: 2rem;
     display: flex;
@@ -26,10 +20,36 @@
     overflow-y: auto; /* Habilita el scroll vertical */
     border: 1px solid #ccc;
     border-radius: 5px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
     margin-bottom: 1rem;
     background-color: #252B42;
     padding-bottom: 1rem;
+}
+/* Estilo Scrollbar en container Proveedores  */
+.prov-lista-container::-webkit-scrollbar {
+    width: 1rem;      
+}
+
+.prov-lista-container::-webkit-scrollbar-thumb {
+    border: 2px solid #ffff;
+    background-color: #252B42;
+    border-radius: 4px;   
+}
+
+.prov-lista-container::-webkit-scrollbar-thumb:hover {
+    background-color: #8d8d8d; 
+}
+
+.prov-lista-container::-webkit-scrollbar-track {
+    background-color: #ccc; 
+}
+
+/* H1 */
+.prov-titulo{
+    color: #ffffff;
+    margin-bottom: 1rem;
+    border-bottom: 3px solid #ffffff;
+
 }
 /* 1er UL */
 .prov-lista{
@@ -118,6 +138,7 @@
     font-weight: bolder;
 }
 
+/* Contenedor edición proveedor */
 .prov-edit-container{
     margin-top: 1rem;
     display: flex;
@@ -128,7 +149,8 @@
     border: 2px solid #252B42;
     border-radius: 5px;
     padding: 0.5rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+
 }
 .prov-edit-container img{
     margin-top: 3.5rem;
