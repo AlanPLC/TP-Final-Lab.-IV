@@ -8,9 +8,9 @@
 
 /* H1 */
 .ventas-titulo{
-    color: black;
-    margin: 1rem;
-    border-bottom: 3px solid #252B42;
+    color: #ffffff;
+    margin-bottom: 1.5rem;
+    border-bottom: 3px solid #ffffff;
 }
 
 .lista-container{
@@ -20,13 +20,14 @@
     align-items: center;
     justify-content: flex-start;
     height: 36rem;
-    padding-top: 2rem;
     overflow-y: auto; /* Habilita el scroll vertical */
     border: 1px solid #ccc;
     border-radius: 5px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     margin-bottom: 1rem;
     background-color: #252B42;
+    margin-top: 2rem;
+    padding-bottom: 2rem;
 }
 /* 1er UL */
 .lista{
