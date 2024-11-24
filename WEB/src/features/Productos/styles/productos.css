@@ -13,14 +13,15 @@
     display: flex;
     flex-direction: column;
     gap: 0;
-    border: 2px solid #252B42;
-    border-radius: 5px;
+    border: 3px solid #252B42;
+    border-radius: 10px;
     padding: 1rem;
     width: 51.5rem;
     height: 38rem;
     overflow-y: auto;
     align-items: center;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+    background-color: #252B42;
 }
 /* Estilo Scrollbar en container Productos  */
 .productos-lista-container::-webkit-scrollbar {
@@ -44,7 +45,7 @@
 /* Estilo resto de elementos list productos  */
 .productos-lista-container h1{
     margin: 0.5rem;
-    color: black;
+    color: #ffff;
     font-weight: bolder;
     text-align:left; 
 }
@@ -59,8 +60,8 @@
 
 .productos-lista-container ul li{
     display: flex;
-    border: 2px solid #252B42;
-    border-radius: 5px;
+    border: 2px solid #ffffff;
+    border-radius: 10px;
     padding-top: 0.2rem;
     height: 20rem;
     width: 15rem;
@@ -68,6 +69,7 @@
     flex-direction: column;
     justify-content: space-between;
     gap: 0;
+    background-color: #ffff;
 }
 
 .p-container{
@@ -122,7 +124,9 @@
 
 .productos-lista-container button{
     width: 100%;
-    border: none;
+    border-bottom: 1px solid #000000;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
     background-color: #252B42;
     height: 2rem;
     color: #ffff;
@@ -130,6 +134,7 @@
     font-size: large;
     letter-spacing: 0.1rem;
     cursor: pointer;
+    
 }
 
 /* Sección Venta */
@@ -140,9 +145,9 @@
     width: 20rem;
     height: 38rem;
     border: 2px solid #252B42;
-    border-radius: 5px;
+    border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
-
+    background-color: #ffff;
 }
 
 .productos-venta-container h1{

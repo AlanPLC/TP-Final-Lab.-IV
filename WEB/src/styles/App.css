@@ -3,8 +3,11 @@
   box-sizing: border-box;
 }
 html, body{
-  background-color: #ffff;
+  background-color: #e5e5f7;
+  opacity: 1;
+  background-image:  repeating-radial-gradient( circle at 0 0, transparent 0, #e5e5f7 10px ), repeating-linear-gradient( #c1c1c155, #c1c1c1 );
   font-family: 'Montserrat', sans-serif;
   padding: 0;
   margin: 0;
+  height: 100%;
 }

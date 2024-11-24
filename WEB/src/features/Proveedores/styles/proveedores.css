@@ -18,8 +18,8 @@
     justify-content: flex-start;
     height: 38rem;
     overflow-y: auto; /* Habilita el scroll vertical */
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    border: 3px solid #000000;
+    border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
     margin-bottom: 1rem;
     background-color: #252B42;
@@ -146,11 +146,11 @@
     width: 20rem;
     align-items: center;
     height: 38rem;
-    border: 2px solid #252B42;
-    border-radius: 5px;
+    border: 3px solid #000000;
+    border-radius: 10px;
     padding: 0.5rem;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
-
+    background-color: #ffff;
 }
 .prov-edit-container img{
     margin-top: 3.5rem;

@@ -84,7 +84,7 @@
 
 .nombres:hover {
     transform: scale(1.2); 
-    color: #c9a700; 
+    color: #ffd500; 
 }
 .pre-presentacion-container a{
     text-decoration: none;
@@ -98,6 +98,6 @@
 }
 .pre-presentacion-container a:hover{
     transform: scale(1.2); 
-    color: #c9a700; 
+    color: #ffd500; 
 }
 
