@@ -1,4 +1,5 @@
 import { db } from '../../config/db.js';
+import jwt from "jsonwebtoken";
 
 // Get ventas (id, fecha), ventadetallada (producto_id, cantidad_producto, precio_unitario)
 // y productos (según id de producto: nombre, precio) | Date: año-mes-dias
@@ -21,6 +22,48 @@ export const getVentas = async (req, res) => {
 
         res.status(200).json({ ventas });
     } catch (error) {
-        res.status(500).json({ errors: [{ msg: "Error de servidor." }], error});
+        res.status(500).json({ errors: [{ msg: "Error de servidor al mostrar ventas." }], error});
     }
 };
+
+export const createVentas = async(req, res) => {
+    try {
+        // Extraigo el token del header, lo decodifico y coloco el id 
+        // extraido del payload en una variable para utilizarlo en el post.
+        const authHeader = req.headers.authorization;
+        if (!authHeader) {
+            return res.status(401).json({ error: 'No se proporcionó el token.' });
+        }
+        const token = authHeader.split(' ')[1]; // Extraer el token "Bearer + token"
+        const secretKey = process.env.SECRET_KEY; // Llave secreta para verificar el token.
+
+        const decoded = jwt.verify(token, secretKey);
+        const usuarioId = decoded.id; 
+
+        // Insertamos productos como array de objetos, teniendo cada uno el id del producto y la cantidad.
+        const { productos } = req.body;
+     
+        // Inicio transacción para peticiones Post.
+        await db.beginTransaction();
+        const [result] = await db.query('INSERT INTO ventas (usuario_id, fecha) VALUES (?,NOW())', [usuarioId]);
+
+        const ventaId = result.insertId;
+
+        // Recorro el array de objetos insertando un registro por cada producto en ventadetallada.
+        const promesaDetalles = productos.map((producto) =>
+            db.query(
+              'INSERT INTO ventadetallada (ventas_id, producto_id, cantidad_producto) VALUES (?, ?, ?)',
+              [ventaId, producto.producto_id, producto.cantidad_producto]
+            )
+          );
+      
+          // Esperar a que todas las inserciones se completen.
+          await Promise.all(promesaDetalles);
+
+        await db.commit();
+        res.status(201).json({ message: "Venta creada exitosamente." });
+    } catch (error) {
+        await db.rollback();
+        res.status(500).json({ errors: [{ msg: "Error de servidor al crear ventas." }], error});
+    }
+}

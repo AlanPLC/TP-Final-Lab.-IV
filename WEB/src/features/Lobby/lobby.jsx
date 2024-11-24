@@ -12,7 +12,7 @@ function Lobby() {
             <li><p className='nombres'>Alarcón Mauro</p></li>
             <li><p className='nombres'>Carrizo Alan</p></li>
             <li><p className='nombres'>Cuello Joaquín</p></li>
-            <li><p className='nombres'>Francisco</p></li>
+            <li><p className='nombres'>Brizuela Francisco</p></li>
           </ul>
         </div>
         <a href="/productos">Ir a los Productos...</a>
