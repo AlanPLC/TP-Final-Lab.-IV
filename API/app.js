@@ -4,11 +4,10 @@ import passport from "passport";
 import { conectarDB } from "./config/db.js";
 import { authConfig } from "./src/middlewares/authConfig.js";
 import usuariosRouter from "./src/routes/usuariosRoutes.js";
-import productosRouter from "./src/routes/productosRoutes.js";
-import ventasRouter from "./src/routes/ventasRoutes.js";
-import ventaDetalladaRouter from "./src/routes/ventaDetalladaRoutes.js";
 import loginRouter from "./src/routes/authRoutes.js";
-import productosConDetalles from "./src/routes/productosDetallesRoutes.js";
+import ventasRouter from "./src/routes/ventasRoutes.js"
+import proveedoresRouter from "./src/routes/proveedoresRoutes.js";
+import productosConDetalles from "./src/routes/productosConDetallesRoutes.js";
 
 // Conectar a DB
 conectarDB();
@@ -31,12 +30,9 @@ app.use(passport.initialize());
 // Rutas
 app.use(loginRouter);
 app.use(usuariosRouter);
-app.use(ventasRouter)
-app.use(ventaDetalladaRouter)
+app.use(ventasRouter);
+app.use(proveedoresRouter);
 app.use(productosConDetalles)
-
-app.use(productosRouter);
-
 app.listen(port, () => {
   console.log(`La aplicacion esta funcionando en: ${port}`);
 });

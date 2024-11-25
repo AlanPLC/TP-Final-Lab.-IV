@@ -5,9 +5,11 @@ export default function useLogin(){
     const [loading, setLoading] = useState(false)
 
     const login = async (user, password) => {
-        
         setLoading(true)
         setError([])
+
+        // Fetch tipo Post a login, exportando los estados loading
+        // y error según resultado para manejo en el componente
         try {
             const response = await fetch("http://localhost:3000/login/",{
                 method: "POST",

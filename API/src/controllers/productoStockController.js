@@ -1,15 +1,4 @@
 import { db } from "../../config/db.js";
-<<<<<<< HEAD
-
-export const getAllProductosStock = async(req, res) => {
-    const [productosStock] = await db.execute("select * from productosStock");
-    res.send({ productosStock });
-  };
-
-export const getAllProductosStock_id = async(req, res) => {
-    const [productos] = await db.execute("select * from productosStock = ?");
-    res.send({ productosStock });
-=======
 import {obtenerFechaActual} from "./VentasControllers.js"
 
 //Obtener todos los productos stock
@@ -111,5 +100,4 @@ export const deleteProductoStock = async (req, res) => {
     } catch (error) {
       res.status(500).json({ errors: [{ msg: "Error de servidor al eliminar el producto del stock." }] });
     }
->>>>>>> Francisco-Brizuela
   };

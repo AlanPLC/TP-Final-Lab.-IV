@@ -1,38 +1,25 @@
-import {body, validationResult} from "express-validator";
+import { body, validationResult } from 'express-validator';
 
+export const validateBody = [
+    body('productos')
+    .isArray({ min: 1 })
+    .withMessage('El campo "productos" debe ser un array con al menos un producto.'),
 
-// Middleware Validar ID
-export const validateID = (req,res,next) => {
-    const id = Number(req.params.id);
-    
-    if(isNaN(id)){
-        return res.status(400).send({ error: "Id no es un número." })
-    }
-    if(!Number.isInteger(id)){
-        return res.status(400).send({ error: "Id no es un número entero." })
-    }
-    if(id<0){
-        return res.status(400).send({ error: "ID debe ser positivo." })
+  // Validar cada objeto dentro del array
+  body('productos.*.producto_id')
+    .isInt({ gt: 0 })
+    .withMessage('Cada id de producto debe ser un número entero positivo.'),
+
+  body('productos.*.cantidad_producto')
+    .isInt({ gt: 0 })
+    .withMessage('Cada cantidad de productos debe ser un número entero positivo.'),
+
+  // Middleware para manejar los errores
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
     }
     next();
-}
-// Validaciones express validator
-
-// Validar Body Usuarios
-export const validateBody = [
-    body('fecha')
-    .notEmpty().withMessage('la fecha de compra debe ser cargada'),
-
-    body('estado')    
-        .notEmpty().withMessage('el estado no puede estar vacio')
-        .isBoolean().withMessage('No coloco el estado')
-        .isIn(["En proceso","Completado"]),
-
-    (req,res,next)=>{
-        const errors = validationResult(req);
-        if(!errors.isEmpty()){
-            return res.status(400).json({ errors: errors.array() });
-        }
-        next();
-    }
+  }
 ];

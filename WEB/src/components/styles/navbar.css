@@ -10,19 +10,28 @@ nav{
     align-items: center;
     padding-left: 4rem;
     padding-right: 4rem;
+    border-bottom: 4px solid #000;
 }
 ul{
     display: flex;
     flex-direction: row;
-    gap: 5rem;
+    gap: 3rem;
     list-style-type: none;
     align-items: center;
 }
 .items{
     text-decoration: none;
-    color: white;
+    color: #ffffff;
     cursor: pointer;
     font-weight: bolder;
+}
+
+.items:hover{
+    color: #ffd500; 
+
+}
+nav li:hover{
+    transform: scale(1.2); 
 }
 
 .logout-button{
@@ -35,4 +44,26 @@ ul{
     border-radius: 5px;
     margin-left: auto; 
     cursor: pointer;
+}
+.logout-button:hover{
+    background-color: #979797;
+}
+
+.login{
+    cursor: pointer;
+    text-decoration: none;
+    color: #ffffff;
+    font-weight: bolder;
+}
+
+.cont-login{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-left: auto;
+    list-style-type: none;
+    gap: 0.2rem;
+}
+.user-logo{
+    width: 30px;
 }
