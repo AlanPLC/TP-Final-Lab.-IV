@@ -33,7 +33,7 @@ function Almacen() {
       mostrarProductos();
     }, [reload]);
      
-    const handleSubmit = async (e) =>{
+    const agregarProducto = async (e) =>{
       e.preventDefault()
       
       const nuevoProducto = {
@@ -50,20 +50,25 @@ function Almacen() {
       if(result.success){
           setReload(!reload)
           console.log("Errores:", error)
-          console.log("Proveedor creado con éxito.", result.data)
+          console.log("Producto creado con éxito.", result.data)
           setError(null)
       } else{
-          console.error("Error al crear el proveedor.", result.message)
+          console.error("Error al crear el producto.", result.message)
       }
       
       
     }
 
-    const actualizarProducto = async()=>{
+    const modificarProducto = async(producto)=>{
       const nuevoProducto = {
-          id: proveedorID,
+          id: proveedor,
           nombre: nombre,
           descripcion: descripcion,
+          categoria: categoria,
+          proveedor: proveedor,
+          precio: precio,
+          cantidad: cantidad,
+          imagen: imagen,
       }
       const result = await putAlmacen(nuevoProducto)
         if(result.success){
@@ -71,15 +76,24 @@ function Almacen() {
           console.log("Productos actualizado con éxito.", result.data)
           setNombre('')
           setDescripcion('')
+          setCategoria('')
+          setProveedor('')
+          setPrecio('')
+          setCantidad('')
+          setImagen('')
           setOnEdit(false)
-          setProveedorID(null)
           setError(null)
         } else{
           console.error("Error al actualizar los Productos.", result.message)
           setNombre('')
           setDescripcion('')
+          setCategoria('')
+          setProveedor('')
+          setPrecio('')
+          setCantidad('')
+          setImagen('')
           setOnEdit(false)
-          setProveedorID(null)
+        
         }
     }
 
@@ -107,44 +121,59 @@ function Almacen() {
           console.log("Lista actualizada: ", listaProductos); 
         }, [listaProductos]);
     
-      return(
-        <div className='almacen-container'>
-          <h1 className='titulo'>Listado del almacen</h1><br />
-          <div className='contenedor-listado'>
-            {listaProductos && listaProductos.length > 0 ? (
-                listaProductos.map(producto => (
-                    <div key={producto.producto_id}>
-                        <img src={producto.imagen_url} alt={producto.nombre} />
-                        <p>{`${producto.producto_id} - ${producto.producto_nombre} - ${producto.descripcion} - P: ${producto.categoria_nombre} - ${producto.cantidad_disponible}}U - ${producto.precio}$`}</p>
-                        <button className="modificar" onClick={() => modificarProducto(producto)}>Modificar</button>
-                        <button className="eliminar" onClick={() => eliminarProducto(producto.id)}>Eliminar</button>
-                    </div>
-                ))
-            ) : (
-                <p>No hay productos disponibles.</p>
-            )}
-        </div>
+  return(
+    <div className='almacen-container'>
+      <h1 className='titulo'>Listado del almacen</h1><br />
+      <div className='contenedor-listado'>
+        {listaProductos && listaProductos.length > 0 ? (
+            listaProductos.map(producto => (
+            <div key={producto.producto_id}>
+              <img src={producto.imagen_url} alt={producto.nombre} />
+              <p>{`${producto.producto_id} - ${producto.producto_nombre} - ${producto.descripcion} - P: ${producto.categoria_nombre} - ${producto.cantidad_disponible}}U - ${producto.precio}$`}</p>
+              <button className="modificar" onClick={() =>{ modificarProducto(producto)
+                setProductoId(producto.producto_id);
+                setNombre(producto.producto_nombre);
+                setDescripcion(producto.descripcion);
+                setCategoria(producto.categoria_id);
+                setProveedor(producto.proveedor_id);
+                setPrecio(producto.precio);
+                setCantidad(producto.cantidad_disponible);
+                setImagen(producto.imagen_url);
+                setOnEdit(true);
+                }}>Modificar</button>
+                <button className="eliminar" onClick={() => eliminarProducto(producto.id)}>Eliminar</button>
+              </div>
+            ))
+          ) : (
+            <p>No hay productos disponibles.</p>
+          )}
+      </div>
           <div className='contenedor-entradas'>
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={agregarProducto}>
                     <label >Nombre:</label>
-                    <input  id="nombre" type="text"  value={nombre}onChange={(e) => setNombre(parseFloat(e.target.value))}/> 
+                    <input  id="nombre" type="text"  value={nombre} onChange={(e) => setNombre(e.target.value)}/> 
                     <label>Descripcion:</label> 
                     <input id="descripcion" type="text" value={descripcion}
-                    onChange={(e) => setDescripcion(parseFloat(e.target.value))}/> 
+                    onChange={(e) => setDescripcion(e.target.value)}/> 
                     <label >Categoria:</label>
                     <input id="apellido" type="text" value={categoria}
-                    onChange={(e) => setCategoria(parseFloat(e.target.value))}/> 
+                    onChange={(e) => setCategoria(e.target.value)}/> 
                     <label >Proveedor:</label>
-                    <input id="proveedor" type="text"value={proveedor}
-                    onChange={(e) => setProveedor(parseFloat(e.target.value))} />
+                    <select name="select" id="select" onChange={(e) => setProveedor(e.target.value)} value={proveedor}>
+                      {listaProductos.map((prov) => (
+                        <option key={prov.id} value={prov.id}>
+                          {prov.categoria_nombre}
+                        </option>
+                      ))}
+                    </select> <br />
                     <label >Precio:</label><input   id="precio" type="number" value={precio}
                     onChange={(e) => setPrecio(parseFloat(e.target.value))} />
-                    <label >Cantidad:</label><input maxLength="2"type="number" name="" id="cantidad" value={cantidad}
+                    <label >Cantidad:</label><input maxLength="2"type="number" id="cantidad" value={cantidad}
                     onChange={(e) => setCantidad(parseFloat(e.target.value))}/>
                     <label >Imagen URL:</label><input maxLength={255} id="imagen" type="url" value={imagen}
-                    onChange={(e) => setImagen(parseFloat(e.target.value))} />
+                    onChange={(e) => setImagen(e.target.value)} />
                     <div className="contenedor-botones">
-                        <button onClick={()=> {modificarProducto(producto)}}>Guardar</button>
+                        <button type="submit">Guardar</button>
                         <button onClick={() => {
                           setProductoId(null)
                           setNombre(""); 
@@ -157,10 +186,10 @@ function Almacen() {
                           setOnEdit(false)}}>Cancelar</button>
                         
                     </div>
-                </form>
-          </div>
+              </form>
         </div>
-      )
+    </div>
+  )
 };
 
   
