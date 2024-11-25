@@ -8,25 +8,44 @@
 
 /* H1 */
 .ventas-titulo{
-    color: black;
-    margin: 1rem;
-    border-bottom: 3px solid #252B42;
+    color: #ffffff;
+    margin-bottom: 1.5rem;
+    border-bottom: 3px solid #ffffff;
 }
 
 .lista-container{
-    padding-top: 7rem;
-    padding-bottom: 1rem;
     display: flex;
     flex-direction: column;
     width: 44rem;
     align-items: center;
-    justify-content: center;
-    max-height: 30rem;
+    justify-content: flex-start;
+    height: 36rem;
     overflow-y: auto; /* Habilita el scroll vertical */
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: 3px solid #000000;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+    margin-bottom: 1rem;
     background-color: #252B42;
+    margin-top: 2rem;
+    padding-bottom: 2rem;
+}
+/* Estilo Scrollbar en container Ventas  */
+.lista-container::-webkit-scrollbar {
+    width: 1rem;      
+}
+
+.lista-container::-webkit-scrollbar-thumb {
+    border: 2px solid #ffff;
+    background-color: #252B42;
+    border-radius: 4px;   
+}
+
+.lista-container::-webkit-scrollbar-thumb:hover {
+    background-color: #8d8d8d; 
+}
+
+.lista-container::-webkit-scrollbar-track {
+    background-color: #ccc; 
 }
 /* 1er UL */
 .lista{

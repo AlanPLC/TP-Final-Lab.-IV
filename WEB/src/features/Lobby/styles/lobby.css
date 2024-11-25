@@ -1,11 +1,104 @@
 .lobby-container{
     display: flex;
     justify-content: center;
+    align-items: flex-start;
+    height: 91.2vh; 
+    width: 100%; 
+    margin: 0;
+    background-image: url("./shopping.gif");
+    background-size: cover;
+    background-repeat: no-repeat; 
+    background-position: center; 
+    position: relative;
+
+}
+.lobby-container::before {
+    content: ""; /* Pseudoelemento vacío para aplicar el filtro */
+    position: absolute; 
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5); 
+    z-index: 1;
+}
+.pre-presentacion-container{
+    display: flex;
+    flex-direction: column;
     align-items: center;
-    margin-top: 3rem;
+    justify-content: center;
+    text-align: center;
+    z-index: 2;
+    gap: 1rem;
+}
+.presentacion-container{
+    margin-top: 4rem;
+    text-align: center;
+    width: 38rem;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    border: 4px solid #252B42;
+    padding: 1rem 2rem;
+    border-radius: 15px;
+    background-color: rgba(0, 0, 0, 0.7);
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.5);
+}
+.lobby-container div h1{
+    letter-spacing: 0.2rem;
+    color: #ffff;
+    font-weight: bolder;
+    border: none;
+    font-size: 40px;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+    margin-top: 1rem;
+    margin-bottom: 1rem;
 }
 
-.titulo{
-    color: black;
-    font-weight: bolder;
+.desc{
+    color: #ffff;
+    font-weight: normal;
+    border: none;
+    text-align: start;
+    text-indent: 1rem;
+    font-size: 17px;
+    font-style:oblique;
 }
+
+.lobby-container ul{
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.nombres{
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    color: #ffff;
+    font-weight: bolder;
+    font-size: larger;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+    margin-bottom: 1rem;
+    cursor: pointer;
+}
+
+.nombres:hover {
+    transform: scale(1.2); 
+    color: #ffd500; 
+}
+.pre-presentacion-container a{
+    text-decoration: none;
+    color: #ffff;
+    font-weight: bolder;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+    text-align: center;
+    font-size: 30px;
+    z-index: 2;
+    letter-spacing: 0.1rem;
+}
+.pre-presentacion-container a:hover{
+    transform: scale(1.2); 
+    color: #ffd500; 
+}
+
