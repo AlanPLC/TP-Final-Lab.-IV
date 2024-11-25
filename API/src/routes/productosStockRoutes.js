@@ -1,6 +1,7 @@
 import express from 'express';
 import {getAllProductoStock,productoStockById,updateProductoStock,createProductoStock, deleteProductoStock} from '../controllers/productoStockController.js';
-import { validateID, validateBody } from '../validations/productosStockValidations.js';
+import { validateBody } from '../validations/productosStockValidations.js';
+import { validateID } from '../middlewares/idValidator.js';
 
 const productosStockRouter = express.Router();
 

@@ -21,7 +21,7 @@ export const validateBody = [
     body('descripcion')
     .notEmpty().withMessage('La descripción del producto es obligatoria.')
     .isString().withMessage('La descripción del producto solo puede contener letras y números.')
-    .isLength({min: 3, max: 50}).withMessage('La descripción debe contener de 3 a 50 carácteres.'),
+    .isLength({min: 3, max: 100}).withMessage('La descripción debe contener de 3 a 50 carácteres.'),
 
     body('precio')
     .notEmpty().withMessage('El precio del producto es obligatorio.')

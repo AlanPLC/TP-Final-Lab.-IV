@@ -1,7 +1,7 @@
 import express from 'express';
 import {getAllProductos,productosById,updateProductos,createProductos, deleteProducto} from '../controllers/productosController.js';
-import { validateID, validateBody } from '../validations/productosValidations.js'
-
+import { validateBody } from '../validations/productosValidations.js'
+import { validateID } from '../middlewares/idValidator.js';
 const productosRouter = express.Router();
 
 // Rutas para Productos

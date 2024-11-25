@@ -2,32 +2,54 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-direction: column;
+    flex-direction: row;
+    gap: 1rem;
     width: 100%;
 }
 
-/* H1 */
-.prov-titulo{
-    color: black;
-    margin: 1rem;
-    border-bottom: 3px solid #252B42;
-}
 
+/* Contenedor Lista de Proveedores */
 .prov-lista-container{
+    margin-top: 2rem;
     display: flex;
     flex-direction: column;
     width: 36rem;
     align-items: center;
-    justify-content: center;
-    height: 30rem;
+    justify-content: flex-start;
+    height: 38rem;
     overflow-y: auto; /* Habilita el scroll vertical */
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: 3px solid #000000;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
     margin-bottom: 1rem;
     background-color: #252B42;
-    padding-top: 2rem;
     padding-bottom: 1rem;
+}
+/* Estilo Scrollbar en container Proveedores  */
+.prov-lista-container::-webkit-scrollbar {
+    width: 1rem;      
+}
+
+.prov-lista-container::-webkit-scrollbar-thumb {
+    border: 2px solid #ffff;
+    background-color: #252B42;
+    border-radius: 4px;   
+}
+
+.prov-lista-container::-webkit-scrollbar-thumb:hover {
+    background-color: #8d8d8d; 
+}
+
+.prov-lista-container::-webkit-scrollbar-track {
+    background-color: #ccc; 
+}
+
+/* H1 */
+.prov-titulo{
+    color: #ffffff;
+    margin-bottom: 1rem;
+    border-bottom: 3px solid #ffffff;
+
 }
 /* 1er UL */
 .prov-lista{
@@ -38,9 +60,7 @@
     margin: 0;
     padding: 0;
 }
-.prov-lista h4{
-    margin: 0.4rem;
-}
+
 .prov-li-main {
     display: flex;
     flex-direction: column;
@@ -57,6 +77,26 @@
     flex-direction: row;
     font-size: 16px;
     margin: 0;
+    align-items: center;
+}
+.proveedor div{
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    margin-left: auto;
+}
+.edit-pic, .delete-pic{
+    width: 20px;
+    height: 20px;   
+    cursor: pointer;
+}
+.prov-lista h4{
+    margin: 0.4rem;
+}
+.non-products{
+    margin: 0.4rem;
+    font-style: italic;
+    font-weight: normal;
 }
 
 .proveedor p{
@@ -85,8 +125,8 @@
     font-size: 16px;
 }
 .prov-producto p {
-    margin  : 0.2rem; /* Elimina márgenes predeterminados */
-    line-height: 1rem; /* Ajusta la altura de línea si es necesario */
+    margin: 0.2rem;
+    line-height: 1rem;
 }
 .prov-producto hr{
     height:15px;
@@ -96,5 +136,113 @@
 
 .p-id{
     font-weight: bolder;
+}
+
+/* Contenedor edición proveedor */
+.prov-edit-container{
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    width: 20rem;
+    align-items: center;
+    height: 38rem;
+    border: 3px solid #000000;
+    border-radius: 10px;
+    padding: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+    background-color: #ffff;
+}
+.prov-edit-container img{
+    margin-top: 3.5rem;
+    width: 200px;
+}
+.prov-edit-container h2{
+    margin-bottom: 1.5rem;
+    color: #252B42;
+    font-size: 22px;
+    border-bottom: 2px solid #252B42;
+    border-radius: 2px;
+}
+.edit-title{
+    display: flex;
+    flex-direction: row;
+    gap: 0.4rem;
+    align-items: center;
+}
+.edit-title h2{
+    color: #252B42;
+    font-size: 22px;
+    border-bottom: 2px solid #252B42;
+    border-radius: 2px;
+}
+.edit-title p{
+    font-size: 22px;
+    color: black;
+    font-weight: bolder;
+    margin-bottom: 1.8rem;
+}
+
+.entryes{
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+.entryes label{
+    font-size:medium; ;
+    font-weight:bold;
+}
+
+.entryes input{
+    width: 16rem;
+    border-radius: 5px;
+    height: 2rem;
+    margin-bottom: 0.5rem;
+    border: 2px solid #ccc; 
+    border-radius: 5px;
+    padding: 0.5rem;
+}
+
+.entryes textarea{
+    max-width: 16rem;
+    border-radius: 5px;
+    height: 5rem;
+    margin-bottom: 0.5rem;
+    border: 2px solid #ccc; 
+    padding: 0.5rem;
+    border-radius: 5px;
+    max-height: 8rem;
+}
+
+.entryes input:focus, textarea:focus {
+    border-color: #252B42;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+.entryes button{
+    width: 100%;
+    height: 1.5rem;
+    border-radius: 3px;
+    background-color: #252B42;
+    color: #fff;
+    cursor: pointer;
+}
+
+.entryes button:disabled{
+    width: 100%;
+    height: 1.5rem;
+    border-radius: 3px;
+    background-color: #ccc;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.buttons{
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+}
+
+.error-msg{
+    color: red;
 }
 

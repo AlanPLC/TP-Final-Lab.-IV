@@ -19,7 +19,7 @@ export const validateBody = [
     body('descripcion')
     .optional()
     .isString().withMessage('La descripción del producto solo puede contener letras y números.')
-    .isLength({min: 3, max: 100}).withMessage('La descripción debe contener de 3 a 20 carácteres.'),
+    .isLength({min: 3, max: 200}).withMessage('La descripción debe contener de 3 a 200 carácteres.'),
 
     (req,res,next)=>{
         const errors = validationResult(req);

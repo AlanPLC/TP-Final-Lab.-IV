@@ -57,8 +57,8 @@ const Ventas = () => {
     
   return(
     <div className='ventas-main-container'>
-        <h1 className='ventas-titulo'>Ventas</h1>
         <div className='lista-container'>
+        <h1 className='ventas-titulo'>Ventas</h1>
             <ul className='lista'>
                 {ventasList.map((venta) => (
                     <li className='li-main' key={venta.venta_id} >
