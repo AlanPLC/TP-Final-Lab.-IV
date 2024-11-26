@@ -8,7 +8,7 @@ export const getAllUsers = async (_, res) => {
     const [usuarios] = await db.execute("SELECT * FROM usuarios");
     res.status(200).json({ usuarios });
   } catch (error) {
-    res.status(500).json({ errors: [{ msg: "Error de servidor al obtener usuarios." }] });
+    res.status(500).json({ errors: [{ msg: "Error de servidor al obtener usuarios." }], error: error.message });
   }
 };
 
@@ -29,7 +29,7 @@ export const getUserByID = async (req, res) => {
 
     res.status(200).json(usuario[0]);
   } catch (error) {
-    res.status(500).json({ errors: [{ msg: "Error de servidor al obtener el usuario." }] });
+    res.status(500).json({ errors: [{ msg: "Error de servidor al obtener el usuario." }], error: error.message });
   }
 };
 
@@ -47,7 +47,7 @@ export const createUser = async (req, res) => {
 
     res.status(201).json({ message: "Usuario creado.", result });
   } catch (error) {
-    res.status(500).json({ errors: [{ msg: "Error de servidor al crear el usuario." }] });
+    res.status(500).json({ errors: [{ msg: "Error de servidor al crear el usuario." }], error: error.message });
   }
 };
 
@@ -68,7 +68,7 @@ export const deleteUser = async (req, res) => {
 
     res.status(200).json({ message: "Usuario eliminado." });
   } catch (error) {
-    res.status(500).json({ errors: [{ msg: "Error de servidor al eliminar el usuario." }] });
+    res.status(500).json({ errors: [{ msg: "Error de servidor al eliminar el usuario." }], error: error.message });
   }
 };
 
@@ -94,6 +94,6 @@ export const updateUser = async (req, res) => {
 
     res.status(200).json({ message: "Usuario actualizado." });
   } catch (error) {
-    res.status(500).json({ errors: [{ msg: "Error de servidor al actualizar el usuario." }] });
+    res.status(500).json({ errors: [{ msg: "Error de servidor al actualizar el usuario." }], error: error.message });
   }
 };

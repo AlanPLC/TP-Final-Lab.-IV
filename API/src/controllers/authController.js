@@ -30,6 +30,6 @@ export const loginUser = async (req, res) => {
 
         res.json({ token });
     } catch (error) {
-        res.status(500).json({ errors: [{ msg: "Error de servidor" }] });
+        res.status(500).json({ errors: [{ msg: "Error de servidor" }], error: error.message });
     }
 };

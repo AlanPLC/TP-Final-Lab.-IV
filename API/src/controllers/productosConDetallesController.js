@@ -17,7 +17,7 @@ export const getProductosConDetalles = async(req, res)=>{
       ORDER BY productos.id;')
       res.status(200).json({ productosConDetalles });
     } catch (error) {
-      res.status(500).json( {error: error.message} );
+      res.status(500).json({ errors: [{ msg: "Error al mostrar los productos con detalles." }], error: error.message});
     }
 }
 
@@ -43,7 +43,7 @@ export const getProductosConDetallesByID = async(req, res)=>{
       }
       res.status(200).json(response[0])
   } catch (error) {
-    res.status(500).json( {error: error.message} );
+    res.status(500).json({ errors: [{ msg: "Error al mostrar el producto por id con detalles." }], error: error.message});
   }
 }
 
@@ -75,7 +75,7 @@ export const createProductoConDetalles = async (req, res) => {
   } catch (error) {
     // Revertir la transacción en caso de error
     await db.rollback();
-    res.status(500).json( {error: error.message} );
+    res.status(500).json({ errors: [{ msg: "Error al crear el producto con detalles." }], error: error.message});
   }
 };
 
@@ -95,7 +95,7 @@ export const updateProductoConDetalles = async(req,res)=>{
     res.status(201).json({ message: "Producto actualizado con detalles exitosamente." });
   } catch (error) {
     await db.rollback();
-    res.status(500).json({ error: "Error al actualizar el producto con detalles.", error });
+    res.status(500).json({ errors: [{ msg: "Error al actualizar el producto con detalles." }], error: error.message});
   }
 }
 
@@ -116,6 +116,6 @@ export const deleteProductoConDetalles = async(req,res)=>{
     
   } catch (error) {
     await db.rollback();
-    res.status(500).json({ message: "Error al eliminar el producto.", error})
+    res.status(500).json({ errors: [{ msg: "Error al eliminar el producto." }], error: error.message});
   }
 }

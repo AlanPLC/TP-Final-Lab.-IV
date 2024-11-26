@@ -14,7 +14,7 @@ export const getProveedoresConProductos = async(req,res)=>{
 
         res.status(200).json({ proveedor });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ errors: [{ msg: "Error al mostrar los proveedores con productos." }], error: error.message});
     }
 }
 
@@ -29,8 +29,7 @@ export const getProveedorByID = async(req,res)=>{
         }
         res.status(200).json(proveedor[0]);
     } catch (error) {
-        res.status(500).json({ error: error.message });
-        
+        res.status(500).json({ errors: [{ msg: "Error al mostrar el proveedor por ID." }], error: error.message});
     }
 }
 
@@ -42,7 +41,7 @@ export const createProveedores = async(req, res)=>{
         [nombre, descripcion]);
         res.status(201).json({ message: "Proveedor creado." });
     } catch (error) {
-        res.status(500).json({ error: error.message });    
+        res.status(500).json({ errors: [{ msg: "Error al crear proveedor." }], error: error.message});
     }
 }
 
@@ -55,7 +54,7 @@ export const deleteProveedor = async(req, res)=>{
         }
         res.status(200).json({ message: "Proveedor eliminado." });
     } catch (error) {
-        res.status(500).json({ error: error.message });    
+        res.status(500).json({ errors: [{ msg: "Error al eliminar proveedor." }], error: error.message});
     }
 }
 
@@ -69,6 +68,6 @@ export const updateProveedor = async(req, res)=>{
         }
         res.status(200).json({ message: "Proveedor actualizado." });
     } catch (error) {
-        res.status(500).json({ error: error.message });    
+        res.status(500).json({ errors: [{ msg: "Error al actualizar el proveedor." }], error: error.message});
     }
 }
