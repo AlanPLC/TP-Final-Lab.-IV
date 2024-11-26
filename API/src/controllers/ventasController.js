@@ -22,7 +22,7 @@ export const getVentas = async (req, res) => {
 
         res.status(200).json({ ventas });
     } catch (error) {
-        res.status(500).json({ errors: [{ msg: "Error de servidor al mostrar ventas." }], error});
+        res.status(500).json({ errors: [{ msg: "Error de servidor al mostrar ventas." }], error: error.message});
     }
 };
 
@@ -64,6 +64,22 @@ export const createVentas = async(req, res) => {
         res.status(201).json({ message: "Venta creada exitosamente." });
     } catch (error) {
         await db.rollback();
-        res.status(500).json({ errors: [{ msg: "Error de servidor al crear ventas." }], error});
+        res.status(500).json({ errors: [{ msg: "Error de servidor al crear ventas." }], error: error.message});
+    }
+}
+
+export const controlStock = async(req,res)=>{
+    const producto_id = req.params.id;
+    const { cantidad_disponible } = req.body;
+    try {
+        const result = await db.execute('UPDATE producto_stock SET cantidad_disponible = ? WHERE producto_id = ?',[cantidad_disponible, producto_id]);
+        if(result.affectedRows === 0){
+            return res.status(404).json({ errors: [{ msg: "Producto no encontrado" }] });
+        }
+        res.status(200).json({ message: "Stock del producto actualizado." });
+
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ errors: [{ msg: "Error de servidor al actualizar stock." }], error: error.message});
     }
 }
