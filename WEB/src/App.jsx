@@ -3,7 +3,7 @@ import Navbar from "./components/navbar.jsx"
 import Lobby from "./features/Lobby/lobby.jsx"
 import Login from "./features/Login-Register/login.jsx"
 import Register from "./features/Login-Register/register.jsx"
-import Productos from './features/productos/productos.jsx';
+import Productos from './features/Productos/productos.jsx';
 import Ventas from './features/Ventas/ventas.jsx'
 import Proveedores from './features/Proveedores/proveedores.jsx';
 import Almacen from './features/Almacen/almacen.jsx'
@@ -21,7 +21,6 @@ function App() {
           <Route path="/" element={<Lobby />}/>
           <Route path="/login" element={<Login/>}/>
           <Route path="/register" element={<Register/>}/>
-          <Route path="/administracion" element={<Almacen/>}/>
 
           {/*como debería utilizarse protectedRoute */}
           <Route path="/productos" element={
@@ -39,6 +38,12 @@ function App() {
           <Route path="/proveedores" element={
             <ProtectedRoute>
               <Proveedores />
+            </ProtectedRoute>
+          }/>
+
+          <Route path="/administracion" element={
+            <ProtectedRoute>
+              <Almacen />
             </ProtectedRoute>
           }/>
         </Routes>

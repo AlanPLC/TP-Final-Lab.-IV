@@ -6,7 +6,6 @@ const Productos = () => {
   const { getProductosConDetalles, postVentas, error, loading} = useProductos()
   const [listaProductos, setListaProductos] = useState([])
   const [productosVenta, setProductosVenta] = useState([])
-  conts [productoNombre, setProductoNombre] = useState('')
 
   // Traer la lista de productos
   const mostrarProductos = async()=>{
