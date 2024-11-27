@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import useProductos from '../../hooks/Productos/useProductos.jsx';
 
 const Productos = () => {
-  const { getProductosConDetalles, postVentas, error, loading} = useProductos()
+  const { getProductosConDetalles, postVentas, controlStock, error, loading} = useProductos()
   const [listaProductos, setListaProductos] = useState([])
   const [productosVenta, setProductosVenta] = useState([])
 
@@ -28,7 +28,6 @@ const Productos = () => {
   }
   // Disparador de la venta
   const confirmarVenta = async()=>{
-
     // Creo el body que va al fetch
     const productosBody = productosVenta.map((producto)=>{
       return {
@@ -38,10 +37,24 @@ const Productos = () => {
     })
     console.log("Cuerpo generado:", productosBody);
     try {
-      const response = await postVentas(productosBody)
-      if(response.success){
-        console.log("Venta creada con éxito.", response.data)
+      // Creo la venta según la lista de productos cargados.
+      const response1 = await postVentas(productosBody)
+      if(response1.success){
+        console.log("Venta creada con éxito.", response1.data)
         setProductosVenta([])
+      }
+      
+      // Actualizo el stock de los productos vendidos.
+      for (const producto of productosVenta){
+        const actualizarStock = {
+          producto_id: producto.producto_id,
+          cantidad_disponible: producto.cantidad_disponible - producto.cantidad
+        }
+        console.log("Stock a actualizar:", actualizarStock)
+        const response2 = await controlStock(actualizarStock)
+        if(response2.success){
+          console.log("Stock actualizado con éxito.", response2.data)
+        }
       }
     } catch (error) {
       console.error(error);
