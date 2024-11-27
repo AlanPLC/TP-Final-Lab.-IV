@@ -9,11 +9,14 @@ export const getProductosConDetalles = async(req, res)=>{
           productos.precio, \
           productos.imagen_url, \
           productos_categorias.nombre AS categoria_nombre, \
-          producto_stock.cantidad_disponible, \
+          proveedores.nombre AS proveedor, \
+          proveedores.descripcion AS descripcion_proveedores, \
+          producto_stock.cantidad_disponible AS cantidad, \
           producto_stock.fecha_ultima_actualizacion \
       FROM productos \
       LEFT JOIN productos_categorias ON productos.categoria_id = productos_categorias.id \
       LEFT JOIN producto_stock ON productos.id = producto_stock.producto_id \
+      LEFT JOIN proveedores ON productos.proveedor_id = proveedores.id \
       ORDER BY productos.id;')
       res.status(200).json({ productosConDetalles });
     } catch (error) {
@@ -31,11 +34,14 @@ export const getProductosConDetallesByID = async(req, res)=>{
           productos.precio, \
           productos.imagen_url, \
           productos_categorias.nombre AS categoria_nombre, \
+          proveedores.nombre AS proveedor, \
+          proveedores.descripcion AS descripcion_proveedores, \
           producto_stock.cantidad_disponible, \
           producto_stock.fecha_ultima_actualizacion \
       FROM productos \
       LEFT JOIN productos_categorias ON productos.categoria_id = productos_categorias.id \
       LEFT JOIN producto_stock ON productos.id = producto_stock.producto_id \
+      LEFT JOIN proveedores ON productos.proveedor_id = proveedores.id \
       WHERE productos.id =? \
       ORDER BY productos.id;',[id])
       if (response === 0) {
