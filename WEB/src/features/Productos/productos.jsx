@@ -132,7 +132,7 @@ const Productos = () => {
                   </li>
                 ))}
               </ul>
-              <button onClick={()=>console.log("Productos a vender: ",productosVenta)}>Lista</button>
+              {/* <button onClick={()=>console.log("Productos a vender: ",productosVenta)}>Lista</button> */}
               <hr />
               <p className='tp1'>Total</p>
               <p className='tp2'>${productosVenta.reduce((acc, curr) => acc + curr.precio*curr.cantidad, 0)}</p>

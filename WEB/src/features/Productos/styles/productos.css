@@ -47,6 +47,10 @@
     margin: 0.5rem;
     color: #ffff;
     font-weight: bolder;
+    border-bottom: 4px solid #ffff;
+    margin: 0 auto 1rem;
+    text-align: center;
+    max-width: fit-content;
 }
 
 .productos-lista-container ul{
@@ -152,9 +156,12 @@
 }
 
 .productos-venta-container h2{
-    color: black;
+    color: #000;
     font-weight: bolder;
+    border-bottom: 3px solid #000;
+    margin: 1rem auto 1rem;
     text-align: center;
+    max-width: fit-content;
 }
 
 .productos-venta{
@@ -162,17 +169,21 @@
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    text-align: center;
+    padding: 1rem;
+    padding-top: 0.4rem;
 }
 .productos-venta h3{
     color: black;
     font-weight: bolder;
     margin: 0;
+    margin-left: 1rem;
+    text-align: left;
+    width: 100%;
 }
 
 .productos-venta hr{
-    height: 1px;
-    background-color: rgb(0, 0, 0,0.4); 
+    height: 0.15rem;
+    background-color: rgb(0, 0, 0,0.2); 
     border: none;
     width: 90%;
     margin: 0;
@@ -196,7 +207,7 @@
 }
 .productos-venta .tp1{
     color: black;
-    font-weight: normal;
+    font-weight:500;
     margin: 0;
     font-size: 22px;
 }
@@ -269,6 +280,7 @@
     width: 2.5rem;
     border-radius: 5px;
     text-align: center;
+    font-weight: bold;
 }
 
 .item-container .d2 button{
