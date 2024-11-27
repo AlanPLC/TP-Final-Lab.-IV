@@ -6,8 +6,6 @@ const Ventas = () => {
     const {ventas, error, loading} = useVentas()
     const [ventasList, setVentasList] = useState([])
 
-
-
     // Recibe el fetch del hook
     const fetchVentas = async()=>{
         try {

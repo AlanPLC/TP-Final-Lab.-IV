@@ -1,13 +1,68 @@
 import './styles/productos.css';
 import { useState, useEffect } from "react";
 import useProductos from '../../hooks/Productos/useProductos.jsx';
+import { jsPDF } from "jspdf";
+import autoTable from "jspdf-autotable";
+import { jwtDecode } from "jwt-decode";
 
 const Productos = () => {
   const { getProductosConDetalles, postVentas, controlStock, error, loading} = useProductos()
   const [listaProductos, setListaProductos] = useState([])
   const [productosVenta, setProductosVenta] = useState([])
   const [reload, setReload] = useState(false)
-
+  
+  // Funcionalidad generar un PDF (ticket) con los datos de la venta realizada.
+  const generarPDF = (productosVenta) => {
+    const doc = new jsPDF();
+    const token = localStorage.getItem('token')
+    const decoded = jwtDecode(token)
+  
+    // Título
+    doc.setFontSize(18);
+    doc.setFont("helvetica", "bold");
+    doc.text("Minimarket Bitward", doc.internal.pageSize.getWidth() / 2, 20, {
+      align: "center",
+    });
+  
+    // Información de la venta
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "normal");
+    doc.text(`Fecha: ${new Date().toLocaleString()}`, 10, 40);
+    doc.text(`Vendedor: ${decoded.user}`, 10, 50);
+  
+    // Tabla con productos
+    autoTable(doc, {
+      startY: 60,
+      head: [["Producto", "Cantidad", "Precio"]],
+      body: productosVenta.map((prod) => [
+        prod.producto_nombre,
+        prod.cantidad,
+        prod.precio,
+      ]),
+      styles: {
+        head: { fillColor: [41, 128, 185], textColor: [255, 255, 255] },
+        fontSize: 10,
+        cellPadding: 4,
+      },
+      columnStyles: {
+        0: { cellWidth: 70 },
+        1: { halign: "center", cellWidth: 30 },
+        2: { halign: "right", cellWidth: 40 },
+      },
+      theme: "grid",
+    });
+  
+    // Total de la venta
+    const total = productosVenta.reduce(
+      (sum, prod) => sum + prod.cantidad * prod.precio,
+      0
+    );
+    doc.text(`Total: $${total.toFixed(2)}`, 10, doc.previousAutoTable.finalY + 10);
+  
+    // Guardar el PDF
+    doc.save("ticket_venta.pdf");
+  };
+  
   // Traer la lista de productos
   const mostrarProductos = async()=>{
     try {
@@ -27,7 +82,7 @@ const Productos = () => {
     }
     setProductosVenta([...productosVenta, { ...prod, cantidad: 1 }])
   }
-  // Disparador de la venta
+  // Disparador de la venta y sus funciones.
   const confirmarVenta = async()=>{
     // Creo el body que va al fetch
     const productosBody = productosVenta.map((producto)=>{
@@ -42,7 +97,6 @@ const Productos = () => {
       const response1 = await postVentas(productosBody)
       if(response1.success){
         console.log("Venta creada con éxito.", response1.data)
-        setProductosVenta([])
       }
       
       // Actualizo el stock de los productos vendidos.
@@ -57,6 +111,11 @@ const Productos = () => {
           console.log("Stock actualizado con éxito.", response2.data)
         }
       }
+      
+      // Genero el PDF con los datos de la venta.
+      generarPDF(productosVenta)
+      
+      setProductosVenta([])
       setReload(!reload)
     } catch (error) {
       console.error(error);
@@ -89,7 +148,7 @@ const Productos = () => {
           : prod
       )
     );
-  };
+  };  
 
   // Cargar los productos cuando se carga la página o cuando la lista sufre algún cambio.
   useEffect(() => {
