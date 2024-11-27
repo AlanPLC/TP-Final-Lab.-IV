@@ -6,6 +6,7 @@ const Productos = () => {
   const { getProductosConDetalles, postVentas, controlStock, error, loading} = useProductos()
   const [listaProductos, setListaProductos] = useState([])
   const [productosVenta, setProductosVenta] = useState([])
+  const [reload, setReload] = useState(false)
 
   // Traer la lista de productos
   const mostrarProductos = async()=>{
@@ -56,6 +57,7 @@ const Productos = () => {
           console.log("Stock actualizado con éxito.", response2.data)
         }
       }
+      setReload(!reload)
     } catch (error) {
       console.error(error);
     }
@@ -89,9 +91,10 @@ const Productos = () => {
     );
   };
 
+  // Cargar los productos cuando se carga la página o cuando la lista sufre algún cambio.
   useEffect(() => {
     mostrarProductos()
-  }, []);
+  }, [reload]);
 
   return(
     <div className='productos-main-container'>
@@ -109,7 +112,9 @@ const Productos = () => {
                     <p className='P3'>{prod.descripcion}</p>
                     <p className='P4'>${prod.precio}</p>
                   </div>
-                  <button onClick={()=> agregarProducto(prod)}>AGREGAR</button>
+                  {prod.cantidad_disponible <= 0 ? 
+                    (<button className='boton-deshabilitado'>SIN STOCK</button>) : 
+                    (<button onClick={()=> agregarProducto(prod)}>AGREGAR</button>)}
                 </li>
               ))}              
             </ul>
@@ -138,7 +143,7 @@ const Productos = () => {
                         <button 
                           className="b2" 
                           onClick={()=>incrementarCantidad(prod.producto_id)}
-                          disabled={prod.cantidad >= 10}/>
+                          disabled={prod.cantidad >= prod.cantidad_disponible}/>
                       </div>
                     </div>
                     <hr />
