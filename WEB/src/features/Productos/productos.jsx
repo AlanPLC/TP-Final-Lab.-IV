@@ -3,10 +3,12 @@ import { useState, useEffect } from "react";
 import useProductos from '../../hooks/Productos/useProductos.jsx';
 
 const Productos = () => {
-  const { getProductosConDetalles, error, loading} = useProductos()
+  const { getProductosConDetalles, postVentas, error, loading} = useProductos()
   const [listaProductos, setListaProductos] = useState([])
   const [productosVenta, setProductosVenta] = useState([])
+  conts [productoNombre, setProductoNombre] = useState('')
 
+  // Traer la lista de productos
   const mostrarProductos = async()=>{
     try {
       const response = await getProductosConDetalles()
@@ -16,7 +18,7 @@ const Productos = () => {
       console.error(error);
     }
   }
-
+  // Llevar el producto a la lista de ventas
   const agregarProducto = (prod) => {
     const prodExiste = productosVenta.some(p => p.producto_id === prod.producto_id)
     if(prodExiste) {
@@ -25,6 +27,28 @@ const Productos = () => {
     }
     setProductosVenta([...productosVenta, { ...prod, cantidad: 1 }])
   }
+  // Disparador de la venta
+  const confirmarVenta = async()=>{
+
+    // Creo el body que va al fetch
+    const productosBody = productosVenta.map((producto)=>{
+      return {
+        producto_id: producto.producto_id,
+        cantidad_producto: producto.cantidad
+      }
+    })
+    console.log("Cuerpo generado:", productosBody);
+    try {
+      const response = await postVentas(productosBody)
+      if(response.success){
+        console.log("Venta creada con éxito.", response.data)
+        setProductosVenta([])
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
 
   // Boton eliminar producto de la lista de ventas.
   const handleEliminar = (id) => {
@@ -109,11 +133,12 @@ const Productos = () => {
                   </li>
                 ))}
               </ul>
-              {/* <button onClick={()=>console.log("Productos a vender: ",productosVenta)}>Lista</button> */}
+              <button onClick={()=>console.log("Productos a vender: ",productosVenta)}>Lista</button>
               <hr />
               <p className='tp1'>Total</p>
               <p className='tp2'>${productosVenta.reduce((acc, curr) => acc + curr.precio*curr.cantidad, 0)}</p>
               <hr />
+              <button className='venta-button' onClick={()=> confirmarVenta()}>Realizar Venta</button>
           </div>
         </div>
     </div>

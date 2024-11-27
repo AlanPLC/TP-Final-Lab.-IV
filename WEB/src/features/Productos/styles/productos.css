@@ -175,8 +175,25 @@
     height: 1px;
     background-color: rgb(0, 0, 0,0.4); 
     border: none;
-    width: 100%;
+    width: 90%;
     margin: 0;
+}
+.venta-button{
+    height: 2.5rem;
+    width: 14rem;
+    margin-top: 1.5rem;
+    border-radius: 5px;
+    border: 2px solid #000;
+    background-color: #252B42;
+    color: #ffffff;
+    font-weight: bolder;
+    font-size: 18px;
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+}
+.venta-button:active{
+    background-color: #ccc;
+    color: #000;
 }
 .productos-venta .tp1{
     color: black;
@@ -287,5 +304,3 @@
     background-image: url('../../../../public/arrow.png');
     margin-right: 4rem;
 }
-
-
