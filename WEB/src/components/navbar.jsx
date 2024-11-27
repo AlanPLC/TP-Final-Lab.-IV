@@ -69,7 +69,7 @@ const Navbar = () => {
                     <p>Ventas</p>
                 </Link></li>
                 {rol === 'administrador' && (
-                    <li><Link className="items" to="/">
+                    <li><Link className="items" to="/administracion">
                         <p>Administrar</p>
                     </Link></li>
                 )}

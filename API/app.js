@@ -33,7 +33,6 @@ app.use(usuariosRouter);
 app.use(ventasRouter);
 app.use(proveedoresRouter);
 app.use(productosConDetalles)
-
 app.listen(port, () => {
   console.log(`La aplicacion esta funcionando en: ${port}`);
 });
