@@ -150,7 +150,10 @@ const Productos = () => {
               <p className='tp1'>Total</p>
               <p className='tp2'>${productosVenta.reduce((acc, curr) => acc + curr.precio*curr.cantidad, 0)}</p>
               <hr />
-              <button className='venta-button' onClick={()=> confirmarVenta()}>Realizar Venta</button>
+              <button 
+                className='venta-button' 
+                onClick={()=> confirmarVenta()}
+                disabled={productosVenta.length == 0}>Realizar Venta</button>
           </div>
         </div>
     </div>

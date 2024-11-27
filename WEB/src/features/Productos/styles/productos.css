@@ -162,6 +162,7 @@
     margin: 1rem auto 1rem;
     text-align: center;
     max-width: fit-content;
+    font-size: 22px;
 }
 
 .productos-venta{
@@ -179,6 +180,8 @@
     margin-left: 1rem;
     text-align: left;
     width: 100%;
+    font-size: 20px;
+    margin-bottom: 0.5rem;
 }
 
 .productos-venta hr{
@@ -191,7 +194,7 @@
 .venta-button{
     height: 2.5rem;
     width: 14rem;
-    margin-top: 1.5rem;
+    margin-top: 1rem;
     border-radius: 5px;
     border: 2px solid #000;
     background-color: #252B42;
@@ -201,6 +204,11 @@
     box-shadow: 0 4px 4px rgba(0, 0, 0, 0.5);
     cursor: pointer;
 }
+.venta-button:disabled{
+    background-color: #ccc;
+    color: #fff;
+    cursor: not-allowed;
+}
 .venta-button:active{
     background-color: #ccc;
     color: #000;
@@ -209,6 +217,7 @@
     color: black;
     font-weight:500;
     margin: 0;
+    margin-top: 0.5rem;
     font-size: 22px;
 }
 .productos-venta .tp2{
@@ -216,6 +225,7 @@
     font-weight: bolder;
     margin: 0;
     font-size: 30px;
+    margin-bottom: 0.5rem;
 }
 .productos-venta ul{
     overflow-y: auto;
@@ -231,6 +241,7 @@
     gap: 0.3rem;
     justify-content:flex-start;
     width: 100%;
+    margin-top: 0;
 }
 
 .productos-venta ul li{
