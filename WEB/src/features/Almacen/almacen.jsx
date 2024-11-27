@@ -13,8 +13,6 @@ function Almacen() {
   const [imagen, setImagen] = useState("")
   const [productoId, setProductoId] = useState(0)
   const[listaProductos, setListaProductos] = useState([])
-  const [proveedorID,setProveedorID] = useState(0)
-  const [index, setIndex] = useState(0)
   const [onEdit, setOnEdit] = useState(false)
   const [reload, setReload] = useState(false) 
     
@@ -65,8 +63,8 @@ function Almacen() {
       setProductoId(producto.id)
       setNombre(producto.producto_nombre)
       setDescripcion(producto.descripcion)
-      setCategoria(producto.categoria_nombre)
-      setProveedor(producto.proveedor)
+      setCategoria(producto.categoria_id)
+      setProveedor(producto.proveedor_id)
       setProveedorID(producto.proveedor_id)
       setIndex(producto.proveedor)
       setPrecio(producto.precio)
@@ -178,7 +176,7 @@ function Almacen() {
                           
                       ))}
                     </select> <br />
-                    <input id="categoria" type="text" value={categoria}
+                    <input id="categoria" type="number" value={categoria}
                     onChange={(e) => setCategoria(parseInt(e.target.value))}/> 
 
                     <label >Proveedor:</label>
@@ -187,19 +185,20 @@ function Almacen() {
                       {listaProductos.map((prov,index) => (
                         
                         <option key={index} value={index+1} >
-                          {prov.proveedor}
+                          {prov.proveedor_nombre
+                          }
                         </option>
                       ))}
                     </select> <br />
-                    <input maxLength={1}  id="proveedor" type="text" value={proveedor}
+                    <input  min={1} max={8}  id="proveedor" type="number" value={proveedor}
                     onChange={(e) => setProveedor(parseInt(e.target.value))}/>
 
                     <label >Precio:</label>
-                    <input   id="precio" type="number" value={precio}
+                    <input min={1}  id="precio" type="number" value={precio}
                     onChange={(e) => setPrecio(parseInt(e.target.value))} />
 
                     <label >Cantidad:</label>
-                    <input maxLength={2}type="number" id="cantidad" value={cantidad}
+                    <input min={1} maxLength={2}type="number" id="cantidad" value={cantidad }
                     onChange={(e) => setCantidad(parseInt(e.target.value))}/>
 
                     <label >Imagen URL:</label>

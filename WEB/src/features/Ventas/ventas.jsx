@@ -17,16 +17,23 @@ const Ventas = () => {
             // Agrupar por venta_id y unificar productos
             const agrupadas = response.data.ventas.reduce((acc, venta) => {
                 const existingVenta = acc.find(item => item.venta_id === venta.venta_id);
-                const precioProducto = Number(venta.producto_precio);
+            
+                // Precio unitario del producto
+                const precioUnitario = Number(venta.producto_precio);
+            
+                // Precio total del producto ajustado por cantidad
+                const precioTotalProducto = precioUnitario * Number(venta.cantidad_producto);
+            
                 if (existingVenta) {
                     // Si ya existe, añadir los detalles del producto
                     existingVenta.productos.push({
                         producto_id: venta.producto_id,
                         producto_nombre: venta.producto_nombre,
                         cantidad_producto: venta.cantidad_producto,
-                        precio: precioProducto
+                        precio_unitario: precioUnitario,
+                        precio_total_producto: precioTotalProducto
                     });
-                    existingVenta.precio_total += precioProducto;
+                    existingVenta.precio_total += precioTotalProducto; // Sumar al precio total general
                 } else {
                     // Si no existe, crear una nueva entrada
                     acc.push({
@@ -37,11 +44,13 @@ const Ventas = () => {
                             producto_id: venta.producto_id,
                             producto_nombre: venta.producto_nombre,
                             cantidad_producto: venta.cantidad_producto,
-                            precio: precioProducto
+                            precio_unitario: precioUnitario,
+                            precio_total_producto: precioTotalProducto
                         }],
-                        precio_total: precioProducto
+                        precio_total: precioTotalProducto // Establecer el precio total inicial
                     });
                 }
+            
                 return acc;
             }, []);
 
@@ -81,7 +90,7 @@ const Ventas = () => {
                                         <hr />
                                         <p>Cant.: {producto.cantidad_producto}</p>
                                         <hr />
-                                        <p>${producto.precio} c/u</p>   
+                                        <p>${producto.precio_unitario} c/u</p>   
                                     </li>
                                 ))}
                             </ul>
