@@ -24,24 +24,34 @@ export const getProductosConDetalles = async(req, res)=>{
       res.status(500).json({ errors: [{ msg: "Error al mostrar los productos con detalles." }], error: error.message});
     }
 }
+export const getCategoria = async(_, res)=>{
+  try {
+    const [categorias] = await db.execute('SELECT * FROM productos_categorias')
+    res.status(200).json({ categorias });
+  } catch (error) {
+    res.status(500).json({ errors: [{ msg: "Error al mostrar las Categorias con detalles." }], error: error.message});
+  }
+}
 
 export const getProductosConDetallesByID = async(req, res)=>{
   try {
       const id = req.params.id;
       const response = await db.execute('SELECT \
-          productos.id AS producto_id, \
-          productos.nombre AS producto_nombre, \
-          productos.descripcion, \
-          productos.precio, \
-          productos.imagen_url, \
-          productos_categorias.nombre AS categoria_nombre, \
-          producto_stock.cantidad_disponible, \
-          producto_stock.fecha_ultima_actualizacion \
+           productos.id AS producto_id, \
+        productos.nombre AS producto_nombre, \
+        productos.descripcion, \
+        productos.precio, \
+        productos.imagen_url, \
+        productos_categorias.id AS categoria_id, \
+        productos_categorias.nombre AS categoria_nombre, \
+        producto_stock.cantidad_disponible, \
+        producto_stock.fecha_ultima_actualizacion, \
+        proveedores.id AS proveedor_id, \
+        proveedores.nombre AS proveedor_nombre \
       FROM productos \
       LEFT JOIN productos_categorias ON productos.categoria_id = productos_categorias.id \
       LEFT JOIN producto_stock ON productos.id = producto_stock.producto_id \
       LEFT JOIN proveedores ON productos.proveedor_id = proveedores.id \
-      WHERE productos.id =? \
       ORDER BY productos.id;',[id])
       if (response === 0) {
         return res.status(404).json({ errors: [{ msg: "Usuario no encontrado." }] });

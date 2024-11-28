@@ -3,7 +3,7 @@ import './styles/almacen.css'
 import useAlmacen from '../../hooks/Almacen/useAlmacen.jsx';
 
 function Almacen() {
-  const {getAlmacen, postAlmacen, putAlmacen, deleteAlmacen, setError,error, loading} =useAlmacen()
+  const {getAlmacen, getCategorias, postAlmacen, putAlmacen, deleteAlmacen, setError,error, loading} =useAlmacen()
   const [nombre, setNombre] = useState(" ")
   const [descripcion, setDescripcion] = useState("")
   const [categoria, setCategoria] = useState("")
@@ -14,14 +14,13 @@ function Almacen() {
   const [productoId, setProductoId] = useState(0)
   const [listaProductos, setListaProductos] = useState([])
   const [onEdit, setOnEdit] = useState(false)
-  const [reload, setReload] = useState(false) 
+  const [reload, setReload] = useState(false)
+  const [listaCategorias, setListaCategorias] = useState([]) 
     
     const mostrarProductos = async ()=>{
-      
       try {
         const response = await getAlmacen();
         console.log('Data recibida:', response);
-        
         setListaProductos(response.data.productosConDetalles);
       } catch (error) {
         console.error(error);
@@ -29,9 +28,23 @@ function Almacen() {
 
     }
 
-    
+    const fetchCategorias = async () => {
+      const result = await getCategorias();
+      console.log('Categoria recibida:', result);
+      
+      if (result.success && Array.isArray(result.data)) {
+        setListaCategorias(result.data);
+      } else {
+        console.error(result.message || result.errors);
+      }
+    };
+    useEffect(() => {
+      fetchCategorias();
+    }, []);
+      
     useEffect(() => {
       mostrarProductos();
+      
     }, [reload]);
      
     const agregarProducto = async (e) =>{
@@ -179,14 +192,11 @@ function Almacen() {
 
                 <label  >Categoria:</label>
                 <select name="select" id="select" onChange={(e) => setCategoria(e.target.value)} value={categoria}>
-                <option value=" ">Categorias</option>
-                 
-                  {[... new Set(listaProductos.map(producto => producto.categoria_nombre))].map((cate,index) => (
-                    
-                    <option key={index} value={index+1}>
-                      {cate}
+                  <option value=" ">Categorias</option>
+                  {listaCategorias.map((cate) => (
+                    <option key={cate.id} value={cate.id}>
+                      {cate.nombre}
                     </option>
-                      
                   ))}
                 </select> <br />
                 <input id="categoria" type="number" value={categoria}
@@ -195,11 +205,7 @@ function Almacen() {
                 <label >Proveedor:</label>
                 <select name="select" id="select" onChange={(e) => setProveedor(e.target.value)} value={proveedor}>
                   <option value=" ">Proveedores</option>
-                  {[... new Set(listaProductos.map(prov=>prov.proveedor_nombre))].map((pro,index) => (
-                    <option key={index} value={index+1}>
-                      {pro}
-                    </option>
-                  ))}
+                  
                 </select> <br />
                 <input  min={1} max={8}  id="proveedor" type="number" value={proveedor}
                 onChange={(e) => setProveedor(parseInt(e.target.value))}/>
