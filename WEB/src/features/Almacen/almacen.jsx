@@ -274,7 +274,7 @@ function Almacen() {
                 
           
           
-      </div>
+       </div>
     </div>
   )
 };
