@@ -1,107 +1,169 @@
-.almacen-container{
+/* Estilos Generales */
+.almacen-container {
     display: flex;
     flex-direction: row;
     gap: 1rem;
     justify-content: center;
     margin-top: 2rem;
+    font-family: Arial, sans-serif;
+    color: #ffffff;
 }
 
 /* Primer Contenedor */
-.contenedor-listado{
-    background-color: #252B42;
+.contenedor-listado {
+    background-color: #1F263B;
     display: flex;
     flex-direction: column;
     width: 50rem;
     height: 38rem;
-    overflow-y: auto; 
-    border: 2px solid #252B42;
+    overflow-y: auto;
+    border: 3px solid #000000;
     border-radius: 10px;
     padding: 1rem;
     gap: 1rem;
 }
 
-/* Estilo Scrollbar en container Productos  */
+.contenedor-listado h1 {
+    color: #E5E5E5;
+    border-bottom: 3px solid #E5E5E5;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.contenedor-listado li {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 0.5rem;
+    border-bottom: 1px solid #3A3F54;
+}
+
+.contenedor-listado img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid #3A3F54;
+}
+
+.s-general {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.s1, .s2, .s3 {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+}
+
+.s1 p, .s2 p, .s3 p {
+    margin: 0;
+}
+
+.contenedor-listado button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.3s ease;
+}
+
+.contenedor-listado button:hover {
+    background-color: #45A049;
+}
+
+.contenedor-listado .eliminar {
+    background-color: #F44336;
+}
+
+.contenedor-listado .eliminar:hover {
+    background-color: #D32F2F;
+}
+
+/* Scrollbar Estilizado */
 .contenedor-listado::-webkit-scrollbar {
-    width: 1rem;      
+    width: 0.8rem;
 }
 
 .contenedor-listado::-webkit-scrollbar-thumb {
-    border: 2px solid #ffff;
-    background-color: #252B42;
-    border-radius: 4px;   
+    background-color: #3A3F54;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
 }
 
 .contenedor-listado::-webkit-scrollbar-thumb:hover {
-    background-color: #8d8d8d; 
-}
-
-.contenedor-listado::-webkit-scrollbar-track {
-    background-color: #ccc; 
-}
-.contenedor-listado button{
-    height: 1.5rem;
-}
-.contenedor-listado li{
-    justify-content: flex-start;
-    align-items: center;
-    display: flex;
-    flex-direction: row;
-    gap: 0.2rem;
-    
-    
-}
-
-.contenedor-listado .s-general{
-    display: flex;
-    flex-direction: column;
-}
-/* secciones listas */
-.contenedor-listado .s1{
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    gap: 0.2rem;
-}
-.contenedor-listado .s2{
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    gap: 0.2rem;
-}
-.contenedor-listado .s3{
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    gap: 0.2rem;
-}
-.contenedor-listado h1{
-    color: #ffffff;
-    border-bottom: 3px solid #ffffff;
-    margin: 0 auto 0rem;
-    text-align: center;
-    max-width: fit-content;
-}
-.contenedor-listado p{
-    color: #ffff;
-    margin: 0.2rem;
-}
-
-.contenedor-listado img{
-    width: 100px;
-    height: 100px;
-    
+    background-color: #646464;
 }
 
 /* Segundo Contenedor */
-.contenedor-entradas{
-    border: 2px solid #252B42;
+.contenedor-entradas {
+    background-color: #ffffff;
+    border: 3px solid #000000;
     padding: 1rem;
-    height: 38rem;
     border-radius: 10px;
-}
-.contenedor-entradas form{
-    gap: 0.2rem;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;;
+    gap: 1rem;
+}
+
+.contenedor-entradas form {
+    display: flex;
+    flex-direction: column;
+    gap: 0rem;
+}
+
+.contenedor-entradas label {
+    font-size: 0.9rem;
+    color: #000000;
+}
+
+.contenedor-entradas input,
+.contenedor-entradas select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #3A3F54;
+    border-radius: 4px;
+    background-color: #1F263B;
+    color: #ffffff;
+    font-size: 0.9rem;
+}
+
+.contenedor-entradas input:focus,
+.contenedor-entradas select:focus {
+    border-color: #4CAF50;
+    outline: none;
+}
+
+.contenedor-botones {
+    display: flex;
+    gap: 1rem;
+}
+
+.contenedor-botones button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.contenedor-botones button:hover {
+    background-color: #45A049;
+}
+
+.contenedor-botones button:last-child {
+    background-color: #F44336;
+}
+
+.contenedor-botones button:last-child:hover {
+    background-color: #D32F2F;
 }
