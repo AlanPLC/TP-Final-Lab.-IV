@@ -3,8 +3,8 @@ import './styles/almacen.css'
 import useAlmacen from '../../hooks/Almacen/useAlmacen.jsx';
 
 function Almacen() {
-  const {getAlmacen, getCategorias, postAlmacen, putAlmacen, deleteAlmacen, setError,error, loading} =useAlmacen()
-  const [nombre, setNombre] = useState(" ")
+  const {getAlmacen, getCategorias,getProveedores, postAlmacen, putAlmacen, deleteAlmacen, setError,error, loading} =useAlmacen()
+  const [nombre, setNombre] = useState("")
   const [descripcion, setDescripcion] = useState("")
   const [categoria, setCategoria] = useState("")
   const [proveedor, setProveedor] = useState("")
@@ -16,6 +16,7 @@ function Almacen() {
   const [onEdit, setOnEdit] = useState(false)
   const [reload, setReload] = useState(false)
   const [listaCategorias, setListaCategorias] = useState([]) 
+  const[listaProveedores, setListaProveedores] = useState([])
     
     const mostrarProductos = async ()=>{
       try {
@@ -28,6 +29,17 @@ function Almacen() {
 
     }
 
+    const fetchProveedores = async () => {
+      const result = await getProveedores();
+      console.log('Proveedor recibido:', result);
+      
+      if (result.success && Array.isArray(result.data)) {
+        setListaProveedores(result.data);
+      } else {
+        console.error(result.message || result.errors);
+      }
+    }
+
     const fetchCategorias = async () => {
       const result = await getCategorias();
       console.log('Categoria recibida:', result);
@@ -38,7 +50,10 @@ function Almacen() {
         console.error(result.message || result.errors);
       }
     };
+    
+    
     useEffect(() => {
+      fetchProveedores();
       fetchCategorias();
     }, []);
       
@@ -67,8 +82,9 @@ function Almacen() {
           setError(null)
       } else{
           console.error("Error al crear el producto.", result.message)
+          
       }
-      reload = false
+      
       
     }
 
@@ -112,7 +128,6 @@ function Almacen() {
           setOnEdit(false)
           setError(null)
         } else{
-          console.log("Productos ERROR:",nuevoProducto)
           console.error("Error al Modificar los Productos.", result.message)
           setNombre('')
           setDescripcion('')
@@ -140,9 +155,7 @@ function Almacen() {
       }
          
     }
-    useEffect(() => {
-      mostrarProductos();
-    }, [reload]); 
+    
       
     
         
@@ -205,6 +218,11 @@ function Almacen() {
                 <label >Proveedor:</label>
                 <select name="select" id="select" onChange={(e) => setProveedor(e.target.value)} value={proveedor}>
                   <option value=" ">Proveedores</option>
+                  {listaProveedores.map((prov)=>{
+                    <option key={prov.proveedor_id} value={prov.proveedor_id}>
+                      {prov.proveedor_nombre}
+                    </option>
+                  })}
                   
                 </select> <br />
                 <input  min={1} max={8}  id="proveedor" type="number" value={proveedor}
@@ -221,7 +239,7 @@ function Almacen() {
                 <label >Imagen URL:</label>
                 <input maxLength={255} id="imagen" type="url" value={imagen}
                 onChange={(e) => setImagen(e.target.value)} />
-
+          
                 {onEdit ? (
                   <div>
                     <button type='button' onClick={modificarProducto}>Modificar</button>
@@ -238,23 +256,24 @@ function Almacen() {
                     }}>Cancelar</button>
                   </div>
                 ) : (
-                  <div className="contenedor-botones">
-                    <button type="submit" onSubmit={agregarProducto}>Guardar</button>
-                    <button onClick={() => {
-                      setProductoId(null)
-                      setNombre(""); 
-                      setDescripcion("");
-                      setCategoria("");
-                      setProveedor("");
-                      setPrecio("");
-                      setCantidad("");
-                      setImagen("")
-                      setOnEdit(false)
-                    }}>Cancelar</button>
-                  </div>
+                  
+                    <button type="submit" >Agregar Producto</button>
+                    
+                  
                 )}
+            </form>
 
-          </form>
+            {Array.isArray(error) && error.length > 0 ? (
+                <div className='errores'>
+                    {error.map((err, index) => (
+                    <p className="error" key={index} style={{ color: 'red' }}>{err.msg}</p>
+                    ))}
+                </div>
+                ) : (<p>ERROR</p>)
+              }
+                
+          
+          
       </div>
     </div>
   )

@@ -24,12 +24,22 @@ export const getProductosConDetalles = async(req, res)=>{
       res.status(500).json({ errors: [{ msg: "Error al mostrar los productos con detalles." }], error: error.message});
     }
 }
+
 export const getCategoria = async(_, res)=>{
   try {
     const [categorias] = await db.execute('SELECT * FROM productos_categorias')
     res.status(200).json({ categorias });
   } catch (error) {
     res.status(500).json({ errors: [{ msg: "Error al mostrar las Categorias con detalles." }], error: error.message});
+  }
+}
+
+export const getProveedor = async(_, res)=>{
+  try {
+    const [proveedores] = await db.execute('SELECT * FROM proveedores')
+    res.status(200).json({ proveedores });
+  } catch (error) {
+    res.status(500).json({ errors: [{ msg: "Error al mostrar los proveedores con detalles." }], error: error.message});
   }
 }
 
