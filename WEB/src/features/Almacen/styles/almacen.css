@@ -195,4 +195,24 @@
     border-radius: 4px;
     transition: background-color 0.3s ease;
 }
+.btn-agregar {
+    background-color: #4CAF50;  
+    color: white;
+    margin: 0.2rem;  
+    border: none; 
+    padding: 0.7rem 1.5rem;  
+    border-radius: 5px;  
+    cursor: pointer;  
+    font-size: 1rem; 
+    transition: background-color 0.3s ease, transform 0.2s ease;  
+}
 
+.btn-agregar:hover {
+    background-color: #45A049;  
+    transform: scale(1.05);  
+}
+
+.btn-agregar:active {
+    background-color: #388E3C;  
+    transform: scale(0.98);  
+}
