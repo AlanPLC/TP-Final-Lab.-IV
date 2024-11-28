@@ -17,6 +17,14 @@
     padding-bottom: 2.5rem;
     padding-top: 2.5rem;
 }
+.login-form-container h1{
+    color: white;
+    font-size: 2rem;
+    font-weight: bolder;
+    border-bottom: #fafafa solid 4px;
+    border-radius: 1px;
+    margin-bottom: 2rem;
+}
 .login-form{
     display: flex;
     flex: 1;

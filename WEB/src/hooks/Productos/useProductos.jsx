@@ -36,11 +36,12 @@ export default function useProductos() {
         setLoading(true)
         const token = localStorage.getItem('token')
         try {
-            const response = await fetch('http://localhost:3000/administrador/', {
+            const response = await fetch('http://localhost:3000/ventas/', {
+                method: "POST",
                 headers: {
+                    'Content-Type': 'application/json',
                     Authorization: "Bearer " + token,
                 },
-                method: "POST",
                 body: JSON.stringify({ productos })
             })
             const data = await response.json()
@@ -61,5 +62,5 @@ export default function useProductos() {
         }
     }
 
-    return {getProductosConDetalles, postVentas,loading, error}
+    return {getProductosConDetalles, postVentas, loading, error}
 }

@@ -32,8 +32,8 @@ function Login() {
       <div className="login-form-container">
         <h1>Inicia Sesión</h1>
         <form className="login-form" onSubmit={handleSubmit}>
-          <div className='er'>
-              <label htmlFor="user">Nomusbre de Usuario</label>
+          <div className='user'>
+              <label htmlFor="user">Nombre de Usuario</label>
               <input 
                   className='login-input'
                   type="text" 

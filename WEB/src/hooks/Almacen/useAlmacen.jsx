@@ -68,7 +68,7 @@ export default function useAlmacen(){
             setLoading(true)
             const token = localStorage.getItem("token")
             try {
-                const response = await fetch(`http://localhost:3000/administrador/${Almacen.id}`,{
+                const response = await fetch(`http://localhost:3000/administrador/${almacen.id}`,{
                     method: "PUT",
                     headers: {
                         
@@ -100,13 +100,13 @@ export default function useAlmacen(){
             setLoading(true)  
             const token = localStorage.getItem("token")
             try {
-                const response = await fetch("http://localhost:3000/administrador/",{
+                const response = await fetch(`http://localhost:3000/administrador/${id}`,{
                     method: "DELETE",
                     headers: {
-                        Authorization: "Bearer " + token,
-                        'content-type': 'application/json'
-                    },
-                    body: JSON.stringify({id})
+                        Authorization: "Bearer " + token
+                        
+                    }
+                    
                 })
                 const data = await response.json()
                 if (!response.ok) {

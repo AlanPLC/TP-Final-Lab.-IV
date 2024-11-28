@@ -26,7 +26,7 @@
     gap: 1.5rem;
 }
 
-h1{
+.register-form-container h1{
     color: white;
     font-size: 2rem;
     font-weight: bolder;
