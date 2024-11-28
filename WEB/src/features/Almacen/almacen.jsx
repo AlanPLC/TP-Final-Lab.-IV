@@ -17,6 +17,7 @@ function Almacen() {
   const [reload, setReload] = useState(false) 
     
     const mostrarProductos = async ()=>{
+      
       try {
         const response = await getAlmacen();
         console.log('Data recibida:', response);
@@ -176,13 +177,14 @@ function Almacen() {
                 <input id="descripcion" type="text" value={descripcion}
                 onChange={(e) => setDescripcion(e.target.value)}/> 
 
-                <label >Categoria:</label>
+                <label  >Categoria:</label>
                 <select name="select" id="select" onChange={(e) => setCategoria(e.target.value)} value={categoria}>
                 <option value=" ">Categorias</option>
-                  {listaProductos.map((cate,index) => (
+                 
+                  {[... new Set(listaProductos.map(producto => producto.categoria_nombre))].map((cate,index) => (
                     
                     <option key={index} value={index+1}>
-                      {cate.categoria_nombre}
+                      {cate}
                     </option>
                       
                   ))}
@@ -193,10 +195,9 @@ function Almacen() {
                 <label >Proveedor:</label>
                 <select name="select" id="select" onChange={(e) => setProveedor(e.target.value)} value={proveedor}>
                   <option value=" ">Proveedores</option>
-                  {listaProductos.map((prov,index) => (
-                    
-                    <option key={index} value={index+1} >
-                      {prov.proveedor_nombre}
+                  {[... new Set(listaProductos.map(prov=>prov.proveedor_nombre))].map((pro,index) => (
+                    <option key={index} value={index+1}>
+                      {pro}
                     </option>
                   ))}
                 </select> <br />
@@ -210,7 +211,7 @@ function Almacen() {
                 <label >Cantidad:</label>
                 <input min={1} maxLength={2}type="number" id="cantidad" value={cantidad }
                 onChange={(e) => setCantidad(parseInt(e.target.value))}/>
-
+                  
                 <label >Imagen URL:</label>
                 <input maxLength={255} id="imagen" type="url" value={imagen}
                 onChange={(e) => setImagen(e.target.value)} />
