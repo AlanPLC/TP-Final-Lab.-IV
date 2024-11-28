@@ -29,8 +29,10 @@
 .contenedor-listado h1 {
     color: #E5E5E5;
     border-bottom: 3px solid #E5E5E5;
-    margin-bottom: 1rem;
+    margin-bottom: 0.1rem;
     text-align: center;
+    display: inline;
+    font-weight: 1px;
 }
 
 .contenedor-listado li {
@@ -74,19 +76,22 @@
     border-radius: 4px;
     cursor: pointer;
     font-size: 0.9rem;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease; 
 }
 
 .contenedor-listado button:hover {
-    background-color: #45A049;
+    background-color: #45A049;  
+    transform: scale(1.05);  
 }
 
 .contenedor-listado .eliminar {
-    background-color: #F44336;
+    background-color: #F44336;  
+    transform: scale(1.05);  
 }
 
 .contenedor-listado .eliminar:hover {
     background-color: #D32F2F;
+    transform: scale(1.05);  
 }
 
 /* Scrollbar Estilizado */
