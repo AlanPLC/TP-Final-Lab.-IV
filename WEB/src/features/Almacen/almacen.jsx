@@ -185,8 +185,6 @@ function Almacen() {
                   <button className="eliminar" onClick={() => eliminarProducto(producto.producto_id)}>Eliminar</button>
                 </div>
               </div>
-              
-              <hr />
             </li>
             ))
           ) : (
@@ -197,11 +195,11 @@ function Almacen() {
             <form onSubmit={agregarProducto} >
                 <label >Nombre:</label>
                 <input  id="nombre" type="text"  value={nombre} 
-                onChange={(e) => setNombre(e.target.value)}/> 
+                onChange={(e) => setNombre(e.target.value)}/> br
 
                 <label>Descripcion:</label> 
                 <input id="descripcion" type="text" value={descripcion}
-                onChange={(e) => setDescripcion(e.target.value)}/> 
+                onChange={(e) => setDescripcion(e.target.value)}/> br
 
                 <label  >Categoria:</label>
                 <select name="select" id="select" onChange={(e) => setCategoria(e.target.value)} value={categoria}>
@@ -212,8 +210,6 @@ function Almacen() {
                     </option>
                   ))}
                 </select> <br />
-                <input id="categoria" type="number" value={categoria}
-                onChange={(e) => setCategoria(parseInt(e.target.value))}/> 
 
                 <label >Proveedor:</label>
                 <select name="select" id="select" onChange={(e) => setProveedor(e.target.value)} value={proveedor}>
@@ -225,23 +221,22 @@ function Almacen() {
                   })}
                   
                 </select> <br />
-                <input  min={1} max={8}  id="proveedor" type="number" value={proveedor}
-                onChange={(e) => setProveedor(parseInt(e.target.value))}/>
+      
 
                 <label >Precio:</label>
                 <input min={1}  id="precio" type="number" value={precio}
-                onChange={(e) => setPrecio(parseInt(e.target.value))} />
+                onChange={(e) => setPrecio(parseInt(e.target.value))} />br
 
                 <label >Cantidad:</label>
                 <input min={1} maxLength={2}type="number" id="cantidad" value={cantidad }
-                onChange={(e) => setCantidad(parseInt(e.target.value))}/>
+                onChange={(e) => setCantidad(parseInt(e.target.value))}/>br
                   
                 <label >Imagen URL:</label>
                 <input maxLength={255} id="imagen" type="url" value={imagen}
-                onChange={(e) => setImagen(e.target.value)} />
+                onChange={(e) => setImagen(e.target.value)} />br
           
                 {onEdit ? (
-                  <div>
+                  <div className="contenedor-botones">
                     <button type='button' onClick={modificarProducto}>Modificar</button>
                     <button type='button' onClick={() => {
                       setProductoId(null)
