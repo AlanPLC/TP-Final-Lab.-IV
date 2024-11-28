@@ -54,12 +54,12 @@ function Almacen() {
       } else{
           console.error("Error al crear el producto.", result.message)
       }
-      
+      reload = false
       
     }
 
     const handleEditProducto = (producto) => {
-      setProductoId(producto.id)
+      setProductoId(producto.producto_id)
       setNombre(producto.producto_nombre)
       setDescripcion(producto.descripcion)
       setCategoria(producto.categoria_id)
@@ -72,10 +72,10 @@ function Almacen() {
       
     }
 
-    const modificarProducto = async(producto)=>{
+    const modificarProducto = async()=>{
       const nuevoProducto = {
         producto_id: productoId,
-        producto_nombre: nombre,
+        nombre: nombre,
         descripcion: descripcion,
         categoria_id: categoria,
         proveedor_id: proveedor,
@@ -87,7 +87,7 @@ function Almacen() {
       const result = await putAlmacen(nuevoProducto)
         if(result.success){
           setReload(!reload)
-          console.log("Productos actualizado con éxito.", result.data)
+          console.log("Productos Modificado con éxito.", result.data)
           setNombre('')
           setDescripcion('')
           setCategoria('')
@@ -98,7 +98,8 @@ function Almacen() {
           setOnEdit(false)
           setError(null)
         } else{
-          console.error("Error al actualizar los Productos.", result.message)
+          console.log("Productos ERROR:",nuevoProducto)
+          console.error("Error al Modificar los Productos.", result.message)
           setNombre('')
           setDescripcion('')
           setCategoria('')
@@ -122,13 +123,14 @@ function Almacen() {
         } else{
             console.error("Error al eliminar el proveedor.", result.message)
         }
-    }
-         
       }
-        useEffect(() => {
-          mostrarProductos();
-        }, [reload]); 
+         
+    }
+    useEffect(() => {
+      mostrarProductos();
+    }, [reload]); 
       
+    
         
     
   return(
@@ -165,7 +167,7 @@ function Almacen() {
           )}
       </div>
       <div className='contenedor-entradas'>
-            <form >
+            <form onSubmit={agregarProducto} >
                 <label >Nombre:</label>
                 <input  id="nombre" type="text"  value={nombre} 
                 onChange={(e) => setNombre(e.target.value)}/> 
@@ -194,8 +196,7 @@ function Almacen() {
                   {listaProductos.map((prov,index) => (
                     
                     <option key={index} value={index+1} >
-                      {prov.proveedor_nombre
-                      }
+                      {prov.proveedor_nombre}
                     </option>
                   ))}
                 </select> <br />

@@ -35,9 +35,9 @@ export const validateBody = [
     .notEmpty().withMessage('El precio del producto es obligatorio.')
     .isNumeric({gt:0}).withMessage('El precio del producto debe ser mayor a 0.'),
 
-    body("imagen_url")
-        .optional()
-        .isURL().withMessage("La imagen_url debe ser una URL válida."),
+    // body("imagen_url")
+    //     .optional()
+    //     .isURL().withMessage("La imagen_url debe ser una URL válida."),
 
     body("cantidad_disponible")
         .isInt({ min: 0 , max: 200}).withMessage("La cantidad disponible debe ser un número entero entre 0 y 200."),

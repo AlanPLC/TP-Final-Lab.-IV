@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import Almacen from '../../features/Almacen/almacen'
+
 
 export default function useAlmacen(){
     const [error, setError] = useState([])
@@ -53,7 +53,7 @@ export default function useAlmacen(){
                     }
                     throw new Error(data.message || 'Error en la solicitud.');
                 }
-                return {data}
+                return {success: true, data}
             } catch (error) {
                 setError(error.message)
                 return {success: false, message: error.message}
@@ -68,7 +68,7 @@ export default function useAlmacen(){
             setLoading(true)
             const token = localStorage.getItem("token")
             try {
-                const response = await fetch(`http://localhost:3000/administrador/${almacen.id}`,{
+                const response = await fetch(`http://localhost:3000/administrador/${almacen.producto_id}`,{
                     method: "PUT",
                     headers: {
                         
@@ -86,7 +86,7 @@ export default function useAlmacen(){
                     }
                     throw new Error(data.message || 'Error en la solicitud.');
                 }
-                return {data}
+                return {success: true, data}
             } catch (error) {
                 setError(error.message)
                 return {success: false, message: error.message}
@@ -117,7 +117,7 @@ export default function useAlmacen(){
                     }
                     throw new Error(data.message || 'Error en la solicitud.');
                 }
-                return {data}
+                return {success: true, data}
             } catch (error) {
                 setError(error.message)
                 return {success: false, message: error.message}
