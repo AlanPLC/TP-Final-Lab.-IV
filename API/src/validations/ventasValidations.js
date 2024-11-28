@@ -26,7 +26,7 @@ export const validateBody = [
 
 export const validateStock = [
   body('cantidad_disponible')
-    .isInt({ min: 1}).withMessage("La cantidad debe productos debe ser un número entero positivo"),
+    .isInt({ min: 0}).withMessage("La cantidad debe productos debe ser un número entero positivo"),
 
 // Middleware para manejar los errores
 (req, res, next) => {

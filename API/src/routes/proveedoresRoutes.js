@@ -1,10 +1,13 @@
 import express from 'express';
-import { getProveedoresConProductos, getProveedorByID, createProveedores, deleteProveedor, updateProveedor } from '../controllers/proveedoresController.js';
+import { getOnlyProveedores, getProveedoresConProductos, getProveedorByID, createProveedores, deleteProveedor, updateProveedor } from '../controllers/proveedoresController.js';
 import { validateID } from '../middlewares/idValidator.js'
 import { validateBody } from '../validations/proveedoresValidations.js';
 import passport from "passport"
 
 const proveedoresRouter = express.Router();
+proveedoresRouter.get("/onlyproveedores", 
+    passport.authenticate("jwt", { session: false }),
+    getOnlyProveedores);
 
 proveedoresRouter.get("/proveedores", 
     passport.authenticate("jwt", { session: false }),
