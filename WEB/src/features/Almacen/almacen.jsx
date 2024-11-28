@@ -257,7 +257,8 @@ function Almacen() {
                   </div>
                 ) : (
                   
-                    <button type="submit" >Agregar Producto</button>
+                  <button type="submit" className="btn-agregar">Agregar Producto</button>
+
                     
                   
                 )}
@@ -266,14 +267,11 @@ function Almacen() {
             {Array.isArray(error) && error.length > 0 ? (
                 <div className='errores'>
                     {error.map((err, index) => (
-                    <p className="error" key={index} style={{ color: 'red' }}>{err.msg}</p>
+                    <><p className="error" key={index} style={{ color: 'red' }}>{err.msg}</p><hr /></>
                     ))}
                 </div>
-                ) : (<p>ERROR</p>)
+                ) : null
               }
-                
-          
-          
        </div>
     </div>
   )
