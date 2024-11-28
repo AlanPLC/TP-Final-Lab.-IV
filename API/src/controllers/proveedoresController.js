@@ -1,4 +1,13 @@
 import { db } from '../../config/db.js';
+
+export const getOnlyProveedores = async(req,res)=>{
+    try {
+        const [proveedores] = await db.execute('SELECT * FROM proveedores');
+        res.status(200).json({ proveedores });
+    } catch (error) {
+        res.status(500).json({ errors: [{ msg: "Error al mostrar los proveedores." }], error: error.message});
+    }
+}
 export const getProveedoresConProductos = async(req,res)=>{
     try {
         const [proveedor] = await db.execute(

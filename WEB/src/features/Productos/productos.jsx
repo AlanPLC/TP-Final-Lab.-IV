@@ -24,7 +24,7 @@ const Productos = () => {
       align: "center",
     });
   
-    // Información de la venta
+    // Información de la venta 
     doc.setFontSize(12);
     doc.setFont("helvetica", "normal");
     doc.text(`Fecha: ${new Date().toLocaleString()}`, 10, 40);
