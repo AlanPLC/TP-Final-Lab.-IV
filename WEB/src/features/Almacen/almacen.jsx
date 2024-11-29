@@ -17,7 +17,8 @@ function Almacen() {
   const [reload, setReload] = useState(false)
   const [listaCategorias, setListaCategorias] = useState([]) 
   const[listaProveedores, setListaProveedores] = useState([])
-  const [isDisabled, setIsDisabled] = useState(false);
+  const [isDisabledCategoria, setIsDisabledCategoria] = useState(false);
+  const [isDisabledProveedor, setIsDisabledProveedor] = useState(false);
     
     const mostrarProductos = async ()=>{
       try {
@@ -90,7 +91,8 @@ function Almacen() {
           
       }
       
-      setIsDisabled(false)
+      setIsDisabledCategoria(false)
+      setIsDisabledProveedor(false)
       
     }
 
@@ -133,7 +135,8 @@ function Almacen() {
           setImagen('')
           setOnEdit(false)
           setError(null)
-          setIsDisabled(false)
+          setIsDisabledCategoria(false)
+          setIsDisabledProveedor(false)
         } else{
           console.error("Error al Modificar los Productos.", result.message)
           setNombre('')
@@ -144,7 +147,8 @@ function Almacen() {
           setCantidad('')
           setImagen('')
           setOnEdit(false)
-          setIsDisabled(true)
+          setIsDisabledCategoria(false)
+          setIsDisabledProveedor(false)
         }
     }
 
@@ -164,7 +168,8 @@ function Almacen() {
     }
     
     const handleSelectFocus =  () => {
-      setIsDisabled(true)
+      setIsDisabledCategoria(true)
+      setIsDisabledProveedor(true)
     }
     
     
@@ -212,9 +217,9 @@ function Almacen() {
                 <label  >Categoria:</label>
                 <select name="select" id="select" onChange={(e) => setCategoria(e.target.value)} value={categoria} 
                 onFocus={handleSelectFocus}>
-                <option value=" " disabled={isDisabled}>{isDisabled== false ? "Categoria": ""} </option>
+                <option value=" " disabled={isDisabledCategoria}>{isDisabledCategoria== false ? "Categoria": ""} </option>
                   {listaCategorias.map((cate) => (
-                    <option  key={cate.id} disabled={!isDisabled} value={cate.id}>
+                    <option  key={cate.id} disabled={!isDisabledCategoria} value={cate.id}>
                       {cate.nombre}
                     </option>
                   ))}
@@ -223,11 +228,11 @@ function Almacen() {
                 <label >Proveedor:</label>
                 <select name="select" id="select" onChange={(e) => setProveedor(e.target.value)} value={proveedor}
                   onFocus={handleSelectFocus}>
-                  <option value=" "  >Proveedor</option>
+                  <option value=" " disabled={isDisabledProveedor} >{isDisabledProveedor== false ? "Proveedor": ""}</option>
                   
                   {listaProveedores.map((prov) => {
                     return ( 
-                      <option key={prov.id} value={prov.id}>
+                      <option key={prov.id} disabled={!isDisabledProveedor} value={prov.id}>
                         {prov.nombre}
                       </option>
                     );
@@ -259,15 +264,15 @@ function Almacen() {
                       setCantidad("");
                       setImagen("")
                       setOnEdit(false)
-                      setIsDisabled(false)
+                      setIsDisabledCategoria(false)
+                      setIsDisabledProveedor(false)
                     }}>Cancelar</button>
                   </div>
                 ) : (
                   
-                  <button type="submit" className="btn-agregar">Agregar Producto</button>
-
+                    <button type="submit"  >Agregar Producto</button>
                     
-                  
+                    
                 )}
             </form>
 
