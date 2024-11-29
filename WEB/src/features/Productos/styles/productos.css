@@ -44,19 +44,45 @@
 }
 
 /* Estilo resto de elementos list productos  */
-.productos-lista-container h1{
-    margin: 0.5rem;
+.productos-lista-container .head {
+    display: flex;
+    justify-content: center; /* Centra el contenido horizontalmente */
+    align-items: center; /* Centra verticalmente los elementos */
+    gap: 1rem;
+    position: relative; /* Esto es necesario para colocar el input a la derecha */
+    width: 100%; /* Asegura que el contenedor ocupe el 100% del ancho disponible */
+  }
+  
+  .productos-lista-container .head input {
+    padding: 1rem;
+    border: 3px solid #000000;
+    border-radius: 10px;
+    height: 2.2rem;
+    width: 14rem;
+    position: absolute; 
+    right: 0;
+    top: 50%; 
+    transform: translateY(-50%);
+    font-weight: bold;
+  }
+  .productos-lista-container .head input:focus {
+    background-color: #f0f0f0;
+    outline: none;
+  }
+  
+  .productos-lista-container h1 {
+    margin: 0.2rem auto 1rem;
     color: #ffff;
     font-weight: bolder;
     border-bottom: 4px solid #ffff;
     border-bottom-left-radius: 2px;
     border-bottom-right-radius: 2px;
-    margin: 0.2rem auto 1rem;
     text-align: center;
     max-width: fit-content;
-    text-shadow:#000000 2px 2px;
-    box-shadow: #000000 0 2px;er-bottom: 3px solid #ffffff;
-}
+    text-shadow: #000000 2px 2px;
+    box-shadow: #000000 0 2px;
+    flex-grow: 1;
+  }
 
 .productos-lista-container ul{
     display: flex;

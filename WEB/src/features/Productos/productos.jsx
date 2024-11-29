@@ -10,6 +10,7 @@ const Productos = () => {
   const [listaProductos, setListaProductos] = useState([])
   const [productosVenta, setProductosVenta] = useState([])
   const [reload, setReload] = useState(false)
+  const [todosLosProductos, setTodosLosProductos] = useState([])
   
   // Funcionalidad generar un PDF (ticket) con los datos de la venta realizada.
   const generarPDF = (productosVenta) => {
@@ -69,6 +70,7 @@ const Productos = () => {
       const response = await getProductosConDetalles()
       console.log("Data recibida: ", response)
       setListaProductos(response.data.productosConDetalles)
+      setTodosLosProductos(response.data.productosConDetalles) 
     } catch (error) {
       console.error(error);
     }
@@ -149,7 +151,16 @@ const Productos = () => {
       )
     );
   };  
-
+  // Buscador de productos.
+  const buscador = (nombre) => {
+    if (nombre === "") {
+      setListaProductos(todosLosProductos);
+    } else {
+      setListaProductos(
+        todosLosProductos.filter((prod) => prod.producto_nombre.toLowerCase().includes(nombre.toLowerCase()))
+      );
+    }
+  }
   // Cargar los productos cuando se carga la página o cuando la lista sufre algún cambio.
   useEffect(() => {
     mostrarProductos()
@@ -158,7 +169,10 @@ const Productos = () => {
   return(
     <div className='productos-main-container'>
         <div className='productos-lista-container'>
-            <h1>Productos</h1>
+            <div className='head'>
+              <h1>Productos</h1>
+              <input type="text" placeholder="Buscar producto..." onChange={(e)=>buscador(e.target.value)}/>
+            </div>
             <ul>
               {listaProductos.map((prod)=>(
                 <li key={prod.producto_id}>

@@ -17,7 +17,7 @@
     background: linear-gradient(90deg, rgba(37,43,66,1) 0%, rgba(42,49,75,1) 20%, rgba(49,57,88,1) 40%, rgba(49,57,88,1) 60%, rgba(42,49,75,1) 80%, rgba(37,43,64,1) 100%);
     display: flex;
     flex-direction: column;
-    width: 50rem;
+    width: 54rem;
     height: 40rem;
     overflow-y: auto;
     border: 3px solid #000000;
@@ -28,19 +28,46 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
 }
 
-.contenedor-listado h1 {
-    margin: 0.5rem;
+.contenedor-listado .head {
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    gap: 1rem;
+    position: relative;
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+  
+  .contenedor-listado .head input {
+    padding: 1rem;
+    border: 3px solid #000000;
+    border-radius: 10px;
+    height: 2.2rem;
+    width: 14rem;
+    position: absolute; 
+    right: 0;
+    top: 50%; 
+    transform: translateY(-50%);
+    font-weight: bold;
+    align-self: center;
+  }
+  .contenedor-listado .head input:focus {
+    background-color: #f0f0f0;
+    outline: none;
+  }
+  
+  .contenedor-listado h1 {
     color: #ffff;
     font-weight: bolder;
     border-bottom: 4px solid #ffff;
     border-bottom-left-radius: 2px;
     border-bottom-right-radius: 2px;
-    margin: 0 auto 0;
     text-align: center;
     max-width: fit-content;
-    text-shadow:#000000 2px 2px;
+    text-shadow: #000000 2px 2px;
     box-shadow: #000000 0 2px;
-}
+    flex-grow: 1;
+  }
 
 .contenedor-listado li {
     display: flex;
@@ -104,7 +131,7 @@
 /* Primera fila información de productos  */
 .s1 .p1{
     font-weight: bolder;
-    font-size: 18px;
+    font-size: 20px;
 }
 .s1 .p2{
     font-size: 20px;

@@ -10,6 +10,7 @@ function Almacen() {
   const [reload, setReload] = useState(false)
   const [listaCategorias, setListaCategorias] = useState([]) 
   const [listaProveedores, setListaProveedores] = useState([])
+  const [todosLosProductos, setTodosLosProductos] = useState([])
 
   // Variables formulario.
   const datosIniciales = {
@@ -46,6 +47,7 @@ function Almacen() {
         const response = await getAlmacen();
         console.log('Data recibida:', response);
         setListaProductos(response.data.productosConDetalles);
+        setTodosLosProductos(response.data.productosConDetalles);
       } catch (error) {
         console.error(error);
       }
@@ -160,13 +162,24 @@ function Almacen() {
         }
       }     
     }
-    
-    
+    // Buscador de productos.
+    const buscador = (nombre) => {
+      if (nombre === "") {
+        setListaProductos(todosLosProductos);
+      } else {
+        setListaProductos(
+          todosLosProductos.filter((prod) => prod.producto_nombre.toLowerCase().includes(nombre.toLowerCase()))
+        );
+      }
+    }
   return(
     <div className='almacen-container'>
       {/* Primer contenedor (Lista de productos) */}
       <div className='contenedor-listado'>
-        <h1 className='titulo'>Listado del almacen</h1><br />
+            <div className='head'>
+              <h1>Listado del Almacén</h1>
+              <input type="text" placeholder="Buscar producto..." onChange={(e)=>buscador(e.target.value)}/>
+            </div>
         {listaProductos && listaProductos.length > 0 ? (
             listaProductos.map((producto, index)  => (
             <li key={index}>
