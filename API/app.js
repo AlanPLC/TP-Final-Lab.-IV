@@ -13,7 +13,6 @@ import productosConDetalles from "./src/routes/productosConDetallesRoutes.js";
 conectarDB();
 console.log("Conectado a base de datos");
 
-
 const app = express();
 const port = 3000;
 
