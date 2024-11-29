@@ -63,7 +63,7 @@ export default function useAlmacen(){
         setLoading(true);
         const token = localStorage.getItem("token");
         try {
-            const response = await fetch("http://localhost:3000/onlyProveedores", {
+            const response = await fetch("http://localhost:3000/onlyproveedores", {
                 headers: {
                     Authorization: "Bearer " + token,
                 }
