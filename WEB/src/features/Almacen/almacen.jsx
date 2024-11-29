@@ -10,8 +10,6 @@ function Almacen() {
   const [reload, setReload] = useState(false)
   const [listaCategorias, setListaCategorias] = useState([]) 
   const [listaProveedores, setListaProveedores] = useState([])
-  const [isDisabledCategoria, setIsDisabledCategoria] = useState(false);
-  const [isDisabledProveedor, setIsDisabledProveedor] = useState(false);
 
   // Variables formulario.
   const datosIniciales = {
@@ -19,7 +17,7 @@ function Almacen() {
     descripcion: "",
     categoria: 0,
     proveedor: 0,
-    precio: 0,
+    precio: null,
     cantidad: 0,
     imagen: "",
   };
@@ -102,13 +100,12 @@ function Almacen() {
           setReload(!reload)
           console.log("Errores:", error)
           console.log("Producto creado con éxito.", result.data)
+          setFormData(datosIniciales)
           setError(null)
       } else{
           console.error("Error al crear el producto.", result.message)  
       }
       
-      setIsDisabledCategoria(false)
-      setIsDisabledProveedor(false)
       
     }
 
@@ -176,34 +173,50 @@ function Almacen() {
     
   return(
     <div className='almacen-container'>
+      {/* Primer contenedor (Lista de productos) */}
       <div className='contenedor-listado'>
         <h1 className='titulo'>Listado del almacen</h1><br />
         {listaProductos && listaProductos.length > 0 ? (
             listaProductos.map((producto, index)  => (
-            <li key={index}>      
-              <img src={producto.imagen_url} alt={producto.nombre} />
-              <div className='s-general'>
-                <div className='s1'>
-                  <p>{producto.producto_id}</p>
-                  <p>{producto.producto_nombre}</p>
-                  <p>{producto.categoria_nombre}</p>
-                </div>
-                <div className='s2'>
-                  <p>{producto.descripcion}</p>
-                </div>
-                <div className='s3'>
-                  <p>{producto.cantidad_disponible}</p>
-                  <p>{producto.precio}</p>
-                  <button className="modificar" onClick={() =>handleEditProducto(producto)}>Modificar</button>
-                  <button className="eliminar" onClick={() => eliminarProducto(producto.producto_id)}>Eliminar</button>
-                </div>
+            <li key={index}>
+              <div className='pre-general'>
+                <img src={producto.imagen_url} alt={producto.nombre} />
+                <div className='s-general'>
+                  <div className='s1'>
+                    <div>   
+                      <p className='p1'>#{producto.producto_id}</p>
+                      <p className='p2'>{producto.producto_nombre}</p>
+                      <p className='p3'>{producto.categoria_nombre}</p>
+                    </div>
+                    <div className='buttons'>
+                      <button 
+                        className="modificar" 
+                        onClick={() =>handleEditProducto(producto)}
+                        disabled={onEdit}/>
+                      <button 
+                        className="eliminar" 
+                        onClick={() => eliminarProducto(producto.producto_id)}
+                        disabled={onEdit}/>
+                    </div>
+                  </div>
+                  <div className='s2'>
+                    <p>{producto.descripcion}</p>
+                  </div>
+                  <div className='s3'>
+                    <p className='p1'>Cant.:</p>
+                    <p className='p2'>{producto.cantidad_disponible}</p>
+                    <p className='p3'>${producto.precio}</p>
+                  </div>
+                </div> 
               </div>
+              <hr />
             </li>
             ))
           ) : (
             <p>No hay productos disponibles.</p>
           )}
       </div>
+      {/* Segundo contenedor (Formulario) */}
       <div className='contenedor-entradas'>
             {onEdit ? (<h3>Editando Producto #{productoId}</h3>) : (<h3>Agregar Producto</h3>)}
             <form onSubmit={onEdit ? modificarProducto : agregarProducto}>
@@ -211,7 +224,8 @@ function Almacen() {
               <input
                 id="nombre"
                 type="text"
-                name="nombre" 
+                name="nombre"
+                placeholder='Nombre del producto'
                 value={formData.nombre}
                 onChange={handleChange}
               />
@@ -221,6 +235,7 @@ function Almacen() {
                 id="descripcion"
                 type="text"
                 name="descripcion" 
+                placeholder='Descripción del producto'
                 value={formData.descripcion}
                 onChange={handleChange}
               />
@@ -228,16 +243,16 @@ function Almacen() {
               <label>Categoria</label>
               <select
                 id="categoria"
-                name="categoria" 
-                value={formData.categoria}
+                name="categoria"
+                value={formData.categoria || ""}
                 onChange={handleChange}
                 onFocus={handleSelectFocus}
               >
-                <option value="" disabled={isDisabledCategoria}>
-                  {isDisabledCategoria ? "" : "Categoria"}
+                <option value="" disabled>
+                  Categoría
                 </option>
                 {listaCategorias.map((cate) => (
-                  <option key={cate.id} disabled={!isDisabledCategoria} value={cate.id}>
+                  <option key={cate.id} value={cate.id}>
                     {cate.nombre}
                   </option>
                 ))}
@@ -246,16 +261,16 @@ function Almacen() {
               <label>Proveedor</label>
               <select
                 id="proveedor"
-                name="proveedor" 
-                value={formData.proveedor}
+                name="proveedor"
+                value={formData.proveedor || ""}
                 onChange={handleChange}
                 onFocus={handleSelectFocus}
               >
-                <option value="" disabled={isDisabledProveedor}>
-                  {isDisabledProveedor ? "" : "Proveedor"}
+                <option value="" disabled>
+                  Proveedor
                 </option>
                 {listaProveedores.map((prov) => (
-                  <option key={prov.id} disabled={!isDisabledProveedor} value={prov.id}>
+                  <option key={prov.id} value={prov.id}>
                     {prov.nombre}
                   </option>
                 ))}
@@ -264,26 +279,46 @@ function Almacen() {
               <div className='p-c'>
                 <div className='p-c-1'>
                   <label>Precio</label>
-                  <input
-                    id="precio"
-                    type="number"
-                    name="precio" 
-                    min={1}
-                    value={formData.precio}
-                    onChange={handleChange}
-                  />
+                  <div>
+                    <input
+                      id="precio"
+                      type="number"
+                      name="precio" 
+                      value={formData.precio}
+                      onChange={handleChange}
+                    />
+                  </div>
                 </div>
                 <div className='p-c-2'>
-                  <label>Cantidad</label>
-                  <input
-                    id="cantidad"
-                    type="number"
-                    name="cantidad" 
-                    min={1}
-                    maxLength={2}
-                    value={formData.cantidad}
-                    onChange={handleChange}
-                  />
+                  <label>Stock</label>
+                  <div className='p-c-cant'>
+                    <button 
+                      className="b1" 
+                      type="button" 
+                      onClick={() =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          cantidad: Math.max(0, prev.cantidad - 1), 
+                        }))
+                      }
+                      disabled={formData.cantidad <= 0}/>
+                    <input
+                      id="cantidad"
+                      type="number"
+                      name="cantidad" 
+                      value={formData.cantidad}
+                      onChange={handleChange}
+                    />
+                    <button 
+                      className="b2" 
+                      type="button"  
+                      onClick={() =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        cantidad: Math.max(0, prev.cantidad + 1), 
+                      }))
+                    }/>
+                  </div>
                 </div>
               </div>
 
@@ -292,7 +327,7 @@ function Almacen() {
                 id="imagen"
                 type="url"
                 name="imagen" 
-                maxLength={255}
+                placeholder='URL de la imágen del producto'
                 value={formData.imagen}
                 onChange={handleChange}
               />

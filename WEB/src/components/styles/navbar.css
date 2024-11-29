@@ -1,5 +1,6 @@
 .navbar-container{
-    background-color: #252B42;
+    background: rgb(37,43,66);
+    background: linear-gradient(90deg, rgba(37,43,66,1) 0%, rgba(42,49,75,1) 20%, rgba(49,57,88,1) 40%, rgba(49,57,88,1) 60%, rgba(42,49,75,1) 80%, rgba(37,43,64,1) 100%);
     width: 100%;
     padding: 0;
     margin-top: 0;
@@ -24,6 +25,8 @@ ul{
     color: #ffffff;
     cursor: pointer;
     font-weight: bolder;
+    letter-spacing: 0.1rem;
+
 }
 
 .items:hover{

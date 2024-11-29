@@ -13,7 +13,8 @@
 
 /* Primer Contenedor */
 .contenedor-listado {
-    background-color: #1F263B;
+    background: rgb(37,43,66);
+    background: linear-gradient(90deg, rgba(37,43,66,1) 0%, rgba(42,49,75,1) 20%, rgba(49,57,88,1) 40%, rgba(49,57,88,1) 60%, rgba(42,49,75,1) 80%, rgba(37,43,64,1) 100%);
     display: flex;
     flex-direction: column;
     width: 50rem;
@@ -24,6 +25,7 @@
     padding: 1rem;
     gap: 0.5rem;
     list-style-type: none; 
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
 }
 
 .contenedor-listado h1 {
@@ -36,15 +38,25 @@
     margin: 0 auto 0;
     text-align: center;
     max-width: fit-content;
+    text-shadow:#000000 2px 2px;
+    box-shadow: #000000 0 2px;
 }
 
 .contenedor-listado li {
     display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    gap: 1rem;
-    padding: 0.5rem;
-    border-bottom: 1px solid #3A3F54;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0;
+    width: 100%;
+    margin: 0;
+}
+.contenedor-listado hr{
+    height: 0.15rem;
+    background-color: rgb(0, 0, 0,0.4); 
+    border: none;
+    width: 100%;
+    margin: 0.6 ;
+    display: center;
 }
 
 .contenedor-listado img {
@@ -52,64 +64,150 @@
     height: 100px;
     object-fit: cover;
     border-radius: 8px;
-    border: 2px solid #3A3F54;
+    border: 4px solid #545454;
+    box-shadow: 2px 2px rgba(0, 0, 0, 0.6);
+    background-color: #ffffff;
+}
+.pre-general{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    gap: 1rem;
 }
 
 .s-general {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    align-items: stretch;
+    width: 100%;
 }
-
-.s1, .s2, .s3 {
+.s1{
     display: flex;
     flex-direction: row;
-    gap: 1rem;
+    gap: 0.5rem;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+.s2, .s3 {
+    display: flex;
+    flex-direction: row;
+    gap: 0.2rem;
+    align-items: center;
+    width: 100%;
 }
 
 .s1 p, .s2 p, .s3 p {
     margin: 0;
 }
-
-.contenedor-listado button {
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
+/* Primera fila información de productos  */
+.s1 .p1{
+    font-weight: bolder;
+    font-size: 18px;
+}
+.s1 .p2{
+    font-size: 20px;
+    font-weight: bold;
+    letter-spacing: 0.1rem
+}
+.s1 .p3{
+    font-size: 18;
+    font-weight: bold;
+    border: 1px solid #000000;
+    color: #4CAF50;
+    padding: 0.3rem;
+    border-radius: 5px;
+    background-color: #000000;
+}
+.s1 div:first-of-type{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.4rem;
+}
+.s1 .buttons{
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    align-items: center;
+    margin: 0;
+}
+/* Segunda fila información de productos  */
+.s2 p{
+    font-weight: normal;
+    font-size: 18px;
+    font-style: italic;
+    color: #ccc;
+}
+/* Tercera fila información de productos  */
+.s3 .p1{
+    font-weight: normal;
+    font-size: 18px;
+    font-style: italic;
+    color: #ccc;
+    margin-right: 0;
+}
+.s3 .p2{
+    font-weight: bolder;
+    font-size: 18px;
+    color: #ffffff;
+    margin-left: 0;
+}
+.s3 .p3{
+    margin-left: 0.5rem;
+    font-weight: bolder;
+    font-size: 20px;
+    color: #4CAF50;
+    text-shadow:#000000 1.5px 1.5px;
+}
+.contenedor-listado button{
+    background-color:rgb(255, 255, 255, 0);
+    filter: invert(1);
+    width: 1.5rem;
+    height: 1.5rem;
     cursor: pointer;
-    font-size: 0.9rem;
-    transition: background-color 0.3s ease, transform 0.2s ease; 
+}
+.contenedor-listado button:disabled{
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+.contenedor-listado button:hover{
+    transform: scale(1.2);
 }
 
-.contenedor-listado button:hover {
-    background-color: #45A049;  
-    transform: scale(1.05);  
+.contenedor-listado .modificar{
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat; 
+    border: none;
+    background-image: url('../../../../public/edit.png');
 }
-
-.contenedor-listado .eliminar {
-    background-color: #F44336;  
-    transform: scale(1.05);  
-}
-
-.contenedor-listado .eliminar:hover {
-    background-color: #D32F2F;
-    transform: scale(1.05);  
+.contenedor-listado .eliminar{
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat; 
+    border: none;
+    background-image: url('../../../../public/delete.png');
 }
 
 /* Scrollbar Estilizado */
 .contenedor-listado::-webkit-scrollbar {
-    width: 0.8rem;
+    width: 1rem;      
 }
 
 .contenedor-listado::-webkit-scrollbar-thumb {
-    background-color: #3A3F54;
-    border-radius: 4px;
-    transition: background-color 0.3s ease;
+    border: 2px solid #ffff;
+    background-color: #252B42;
+    border-radius: 4px;   
 }
 
 .contenedor-listado::-webkit-scrollbar-thumb:hover {
-    background-color: #646464;
+    background-color: #8d8d8d; 
+}
+
+.contenedor-listado::-webkit-scrollbar-track {
+    background-color: #ccc; 
 }
 
 /* Segundo Contenedor */
@@ -124,6 +222,7 @@
     gap: 0;
     max-height: 40rem;
     width: 17rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
 }
 .contenedor-entradas h3{
     margin: 0.5rem;
@@ -143,25 +242,20 @@
 .contenedor-entradas label {
     font-size: 0.9rem;
     color: #000000;
+    font-weight: bold;
     margin: 0;
 }
 
 .contenedor-entradas input,
-.contenedor-entradas select {
+.contenedor-entradas select{
     width: 100%;
     padding: 0.5rem;
     border: 2px solid #818181;
     border-radius: 5px;
-    background-color: #252B42;
-    color: #ffffff;
+    background-color: light-dark(rgb(232, 240, 254), rgba(70, 90, 126, 0.4));
+    color: #000000;
     font-size: 0.9rem;
     margin-bottom: 0.5rem;
-}
-
-.contenedor-entradas input:focus,
-.contenedor-entradas select:focus {
-    border-color: #0000;
-    outline: none;
 }
 
 .contenedor-entradas button{
@@ -192,17 +286,7 @@
     color: #000000;
     border: 2px solid #000000;
 }
-.contenedor-botones button:hover {
-    background-color: #45A049;
-}
 
-.contenedor-botones button:last-child {
-    background-color: #F44336;
-}
-
-.contenedor-botones button:last-child:hover {
-    background-color: #D32F2F;
-}
 .errores{
     margin-top: 0.5rem;
     height: 9rem;
@@ -221,44 +305,97 @@
     margin: 0.6 ;
     display: center;
 }
-
-.errores::-webkit-scrollbar {
-    width: 0.8rem;
-}
-
-.errores::-webkit-scrollbar-thumb {
-    background-color: #3A3F54;
-    border-radius: 4px;
-    transition: background-color 0.3s ease;
-}
-.btn-agregar {
-    background-color: #4CAF50;  
-    color: white;
-    margin: 0.2rem;  
-    border: none; 
-    padding: 0.7rem 1.5rem;  
-    border-radius: 5px;  
-    cursor: pointer;  
-    font-size: 1rem; 
-    transition: background-color 0.3s ease, transform 0.2s ease;  
-}
-
-.btn-agregar:hover {
-    background-color: #45A049;  
-    transform: scale(1.05);  
-}
-
-.btn-agregar:active {
-    background-color: #388E3C;  
-    transform: scale(0.98);  
-}
-
 .p-c{
     gap: 0.5rem;
     display: flex;
     flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
 }
-
 .p-c input{
     text-align: center;
+    margin: 0;
+}
+.p-c-1{
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+.p-c-1 input{
+    width: 6rem;
+}
+.p-c-2{
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    margin-left: auto;
+    gap: 0.2rem;
+    height: 100%;
+    width: 100%;
+}
+.p-c-2 .p-c-cant{
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 0.1rem;
+}
+.p-c-2 input{
+    width: 3rem;
+}
+
+.p-c-2 .b1{
+    height: 20px;
+    width: 20px;
+    background-color: rgb(0, 0, 0, 0);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat; 
+    border: none;
+    background-image: url('../../../../public/arrow.png');
+    transform: rotate(180deg);
+    margin: 0;
+}
+.p-c-2 .b1:disabled{
+    height: 20px;
+    width: 20px;
+    background-color: rgb(0, 0, 0, 0);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat; 
+    border: none;
+    background-image: url('../../../../public/arrow.png');
+    transform: rotate(180deg);
+    margin: 0;
+    opacity: 0.5;
+}
+.p-c-2 .b2{
+    height: 20px;
+    width: 20px;
+    background-color: rgb(0, 0, 0, 0);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border: none;
+    background-image: url('../../../../public/arrow.png');
+    margin: 0;
+}
+
+/* Estilo Scroll contenedor errores  */
+.errores::-webkit-scrollbar {
+    width: 1rem;      
+}
+
+.errores::-webkit-scrollbar-thumb {
+    border: 2px solid #ffff;
+    background-color: #252B42;
+    border-radius: 4px;   
+}
+
+.errores::-webkit-scrollbar-thumb:hover {
+    background-color: #8d8d8d; 
+}
+
+.errores::-webkit-scrollbar-track {
+    background-color: #ccc; 
 }

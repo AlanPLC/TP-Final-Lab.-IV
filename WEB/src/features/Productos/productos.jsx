@@ -166,9 +166,9 @@ const Productos = () => {
                     <img src={prod.imagen_url} alt="imagen" className='imagen'/>
                   </div>
                   <div className='p-container'>
-                    <p className='P1'>{prod.producto_nombre}</p>
+                    <p className='P1' title={prod.producto_nombre}>{prod.producto_nombre}</p>
                     <p className='P2'>{prod.categoria_nombre}</p>
-                    <p className='P3'>{prod.descripcion}</p>
+                    <p className='P3' title={prod.descripcion}>{prod.descripcion}</p>
                     <p className='P4'>${prod.precio}</p>
                   </div>
                   {prod.cantidad_disponible <= 0 ? 

@@ -21,7 +21,8 @@
     overflow-y: auto;
     align-items: center;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
-    background-color: #252B42;
+    background: rgb(37,43,66);
+    background: linear-gradient(90deg, rgba(37,43,66,1) 0%, rgba(42,49,75,1) 20%, rgba(49,57,88,1) 40%, rgba(49,57,88,1) 60%, rgba(42,49,75,1) 80%, rgba(37,43,64,1) 100%);
 }
 /* Estilo Scrollbar en container Productos  */
 .productos-lista-container::-webkit-scrollbar {
@@ -48,9 +49,13 @@
     color: #ffff;
     font-weight: bolder;
     border-bottom: 4px solid #ffff;
-    margin: 0 auto 1rem;
+    border-bottom-left-radius: 2px;
+    border-bottom-right-radius: 2px;
+    margin: 0.2rem auto 1rem;
     text-align: center;
     max-width: fit-content;
+    text-shadow:#000000 2px 2px;
+    box-shadow: #000000 0 2px;er-bottom: 3px solid #ffffff;
 }
 
 .productos-lista-container ul{
@@ -94,7 +99,12 @@
     text-transform: uppercase;
     padding: 0.3rem;
     letter-spacing: 0.2rem;
+    white-space: nowrap;     
+    overflow: hidden;       
+    text-overflow: ellipsis; 
+    max-width: 14rem;  
 }
+
 .P2{
     font-size: medium;
     font-weight: bold;
@@ -185,6 +195,7 @@
     flex-direction: column;
     padding: 1rem;
     padding-top: 0.4rem;
+
 }
 .productos-venta h3{
     color: black;
@@ -255,6 +266,7 @@
     justify-content:flex-start;
     width: 100%;
     margin-top: 0;
+    background-color: light-dark(rgb(232, 240, 254), rgba(70, 90, 126, 0.4));
 }
 
 .productos-venta ul li{
