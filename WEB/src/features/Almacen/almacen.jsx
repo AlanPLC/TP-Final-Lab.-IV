@@ -4,13 +4,6 @@ import useAlmacen from '../../hooks/Almacen/useAlmacen.jsx';
 
 function Almacen() {
   const {getAlmacen, getCategorias, getProveedores, postAlmacen, putAlmacen, deleteAlmacen, setError,error, loading} =useAlmacen()
-  const [nombre, setNombre] = useState("")
-  const [descripcion, setDescripcion] = useState("")
-  const [categoria, setCategoria] = useState("")
-  const [proveedor, setProveedor] = useState("")
-  const [precio, setPrecio] = useState("")
-  const [cantidad, setCantidad] = useState("")
-  const [imagen, setImagen] = useState("")
   const [productoId, setProductoId] = useState(0)
   const [listaProductos, setListaProductos] = useState([])
   const [onEdit, setOnEdit] = useState(false)
@@ -19,7 +12,37 @@ function Almacen() {
   const [listaProveedores, setListaProveedores] = useState([])
   const [isDisabledCategoria, setIsDisabledCategoria] = useState(false);
   const [isDisabledProveedor, setIsDisabledProveedor] = useState(false);
+
+  // Variables formulario.
+  const datosIniciales = {
+    nombre: "",
+    descripcion: "",
+    categoria: 0,
+    proveedor: 0,
+    precio: 0,
+    cantidad: 0,
+    imagen: "",
+  };
+  const [formData, setFormData] = useState(datosIniciales); 
+
+  // Validar campos del formulario.
+  const validarForm =
+    formData.nombre.trim() &&
+    formData.descripcion.trim() &&
+    formData.categoria > 0 &&
+    formData.proveedor > 0 &&
+    formData.precio > 0 &&
+    formData.cantidad > 0 &&
+    formData.imagen.trim();
     
+    const handleChange = (e) => {
+      const { name, value } = e.target;
+      setFormData({
+        ...formData,
+        [name]: name === "precio" || name === "cantidad" ? parseFloat(value) || 0 : value,
+      });
+    };
+
     const mostrarProductos = async ()=>{
       try {
         const response = await getAlmacen();
@@ -37,12 +60,8 @@ function Almacen() {
       // Verifica la estructura de result
       console.log('Proveedores de result:', JSON.stringify(result, null, 2));
       
-      // if (result.success && Array.isArray(result.data)) {
-        setListaProveedores(result.data.proveedores, result.success);
-        console.log("PROVEEDOR", listaProveedores);
-      // } else {
-      //   console.error(result.message || result.errors);
-      // }
+      setListaProveedores(result.data.proveedores, result.success);
+      console.log("PROVEEDOR", listaProveedores);
     };
 
     const fetchCategorias = async () => {
@@ -70,13 +89,13 @@ function Almacen() {
       e.preventDefault()
       
       const nuevoProducto = {
-        nombre: nombre,
-        descripcion: descripcion,
-        categoria_id: categoria,
-        proveedor_id: proveedor,
-        precio: precio,
-        cantidad_disponible: cantidad,
-        imagen_url: imagen
+        nombre: formData.nombre,
+        descripcion: formData.descripcion,
+        categoria_id: formData.categoria,
+        proveedor_id: formData.proveedor,
+        precio: formData.precio,
+        cantidad_disponible: formData.cantidad,
+        imagen_url: formData.imagen
       }
       const result = await postAlmacen(nuevoProducto)
       if(result.success){
@@ -95,52 +114,42 @@ function Almacen() {
 
     const handleEditProducto = (producto) => {
       setProductoId(producto.producto_id)
-      setNombre(producto.producto_nombre)
-      setDescripcion(producto.descripcion)
-      setCategoria(producto.categoria_id)
-      setProveedor(producto.proveedor_id)
-      setPrecio(producto.precio)
-      setCantidad(producto.cantidad_disponible)
-      setImagen(producto.imagen_url)
       setOnEdit(true)
+      setFormData({
+        nombre: producto.producto_nombre,
+        descripcion: producto.descripcion,
+        categoria: producto.categoria_id,
+        proveedor: producto.proveedor_id,
+        precio: producto.precio,
+        cantidad: producto.cantidad_disponible,
+        imagen: producto.imagen_url,
+      })
     }
 
     const modificarProducto = async()=>{
       const nuevoProducto = {
         producto_id: productoId,
-        nombre: nombre,
-        descripcion: descripcion,
-        categoria_id: categoria,
-        proveedor_id: proveedor,
-        precio: precio,
-        cantidad_disponible: cantidad,
-        imagen_url: imagen
+        nombre: formData.nombre,
+        descripcion: formData.descripcion,
+        categoria_id: formData.categoria,
+        proveedor_id: formData.proveedor,
+        precio: formData.precio,
+        cantidad_disponible: formData.cantidad,
+        imagen_url: formData.imagen
       }
 
       const result = await putAlmacen(nuevoProducto)
         if(result.success){
           setReload(!reload)
           console.log("Productos Modificado con éxito.", result.data)
-          setNombre('')
-          setDescripcion('')
-          setCategoria('')
-          setProveedor('')
-          setPrecio('')
-          setCantidad('')
-          setImagen('')
+          setFormData(datosIniciales)
           setOnEdit(false)
           setError(null)
           setIsDisabledCategoria(false)
           setIsDisabledProveedor(false)
         } else{
           console.error("Error al Modificar los Productos.", result.message)
-          setNombre('')
-          setDescripcion('')
-          setCategoria('')
-          setProveedor('')
-          setPrecio('')
-          setCantidad('')
-          setImagen('')
+          setFormData(datosIniciales)
           setOnEdit(false)
           setIsDisabledCategoria(false)
           setIsDisabledProveedor(false)
@@ -196,77 +205,126 @@ function Almacen() {
           )}
       </div>
       <div className='contenedor-entradas'>
-            <form onSubmit={agregarProducto} >
-                <label >Nombre:</label>
-                <input  id="nombre" type="text"  value={nombre} 
-                onChange={(e) => setNombre(e.target.value)}/> br
+            {onEdit ? (<h3>Editando Producto #{productoId}</h3>) : (<h3>Agregar Producto</h3>)}
+            <form onSubmit={onEdit ? modificarProducto : agregarProducto}>
+              <label>Nombre</label>
+              <input
+                id="nombre"
+                type="text"
+                name="nombre" 
+                value={formData.nombre}
+                onChange={handleChange}
+              />
 
-                <label>Descripcion:</label> 
-                <input id="descripcion" type="text" value={descripcion}
-                onChange={(e) => setDescripcion(e.target.value)}/> br
+              <label>Descripcion</label>
+              <input
+                id="descripcion"
+                type="text"
+                name="descripcion" 
+                value={formData.descripcion}
+                onChange={handleChange}
+              />
 
-                <label  >Categoria:</label>
-                <select name="select" id="select" onChange={(e) => setCategoria(e.target.value)} value={categoria} 
-                onFocus={handleSelectFocus}>
-                <option value=" " disabled={isDisabledCategoria}>{isDisabledCategoria== false ? "Categoria": ""} </option>
-                  {listaCategorias.map((cate) => (
-                    <option  key={cate.id} disabled={!isDisabledCategoria} value={cate.id}>
-                      {cate.nombre}
-                    </option>
-                  ))}
-                </select>  
+              <label>Categoria</label>
+              <select
+                id="categoria"
+                name="categoria" 
+                value={formData.categoria}
+                onChange={handleChange}
+                onFocus={handleSelectFocus}
+              >
+                <option value="" disabled={isDisabledCategoria}>
+                  {isDisabledCategoria ? "" : "Categoria"}
+                </option>
+                {listaCategorias.map((cate) => (
+                  <option key={cate.id} disabled={!isDisabledCategoria} value={cate.id}>
+                    {cate.nombre}
+                  </option>
+                ))}
+              </select>
 
-                <label >Proveedor:</label>
-                <select name="select" id="select" onChange={(e) => setProveedor(e.target.value)} value={proveedor}
-                  onFocus={handleSelectFocus}>
-                  <option value=" " disabled={isDisabledProveedor} >{isDisabledProveedor== false ? "Proveedor": ""}</option>
-                  
-                  {listaProveedores.map((prov) => {
-                    return ( 
-                      <option key={prov.id} disabled={!isDisabledProveedor} value={prov.id}>
-                        {prov.nombre}
-                      </option>
-                    );
-                  })}
-                </select>
-                
-                <label >Precio:</label>
-                <input min={1}  id="precio" type="number" value={precio}
-                onChange={(e) => setPrecio(parseInt(e.target.value))} />br
+              <label>Proveedor</label>
+              <select
+                id="proveedor"
+                name="proveedor" 
+                value={formData.proveedor}
+                onChange={handleChange}
+                onFocus={handleSelectFocus}
+              >
+                <option value="" disabled={isDisabledProveedor}>
+                  {isDisabledProveedor ? "" : "Proveedor"}
+                </option>
+                {listaProveedores.map((prov) => (
+                  <option key={prov.id} disabled={!isDisabledProveedor} value={prov.id}>
+                    {prov.nombre}
+                  </option>
+                ))}
+              </select>
+              
+              <div className='p-c'>
+                <div className='p-c-1'>
+                  <label>Precio</label>
+                  <input
+                    id="precio"
+                    type="number"
+                    name="precio" 
+                    min={1}
+                    value={formData.precio}
+                    onChange={handleChange}
+                  />
+                </div>
+                <div className='p-c-2'>
+                  <label>Cantidad</label>
+                  <input
+                    id="cantidad"
+                    type="number"
+                    name="cantidad" 
+                    min={1}
+                    maxLength={2}
+                    value={formData.cantidad}
+                    onChange={handleChange}
+                  />
+                </div>
+              </div>
 
-                <label >Cantidad:</label>
-                <input min={1} maxLength={2}type="number" id="cantidad" value={cantidad }
-                onChange={(e) => setCantidad(parseInt(e.target.value))}/>br
-                  
-                <label >Imagen URL:</label>
-                <input maxLength={255} id="imagen" type="url" value={imagen}
-                onChange={(e) => setImagen(e.target.value)} />br
-          
-                {onEdit ? (
-                  <div className="contenedor-botones">
-                    <button type='button' onClick={modificarProducto}>Modificar</button>
-                    <button type='button' onClick={() => {
-                      setProductoId(null)
-                      setNombre(""); 
-                      setDescripcion("");
-                      setCategoria("");
-                      setProveedor("");
-                      setPrecio("");
-                      setCantidad("");
-                      setImagen("")
-                      setOnEdit(false)
-                      setIsDisabledCategoria(false)
-                      setIsDisabledProveedor(false)
-                    }}>Cancelar</button>
-                  </div>
-                ) : (
-                  
-                    <button type="submit"  >Agregar Producto</button>
-                    
-                    
-                )}
+              <label>Imagen URL</label>
+              <input
+                id="imagen"
+                type="url"
+                name="imagen" 
+                maxLength={255}
+                value={formData.imagen}
+                onChange={handleChange}
+              />
+
+              {onEdit ? (
+                <div className="buttons-cont">
+                  <button
+                    type="button"
+                    className="b1"
+                    disabled={!validarForm}
+                    onClick={modificarProducto}
+                  > Modificar
+                  </button>
+                  <button
+                    type="button"
+                    className="b2"
+                    onClick={() => {
+                      setFormData(datosIniciales); 
+                      setOnEdit(false);
+                      setIsDisabledCategoria(false);
+                      setIsDisabledProveedor(false);
+                    }}
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              ) : (
+                <button type="submit" disabled={!validarForm}>
+                  Agregar Producto
+                </button>
+              )}
             </form>
-
             {Array.isArray(error) && error.length > 0 ? (
                 <div className='errores'>
                     {error.map((err, index) => (
