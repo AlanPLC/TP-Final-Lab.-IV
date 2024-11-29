@@ -3,7 +3,7 @@ import './styles/almacen.css'
 import useAlmacen from '../../hooks/Almacen/useAlmacen.jsx';
 
 function Almacen() {
-  const {getAlmacen, getCategorias,getProveedores, postAlmacen, putAlmacen, deleteAlmacen, setError,error, loading} =useAlmacen()
+  const {getAlmacen, getCategorias,getProveedores, postAlmacen, putAlmacen, deleteAlmacen, setError, error, loading} = useAlmacen()
   const [nombre, setNombre] = useState("")
   const [descripcion, setDescripcion] = useState("")
   const [categoria, setCategoria] = useState("")
@@ -16,7 +16,7 @@ function Almacen() {
   const [onEdit, setOnEdit] = useState(false)
   const [reload, setReload] = useState(false)
   const [listaCategorias, setListaCategorias] = useState([]) 
-  const[listaProveedores, setListaProveedores] = useState([])
+  const [listaProveedores, setListaProveedores] = useState([])
     
     const mostrarProductos = async ()=>{
       try {
@@ -26,13 +26,11 @@ function Almacen() {
       } catch (error) {
         console.error(error);
       }
-
     }
 
     const fetchProveedores = async () => {
       const result = await getProveedores();
       console.log('Proveedor recibido:', result);
-      
       if (result.success && Array.isArray(result.data)) {
         setListaProveedores(result.data);
       } else {
@@ -43,14 +41,12 @@ function Almacen() {
     const fetchCategorias = async () => {
       const result = await getCategorias();
       console.log('Categoria recibida:', result);
-      
       if (result.success && Array.isArray(result.data)) {
         setListaCategorias(result.data);
       } else {
         console.error(result.message || result.errors);
       }
     };
-    
     
     useEffect(() => {
       fetchProveedores();
@@ -59,7 +55,6 @@ function Almacen() {
       
     useEffect(() => {
       mostrarProductos();
-      
     }, [reload]);
      
     const agregarProducto = async (e) =>{
@@ -81,11 +76,8 @@ function Almacen() {
           console.log("Producto creado con éxito.", result.data)
           setError(null)
       } else{
-          console.error("Error al crear el producto.", result.message)
-          
+          console.error("Error al crear el producto.", result.message)  
       }
-      
-      
     }
 
     const handleEditProducto = (producto) => {
@@ -98,8 +90,6 @@ function Almacen() {
       setCantidad(producto.cantidad_disponible)
       setImagen(producto.imagen_url)
       setOnEdit(true)
-      
-      
     }
 
     const modificarProducto = async()=>{
@@ -136,12 +126,9 @@ function Almacen() {
           setPrecio('')
           setCantidad('')
           setImagen('')
-          setOnEdit(false)
-          
+          setOnEdit(false)      
         }
-    }
-
-    
+    } 
     
     const eliminarProducto = async (id) => {
       if(confirm(`¿Quieres eliminar el producto Nº${id}?`)){
@@ -152,13 +139,8 @@ function Almacen() {
         } else{
             console.error("Error al eliminar el proveedor.", result.message)
         }
-      }
-         
+      }     
     }
-    
-      
-    
-        
     
   return(
     <div className='almacen-container'>
@@ -166,8 +148,7 @@ function Almacen() {
         <h1 className='titulo'>Listado del almacen</h1><br />
         {listaProductos && listaProductos.length > 0 ? (
             listaProductos.map((producto, index)  => (
-            <li key={index}  >
-              
+            <li key={index}>      
               <img src={producto.imagen_url} alt={producto.nombre} />
               <div className='s-general'>
                 <div className='s1'>
@@ -201,7 +182,7 @@ function Almacen() {
                 <input id="descripcion" type="text" value={descripcion}
                 onChange={(e) => setDescripcion(e.target.value)}/> br
 
-                <label  >Categoria:</label>
+                <label>Categoria:</label>
                 <select name="select" id="select" onChange={(e) => setCategoria(e.target.value)} value={categoria}>
                   <option value=" ">Categorias</option>
                   {listaCategorias.map((cate) => (
@@ -212,14 +193,13 @@ function Almacen() {
                 </select> <br />
 
                 <label >Proveedor:</label>
-                <select name="select" id="select" onChange={(e) => setProveedor(e.target.value)} value={proveedor}>
-                  <option value=" ">Proveedores</option>
-                  {listaProveedores.map((prov)=>{
-                    <option key={prov.proveedor_id} value={prov.proveedor_id}>
-                      {prov.proveedor_nombre}
-                    </option>
-                  })}
-                  
+                  <select name="select" id="select" onChange={(e) => setProveedor(e.target.value)} value={proveedor}>
+                    <option value=" ">Proveedores</option>
+                    {listaProveedores.map((prov)=>{
+                      <option key={prov.proveedor_id} value={prov.proveedor_id}>
+                        {prov.proveedor_nombre}
+                      </option>
+                    })}
                 </select> <br />
       
 
@@ -251,11 +231,7 @@ function Almacen() {
                     }}>Cancelar</button>
                   </div>
                 ) : (
-                  
                   <button type="submit" className="btn-agregar">Agregar Producto</button>
-
-                    
-                  
                 )}
             </form>
 
@@ -271,7 +247,5 @@ function Almacen() {
     </div>
   )
 };
-
-  
 
 export default Almacen;
