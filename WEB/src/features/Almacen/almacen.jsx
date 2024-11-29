@@ -16,7 +16,7 @@ function Almacen() {
   const [onEdit, setOnEdit] = useState(false)
   const [reload, setReload] = useState(false)
   const [listaCategorias, setListaCategorias] = useState([]) 
-  const[listaProveedores, setListaProveedores] = useState([])
+  const [listaProveedores, setListaProveedores] = useState([])
   const [isDisabledCategoria, setIsDisabledCategoria] = useState(false);
   const [isDisabledProveedor, setIsDisabledProveedor] = useState(false);
     
