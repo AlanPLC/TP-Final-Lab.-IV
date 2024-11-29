@@ -142,14 +142,10 @@ function Almacen() {
           setFormData(datosIniciales)
           setOnEdit(false)
           setError(null)
-          setIsDisabledCategoria(false)
-          setIsDisabledProveedor(false)
         } else{
           console.error("Error al Modificar los Productos.", result.message)
           setFormData(datosIniciales)
           setOnEdit(false)
-          setIsDisabledCategoria(false)
-          setIsDisabledProveedor(false)
         }
     } 
     
@@ -163,11 +159,6 @@ function Almacen() {
             console.error("Error al eliminar el proveedor.", result.message)
         }
       }     
-    }
-    
-    const handleSelectFocus =  () => {
-      setIsDisabledCategoria(true)
-      setIsDisabledProveedor(true)
     }
     
     
@@ -246,7 +237,6 @@ function Almacen() {
                 name="categoria"
                 value={formData.categoria || ""}
                 onChange={handleChange}
-                onFocus={handleSelectFocus}
               >
                 <option value="" disabled>
                   Categoría
@@ -264,7 +254,6 @@ function Almacen() {
                 name="proveedor"
                 value={formData.proveedor || ""}
                 onChange={handleChange}
-                onFocus={handleSelectFocus}
               >
                 <option value="" disabled>
                   Proveedor
@@ -347,8 +336,6 @@ function Almacen() {
                     onClick={() => {
                       setFormData(datosIniciales); 
                       setOnEdit(false);
-                      setIsDisabledCategoria(false);
-                      setIsDisabledProveedor(false);
                     }}
                   >
                     Cancelar
