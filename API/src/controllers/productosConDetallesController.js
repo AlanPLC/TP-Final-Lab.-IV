@@ -34,8 +34,6 @@ export const getCategoria = async(_, res)=>{
   }
 }
 
-
-
 export const getProductosConDetallesByID = async(req, res)=>{
   try {
       const id = req.params.id;
@@ -108,8 +106,7 @@ export const updateProductoConDetalles = async(req,res)=>{
     if(result.affectedRows === 0){
       return res.status(404).json({ errors: [{ msg: "No se encontró el producto." }] });
     }
-    const productoId = result.insertId;
-    await db.query('UPDATE producto_stock SET cantidad_disponible =?, fecha_ultima_actualizacion =NOW() WHERE producto_id =?', [cantidad_disponible, productoId])
+    await db.query('UPDATE producto_stock SET cantidad_disponible =?, fecha_ultima_actualizacion =NOW() WHERE producto_id =?', [cantidad_disponible, id])
     res.status(201).json({ message: "Producto actualizado con detalles exitosamente." });
   } catch (error) {
     await db.rollback();
