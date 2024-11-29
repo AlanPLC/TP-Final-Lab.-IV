@@ -3,7 +3,7 @@ import './styles/almacen.css'
 import useAlmacen from '../../hooks/Almacen/useAlmacen.jsx';
 
 function Almacen() {
-  const {getAlmacen, getCategorias, getProveedores, postAlmacen, putAlmacen, deleteAlmacen, setError,error, loading} =useAlmacen()
+  const {getAlmacen, getCategorias, getProveedores, postAlmacen, putAlmacen, deleteAlmacen, setError,error} =useAlmacen()
   const [productoId, setProductoId] = useState(0)
   const [listaProductos, setListaProductos] = useState([])
   const [onEdit, setOnEdit] = useState(false)

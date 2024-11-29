@@ -1,18 +1,30 @@
 import { Navigate } from "react-router-dom";
-import { useState } from 'react'
-import { jwtDecode } from "jwt-decode";
+import { jwtDecode } from "jwt-decode"; 
 
-const AdminRoute = ({children}) => {
-    const [rol, setRol] = useState('')
-    const token = localStorage.getItem("token");
-    const decoded = jwtDecode(token);
-    setRol(decoded.rol)
+// Protección rutas solo para administrador.
+const AdminRoute = ({ children }) => {
+  const token = localStorage.getItem("token");
 
-    if(!rol === "administrador"){
-        alert("Rol administrador requerido.")
-        return <Navigate to="/" replace />;
+  if (!token) {
+    alert("Debes iniciar sesión.");
+    return <Navigate to="/login" replace />;
+  }
+
+  try {
+    const decoded = jwtDecode(token); 
+    const rol = decoded?.rol;
+
+    if (rol !== "administrador") {
+      alert("Rol administrador requerido.");
+      return <Navigate to="/" replace />;
     }
-    return children;
-}
+  } catch (error) {
+    console.error("Error al decodificar el token:", error);
+    alert("Token inválido. Por favor, inicia sesión nuevamente.");
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
+};
 
 export default AdminRoute;

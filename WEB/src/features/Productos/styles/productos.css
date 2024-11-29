@@ -46,11 +46,11 @@
 /* Estilo resto de elementos list productos  */
 .productos-lista-container .head {
     display: flex;
-    justify-content: center; /* Centra el contenido horizontalmente */
-    align-items: center; /* Centra verticalmente los elementos */
+    justify-content: center; 
+    align-items: center;
     gap: 1rem;
-    position: relative; /* Esto es necesario para colocar el input a la derecha */
-    width: 100%; /* Asegura que el contenedor ocupe el 100% del ancho disponible */
+    position: relative;
+    width: 100%;
   }
   
   .productos-lista-container .head input {

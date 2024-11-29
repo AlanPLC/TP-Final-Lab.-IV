@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import useVentas from "../../hooks/Ventas/useVentas.jsx";
 
 const Ventas = () => {
-    const {ventas, error, loading} = useVentas()
+    const {ventas} = useVentas()
     const [ventasList, setVentasList] = useState([])
 
     // Recibe el fetch del hook

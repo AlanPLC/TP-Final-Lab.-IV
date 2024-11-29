@@ -2,7 +2,7 @@ import './styles/proveedores.css';
 import useProveedores from '../../hooks/Proveedores/useProveedores.jsx';
 import {useState, useEffect} from 'react';
 const Proveedores = () => {
-    const { getProveedor, postProveedor, deleteProveedor, updateProveedor, setError, error, loading } = useProveedores();
+    const { getProveedor, postProveedor, deleteProveedor, updateProveedor, setError, error } = useProveedores();
     const [listaProveedores, setListaProveedores] = useState([])
     const [nombre, setNombre] = useState('')
     const [descripcion, setDescripcion] = useState('')

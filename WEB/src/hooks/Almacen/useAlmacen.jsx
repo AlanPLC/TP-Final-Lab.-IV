@@ -3,10 +3,8 @@ import { useState } from 'react'
 
 export default function useAlmacen(){
     const [error, setError] = useState([])
-    const [loading, setLoading] = useState(false)
 
     const getAlmacen = async () => {
-        setLoading(true);
         const token = localStorage.getItem("token");
         try {
             const response = await fetch("http://localhost:3000/administrador/", {
@@ -27,13 +25,10 @@ export default function useAlmacen(){
         } catch (error) {
             setError(error.message);
             return { success: false, message: error.message };
-        } finally {
-            setLoading(false);
         }
     };
 
     const getCategorias = async () => {
-        setLoading(true);
         const token = localStorage.getItem("token");
         try {
             const response = await fetch("http://localhost:3000/categorias", {
@@ -54,13 +49,10 @@ export default function useAlmacen(){
         } catch (error) {
             setError(error.message);
             return { success: false, message: error.message };
-        } finally {
-            setLoading(false);
         }
     };
 
     const getProveedores = async () => {
-        setLoading(true);
         const token = localStorage.getItem("token");
         try {
             const response = await fetch("http://localhost:3000/onlyproveedores", {
@@ -81,8 +73,6 @@ export default function useAlmacen(){
         } catch (error) {
             setError(error.message);
             return { success: false, message: error.message };
-        } finally {
-            setLoading(false);
         }
     };
 
@@ -113,13 +103,9 @@ export default function useAlmacen(){
                 return {success: false, message: error.message}
                 
             }
-            finally {
-                setLoading(false)
-            }
         }
 
         const putAlmacen = async(almacen) =>{
-            setLoading(true)
             const token = localStorage.getItem("token")
             try {
                 const response = await fetch(`http://localhost:3000/administrador/${almacen.producto_id}`,{
@@ -145,13 +131,9 @@ export default function useAlmacen(){
                 setError(error.message)
                 return {success: false, message: error.message}
             }
-            finally {
-                setLoading(false)
-            }
         }
 
         const deleteAlmacen = async(id) =>{
-            setLoading(true)  
             const token = localStorage.getItem("token")
             try {
                 const response = await fetch(`http://localhost:3000/administrador/${id}`,{
@@ -175,13 +157,10 @@ export default function useAlmacen(){
             } catch (error) {
                 setError(error.message)
                 return {success: false, message: error.message}
-            }
-            finally {
-                setLoading(false)
             } 
         }
         
-        return {getAlmacen, getCategorias, getProveedores, postAlmacen, putAlmacen, deleteAlmacen, setError, error, loading}
+        return {getAlmacen, getCategorias, getProveedores, postAlmacen, putAlmacen, deleteAlmacen, setError, error}
      
     }  
 

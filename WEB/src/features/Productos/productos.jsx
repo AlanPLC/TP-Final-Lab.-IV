@@ -6,7 +6,7 @@ import autoTable from "jspdf-autotable";
 import { jwtDecode } from "jwt-decode";
 
 const Productos = () => {
-  const { getProductosConDetalles, postVentas, controlStock, error, loading} = useProductos()
+  const { getProductosConDetalles, postVentas, controlStock} = useProductos()
   const [listaProductos, setListaProductos] = useState([])
   const [productosVenta, setProductosVenta] = useState([])
   const [reload, setReload] = useState(false)

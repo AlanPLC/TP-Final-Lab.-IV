@@ -7,6 +7,7 @@ import Productos from './features/Productos/productos.jsx';
 import Ventas from './features/Ventas/ventas.jsx'
 import Proveedores from './features/Proveedores/proveedores.jsx';
 import Almacen from './features/Almacen/almacen.jsx'
+import AdminRoute from './components/adminProtect.jsx';
 import './styles/App.css'
 // Componente para proteger rutas sin estar logueado.
 import ProtectedRoute from './components/protecRoute.jsx';
@@ -41,11 +42,14 @@ function App() {
             </ProtectedRoute>
           }/>
 
-          <Route path="/administracion" element={
-            <ProtectedRoute>
-              <Almacen />
-            </ProtectedRoute>
-          }/>
+          <Route
+            path="/administracion"
+            element={
+              <AdminRoute>
+                <Almacen />
+              </AdminRoute>
+            }
+          />
         </Routes>
       </Router>
     </>

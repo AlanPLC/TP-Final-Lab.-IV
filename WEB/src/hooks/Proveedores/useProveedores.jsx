@@ -2,11 +2,9 @@ import { useState } from 'react'
 
 export default function useProveedores(){
     const [error, setError] = useState([])
-    const [loading, setLoading] = useState(false)
 
     // Get a Proveedores con sus Productos
     const getProveedor = async() =>{
-        setLoading(true)
         const token = localStorage.getItem('token')
         try {
             const response = await fetch("http://localhost:3000/proveedores/",{
@@ -28,14 +26,10 @@ export default function useProveedores(){
             setError(error.message)
             return {success: false, message: error.message}
         }
-        finally {
-            setLoading(false)
-        }
     }  
 
     // Post a Proveedores
     const postProveedor = async(proveedor) =>{
-        setLoading(true)
         try {
             const token = localStorage.getItem('token')
             const response = await fetch("http://localhost:3000/proveedores/",{
@@ -59,14 +53,11 @@ export default function useProveedores(){
         } catch (error) {
             setError(error.message)
             return {success: false, message: error.message}
-        } finally{
-            setLoading(false)
         }
     }
 
     // Eliminar proveedor
     const deleteProveedor = async(id) =>{
-        setLoading(true)
         try {
             const token = localStorage.getItem('token')
             const response = await fetch(`http://localhost:3000/proveedores/${id}`,{
@@ -89,14 +80,11 @@ export default function useProveedores(){
         } catch (error) {
             setError(error.message)
             return {success: false, message: error.message}
-        } finally {
-            setLoading(false)
         }
     }
 
     // Actualizar proveedor
     const updateProveedor = async(proveedor) =>{
-        setLoading(true)
         try {
             const token = localStorage.getItem('token')
             const response = await fetch(`http://localhost:3000/proveedores/${proveedor.id}`,{
@@ -120,10 +108,8 @@ export default function useProveedores(){
         } catch (error) {
             setError(error.message)
             return {success: false, message: error.message}
-        } finally{
-            setLoading(false)
         }
     }
 
-    return {getProveedor, postProveedor, deleteProveedor, updateProveedor, setError, error, loading}
+    return {getProveedor, postProveedor, deleteProveedor, updateProveedor, setError, error}
 }

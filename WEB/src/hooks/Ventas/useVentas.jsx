@@ -2,11 +2,8 @@ import { useState } from 'react'
 
 export default function useVentas(){
     const [error, setError] = useState([])
-    const [loading, setLoading] = useState(false)
 
     const ventas = async() =>{
-        setLoading(true)
-
         try {
             const token = localStorage.getItem('token')
             const response = await fetch("http://localhost:3000/ventas/",{
@@ -23,10 +20,7 @@ export default function useVentas(){
             setError(error.message)
             return {success: false, message: error.message}
         }
-        finally {
-            setLoading(false)
-        }
     }  
 
-    return {ventas, error, loading}
+    return {ventas, error}
 }
