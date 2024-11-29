@@ -3,7 +3,7 @@ import './styles/almacen.css'
 import useAlmacen from '../../hooks/Almacen/useAlmacen.jsx';
 
 function Almacen() {
-  const {getAlmacen, getCategorias,getProveedores, postAlmacen, putAlmacen, deleteAlmacen, setError,error, loading} =useAlmacen()
+  const {getAlmacen, getCategorias, getProveedores, postAlmacen, putAlmacen, deleteAlmacen, setError,error, loading} =useAlmacen()
   const [nombre, setNombre] = useState("")
   const [descripcion, setDescripcion] = useState("")
   const [categoria, setCategoria] = useState("")
@@ -17,6 +17,7 @@ function Almacen() {
   const [reload, setReload] = useState(false)
   const [listaCategorias, setListaCategorias] = useState([]) 
   const[listaProveedores, setListaProveedores] = useState([])
+  const [isDisabled, setIsDisabled] = useState(false);
     
     const mostrarProductos = async ()=>{
       try {
@@ -33,24 +34,28 @@ function Almacen() {
       const result = await getProveedores();
       console.log('Proveedor recibido:', result);
       
-      if (result.success && Array.isArray(result.data)) {
-        setListaProveedores(result.data);
-      } else {
-        console.error(result.message || result.errors);
-      }
-    }
+      // Verifica la estructura de result
+      console.log('Proveedores de result:', JSON.stringify(result, null, 2));
+      
+      // if (result.success && Array.isArray(result.data)) {
+        setListaProveedores(result.data.proveedores, result.success);
+        console.log("PROVEEDOR", listaProveedores);
+      // } else {
+      //   console.error(result.message || result.errors);
+      // }
+    };
 
     const fetchCategorias = async () => {
       const result = await getCategorias();
       console.log('Categoria recibida:', result);
-      
-      if (result.success && Array.isArray(result.data)) {
+      console.log('Categoria de result:', JSON.stringify(result, null, 2));
+      if (result.success ) {
         setListaCategorias(result.data);
+        console.log("CATEGORIA",listaCategorias )
       } else {
         console.error(result.message || result.errors);
       }
     };
-    
     
     useEffect(() => {
       fetchProveedores();
@@ -85,6 +90,7 @@ function Almacen() {
           
       }
       
+      setIsDisabled(false)
       
     }
 
@@ -127,6 +133,7 @@ function Almacen() {
           setImagen('')
           setOnEdit(false)
           setError(null)
+          setIsDisabled(false)
         } else{
           console.error("Error al Modificar los Productos.", result.message)
           setNombre('')
@@ -137,7 +144,7 @@ function Almacen() {
           setCantidad('')
           setImagen('')
           setOnEdit(false)
-          
+          setIsDisabled(true)
         }
     }
 
@@ -156,9 +163,10 @@ function Almacen() {
          
     }
     
-      
+    const handleSelectFocus =  () => {
+      setIsDisabled(true)
+    }
     
-        
     
   return(
     <div className='almacen-container'>
@@ -204,30 +212,30 @@ function Almacen() {
                 onChange={(e) => setDescripcion(e.target.value)}/> 
 
                 <label  >Categoria:</label>
-                <select name="select" id="select" onChange={(e) => setCategoria(e.target.value)} value={categoria}>
-                  <option value=" ">Categorias</option>
+                <select name="select" id="select" onChange={(e) => setCategoria(e.target.value)} value={categoria} 
+                onFocus={handleSelectFocus}>
+                <option value=" " disabled={isDisabled}>{isDisabled== false ? "Categoria": ""} </option>
                   {listaCategorias.map((cate) => (
-                    <option key={cate.id} value={cate.id}>
+                    <option  key={cate.id} disabled={!isDisabled} value={cate.id}>
                       {cate.nombre}
                     </option>
                   ))}
-                </select> <br />
-                <input id="categoria" type="number" value={categoria}
-                onChange={(e) => setCategoria(parseInt(e.target.value))}/> 
+                </select>  
 
                 <label >Proveedor:</label>
-                <select name="select" id="select" onChange={(e) => setProveedor(e.target.value)} value={proveedor}>
-                  <option value=" ">Proveedores</option>
-                  {listaProveedores.map((prov)=>{
-                    <option key={prov.proveedor_id} value={prov.proveedor_id}>
-                      {prov.proveedor_nombre}
-                    </option>
-                  })}
+                <select name="select" id="select" onChange={(e) => setProveedor(e.target.value)} value={proveedor}
+                  onFocus={handleSelectFocus}>
+                  <option value=" "  >Proveedor</option>
                   
-                </select> <br />
-                <input  min={1} max={8}  id="proveedor" type="number" value={proveedor}
-                onChange={(e) => setProveedor(parseInt(e.target.value))}/>
-
+                  {listaProveedores.map((prov) => {
+                    return ( 
+                      <option key={prov.id} value={prov.id}>
+                        {prov.nombre}
+                      </option>
+                    );
+                  })}
+                </select>
+                
                 <label >Precio:</label>
                 <input min={1}  id="precio" type="number" value={precio}
                 onChange={(e) => setPrecio(parseInt(e.target.value))} />
@@ -253,6 +261,7 @@ function Almacen() {
                       setCantidad("");
                       setImagen("")
                       setOnEdit(false)
+                      setIsDisabled(false)
                     }}>Cancelar</button>
                   </div>
                 ) : (
