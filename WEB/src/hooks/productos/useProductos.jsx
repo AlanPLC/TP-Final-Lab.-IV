@@ -1,9 +1,11 @@
 import { useState } from 'react'
 
 export default function useProductos() {
+    const [loading, setLoading] = useState(false)
     const [error, setError] = useState([])
 
     const getProductosConDetalles = async() =>{
+        setLoading(true)
         const token = localStorage.getItem('token')
         try {
             const response = await fetch("http://localhost:3000/administrador/",{
@@ -24,11 +26,14 @@ export default function useProductos() {
         } catch (error) {
             setError(error.message)
             return {success: false, message: error.message}
-        }
+        } finally {
+            setLoading(false)
+        } 
     }
 
     const postVentas = async(productos) =>{
 
+        setLoading(true)
         const token = localStorage.getItem('token')
         try {
             const response = await fetch('http://localhost:3000/ventas/', {
@@ -52,10 +57,13 @@ export default function useProductos() {
         } catch (error) {
             setError(error.message)
             return {success: false, message: error.message}
+        } finally{
+            setLoading(false)
         }
     }
 
     const controlStock = async(productos)=>{
+        setLoading(true)
         const token = localStorage.getItem('token')
         try {
             const response = await fetch(`http://localhost:3000/ventas/${productos.producto_id}`,{
@@ -79,8 +87,10 @@ export default function useProductos() {
         } catch (error) {
             setError(error.message)
             return {success: false, message: error.message}
+        } finally{
+            setLoading(false)
         }
     }
 
-    return {getProductosConDetalles, controlStock, postVentas, error}
+    return {getProductosConDetalles, controlStock, postVentas, loading, error}
 }
