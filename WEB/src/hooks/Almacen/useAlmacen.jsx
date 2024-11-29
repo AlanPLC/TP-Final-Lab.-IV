@@ -77,7 +77,7 @@ export default function useAlmacen(){
                 }
                 throw new Error(data.message || 'Error en la solicitud.');
             }
-            return { success: true, data: data.proveedor };
+            return { success: true, data };
         } catch (error) {
             setError(error.message);
             return { success: false, message: error.message };

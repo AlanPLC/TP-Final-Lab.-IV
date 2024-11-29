@@ -34,14 +34,7 @@ export const getCategoria = async(_, res)=>{
   }
 }
 
-export const getProveedor = async(_, res)=>{
-  try {
-    const [proveedores] = await db.execute('SELECT * FROM proveedores')
-    res.status(200).json({ proveedores });
-  } catch (error) {
-    res.status(500).json({ errors: [{ msg: "Error al mostrar los proveedores con detalles." }], error: error.message});
-  }
-}
+
 
 export const getProductosConDetallesByID = async(req, res)=>{
   try {
