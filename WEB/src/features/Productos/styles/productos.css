@@ -122,6 +122,7 @@
 }
 .img-container img{
     height: 150px;
+    max-width: 14rem;
     width: auto;
 }
 

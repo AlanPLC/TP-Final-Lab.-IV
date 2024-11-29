@@ -163,7 +163,7 @@ const Productos = () => {
               {listaProductos.map((prod)=>(
                 <li key={prod.producto_id}>
                   <div className='img-container'>
-                    <img src="/coca.jpeg" alt="imagen" className='imagen'/>
+                    <img src={prod.imagen_url} alt="imagen" className='imagen'/>
                   </div>
                   <div className='p-container'>
                     <p className='P1'>{prod.producto_nombre}</p>
