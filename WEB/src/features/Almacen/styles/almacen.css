@@ -1,0 +1,427 @@
+/* Estilos Generales */
+.almacen-container {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 1rem;
+    font-family: Arial, sans-serif;
+    color: #ffffff;
+}
+
+
+/* Primer Contenedor */
+.contenedor-listado {
+    background: rgb(37,43,66);
+    background: linear-gradient(90deg, rgba(37,43,66,1) 0%, rgba(42,49,75,1) 20%, rgba(49,57,88,1) 40%, rgba(49,57,88,1) 60%, rgba(42,49,75,1) 80%, rgba(37,43,64,1) 100%);
+    display: flex;
+    flex-direction: column;
+    width: 54rem;
+    height: 40rem;
+    overflow-y: auto;
+    border: 3px solid #000000;
+    border-radius: 10px;
+    padding: 1rem;
+    gap: 0.5rem;
+    list-style-type: none; 
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+}
+
+.contenedor-listado .head {
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    gap: 1rem;
+    position: relative;
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+  
+  .contenedor-listado .head input {
+    padding: 1rem;
+    border: 3px solid #000000;
+    border-radius: 10px;
+    height: 2.2rem;
+    width: 14rem;
+    position: absolute; 
+    right: 0;
+    top: 50%; 
+    transform: translateY(-50%);
+    font-weight: bold;
+    align-self: center;
+  }
+  .contenedor-listado .head input:focus {
+    background-color: #f0f0f0;
+    outline: none;
+  }
+  
+  .contenedor-listado h1 {
+    color: #ffff;
+    font-weight: bolder;
+    border-bottom: 4px solid #ffff;
+    border-bottom-left-radius: 2px;
+    border-bottom-right-radius: 2px;
+    text-align: center;
+    max-width: fit-content;
+    text-shadow: #000000 2px 2px;
+    box-shadow: #000000 0 2px;
+    flex-grow: 1;
+  }
+
+.contenedor-listado li {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0;
+    width: 100%;
+    margin: 0;
+}
+.contenedor-listado hr{
+    height: 0.15rem;
+    background-color: rgb(0, 0, 0,0.4); 
+    border: none;
+    width: 100%;
+    margin: 0.6 ;
+    display: center;
+}
+
+.contenedor-listado img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 4px solid #545454;
+    box-shadow: 2px 2px rgba(0, 0, 0, 0.6);
+    background-color: #ffffff;
+}
+.pre-general{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    gap: 1rem;
+}
+
+.s-general {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: stretch;
+    width: 100%;
+}
+.s1{
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+.s2, .s3 {
+    display: flex;
+    flex-direction: row;
+    gap: 0.2rem;
+    align-items: center;
+    width: 100%;
+}
+
+.s1 p, .s2 p, .s3 p {
+    margin: 0;
+}
+/* Primera fila información de productos  */
+.s1 .p1{
+    font-weight: bolder;
+    font-size: 20px;
+}
+.s1 .p2{
+    font-size: 20px;
+    font-weight: bold;
+    letter-spacing: 0.1rem
+}
+.s1 .p3{
+    font-size: 18;
+    font-weight: bold;
+    border: 1px solid #000000;
+    color: #4CAF50;
+    padding: 0.3rem;
+    border-radius: 5px;
+    background-color: #000000;
+}
+.s1 div:first-of-type{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.4rem;
+}
+.s1 .buttons{
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    align-items: center;
+    margin: 0;
+}
+/* Segunda fila información de productos  */
+.s2 p{
+    font-weight: normal;
+    font-size: 18px;
+    font-style: italic;
+    color: #ccc;
+}
+/* Tercera fila información de productos  */
+.s3 .p1{
+    font-weight: normal;
+    font-size: 18px;
+    font-style: italic;
+    color: #ccc;
+    margin-right: 0;
+}
+.s3 .p2{
+    font-weight: bolder;
+    font-size: 18px;
+    color: #ffffff;
+    margin-left: 0;
+}
+.s3 .p3{
+    margin-left: 0.5rem;
+    font-weight: bolder;
+    font-size: 20px;
+    color: #4CAF50;
+    text-shadow:#000000 1.5px 1.5px;
+}
+.contenedor-listado button{
+    background-color:rgb(255, 255, 255, 0);
+    filter: invert(1);
+    width: 1.5rem;
+    height: 1.5rem;
+    cursor: pointer;
+}
+.contenedor-listado button:disabled{
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+.contenedor-listado button:hover{
+    transform: scale(1.2);
+}
+
+.contenedor-listado .modificar{
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat; 
+    border: none;
+    background-image: url('../../../../public/edit.png');
+}
+.contenedor-listado .eliminar{
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat; 
+    border: none;
+    background-image: url('../../../../public/delete.png');
+}
+
+/* Scrollbar Estilizado */
+.contenedor-listado::-webkit-scrollbar {
+    width: 1rem;      
+}
+
+.contenedor-listado::-webkit-scrollbar-thumb {
+    border: 2px solid #ffff;
+    background-color: #252B42;
+    border-radius: 4px;   
+}
+
+.contenedor-listado::-webkit-scrollbar-thumb:hover {
+    background-color: #8d8d8d; 
+}
+
+.contenedor-listado::-webkit-scrollbar-track {
+    background-color: #ccc; 
+}
+
+/* Segundo Contenedor */
+.contenedor-entradas {
+    background-color: #ffffff;
+    border: 3px solid #000000;
+    padding: 1rem;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;;
+    gap: 0;
+    max-height: 40rem;
+    width: 17rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+}
+.contenedor-entradas h3{
+    margin: 0.5rem;
+    color: #000000;
+    font-weight: bolder;
+    text-align: center;
+    margin-bottom: 1rem;
+    margin-top: 0.2rem;
+    font-size: 20px;
+}
+.contenedor-entradas form {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.contenedor-entradas label {
+    font-size: 0.9rem;
+    color: #000000;
+    font-weight: bold;
+    margin: 0;
+}
+
+.contenedor-entradas input,
+.contenedor-entradas select{
+    width: 100%;
+    padding: 0.5rem;
+    border: 2px solid #818181;
+    border-radius: 5px;
+    background-color: light-dark(rgb(232, 240, 254), rgba(70, 90, 126, 0.4));
+    color: #000000;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.contenedor-entradas button{
+    background-color: #252B42;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    font-weight: bolder;
+    margin-top: 0.5rem;
+    margin-bottom: 0.2rem;
+}
+.contenedor-entradas button:disabled{
+    background-color: #ccc;
+    border: 2px solid #000000;
+    cursor: not-allowed;
+}
+.buttons-cont{
+    width: 100%;
+    display: flex;
+    gap: 1rem;
+}
+.buttons-cont .b2{
+    background-color: #ccc;
+    color: #000000;
+    border: 2px solid #000000;
+}
+
+.errores{
+    margin-top: 0.5rem;
+    height: 9rem;
+    max-width: 16rem;
+    overflow-y: scroll;
+    color: #000000;
+    border: 1px solid #000000;
+    align-items: center;
+    border-radius: 10px;
+}
+.errores hr {
+    height: 0.15rem;
+    background-color: rgb(0, 0, 0,0.2); 
+    border: none;
+    width: 90%;
+    margin: 0.6 ;
+    display: center;
+}
+.p-c{
+    gap: 0.5rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+}
+.p-c input{
+    text-align: center;
+    margin: 0;
+}
+.p-c-1{
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+.p-c-1 input{
+    width: 6rem;
+}
+.p-c-2{
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    margin-left: auto;
+    gap: 0.2rem;
+    height: 100%;
+    width: 100%;
+}
+.p-c-2 .p-c-cant{
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 0.1rem;
+}
+.p-c-2 input{
+    width: 3rem;
+}
+
+.p-c-2 .b1{
+    height: 20px;
+    width: 20px;
+    background-color: rgb(0, 0, 0, 0);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat; 
+    border: none;
+    background-image: url('../../../../public/arrow.png');
+    transform: rotate(180deg);
+    margin: 0;
+}
+.p-c-2 .b1:disabled{
+    height: 20px;
+    width: 20px;
+    background-color: rgb(0, 0, 0, 0);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat; 
+    border: none;
+    background-image: url('../../../../public/arrow.png');
+    transform: rotate(180deg);
+    margin: 0;
+    opacity: 0.5;
+}
+.p-c-2 .b2{
+    height: 20px;
+    width: 20px;
+    background-color: rgb(0, 0, 0, 0);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border: none;
+    background-image: url('../../../../public/arrow.png');
+    margin: 0;
+}
+
+/* Estilo Scroll contenedor errores  */
+.errores::-webkit-scrollbar {
+    width: 1rem;      
+}
+
+.errores::-webkit-scrollbar-thumb {
+    border: 2px solid #ffff;
+    background-color: #252B42;
+    border-radius: 4px;   
+}
+
+.errores::-webkit-scrollbar-thumb:hover {
+    background-color: #8d8d8d; 
+}
+
+.errores::-webkit-scrollbar-track {
+    background-color: #ccc; 
+}

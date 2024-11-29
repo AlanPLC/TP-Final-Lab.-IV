@@ -1,0 +1,126 @@
+.ventas-main-container{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    width: 100%;
+}
+
+/* H1 */
+.ventas-titulo{
+    margin: 0.5rem;
+    color: #ffff;
+    font-weight: bolder;
+    border-bottom: 4px solid #ffff;
+    border-bottom-left-radius: 2px;
+    border-bottom-right-radius: 2px;
+    margin: 1rem auto 1.5rem;
+    text-align: center;
+    max-width: fit-content;
+    text-shadow:#000000 2px 2px;
+    box-shadow: #000000 0 2px;er-bottom: 3px solid #ffffff;
+}
+
+.lista-container{
+    display: flex;
+    flex-direction: column;
+    width: 44rem;
+    align-items: center;
+    justify-content: flex-start;
+    height: 36rem;
+    overflow-y: auto; /* Habilita el scroll vertical */
+    border: 3px solid #000000;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+    margin-bottom: 1rem;
+    background: rgb(37,43,66);
+    background: linear-gradient(90deg, rgba(37,43,66,1) 0%, rgba(42,49,75,1) 20%, rgba(49,57,88,1) 40%, rgba(49,57,88,1) 60%, rgba(42,49,75,1) 80%, rgba(37,43,64,1) 100%);
+    margin-top: 2rem;
+    padding-bottom: 2rem;
+}
+/* Estilo Scrollbar en container Ventas  */
+.lista-container::-webkit-scrollbar {
+    width: 1rem;      
+}
+
+.lista-container::-webkit-scrollbar-thumb {
+    border: 2px solid #ffff;
+    background-color: #252B42;
+    border-radius: 4px;   
+}
+
+.lista-container::-webkit-scrollbar-thumb:hover {
+    background-color: #8d8d8d; 
+}
+
+.lista-container::-webkit-scrollbar-track {
+    background-color: #ccc; 
+}
+/* 1er UL */
+.lista{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 36rem;
+    margin: 0;
+    padding-left: 0;
+}
+.lista > li {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    border: #000 solid 1px;
+    padding: 1rem;
+    width: 100%;
+    margin: 0 auto;
+    background-color: #ffff;
+    border-radius: 5px;
+
+}
+.venta{
+    display: flex;
+    flex-direction: column;
+    font-size: 16px;
+}
+
+.venta p{
+    margin: 0.4rem
+}
+.venta div{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.p1, .p3, .p5{
+    font-weight: bolder;
+}
+
+/* 2do UL */
+.lista-productos{
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    align-items: flex-start;
+}
+.producto{
+    display: flex;
+    flex-direction: row;
+    border: none;
+    font-style: italic;
+    gap: 0.2rem;
+    font-size: 16px;
+}
+
+.p-id{
+    font-weight: bolder;
+}
+.producto p {
+    margin  : 0.2rem; /* Elimina márgenes predeterminados */
+    line-height: 1rem; /* Ajusta la altura de línea si es necesario */
+}
+.producto hr{
+    height:15px;
+    margin-top:4px;
+    padding: 0;
+}
