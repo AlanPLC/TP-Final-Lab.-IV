@@ -63,7 +63,7 @@ export default function useAlmacen(){
         setLoading(true);
         const token = localStorage.getItem("token");
         try {
-            const response = await fetch("http://localhost:3000/onlyProveedores", {
+            const response = await fetch("http://localhost:3000/onlyproveedores", {
                 headers: {
                     Authorization: "Bearer " + token,
                 }
@@ -77,7 +77,7 @@ export default function useAlmacen(){
                 }
                 throw new Error(data.message || 'Error en la solicitud.');
             }
-            return { success: true, data: data.proveedor };
+            return { success: true, data };
         } catch (error) {
             setError(error.message);
             return { success: false, message: error.message };
