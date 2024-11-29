@@ -1,6 +1,5 @@
 import { useState } from 'react'
 
-
 export default function useAlmacen(){
     const [error, setError] = useState([])
 
