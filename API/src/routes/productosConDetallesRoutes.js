@@ -13,7 +13,6 @@ productosConDetalles.get('/administrador',
 productosConDetalles.get('/categorias', 
     passport.authenticate("jwt", { session: false }),
     getCategoria)
-    
 
 
 productosConDetalles.get('/administrador/:id', 

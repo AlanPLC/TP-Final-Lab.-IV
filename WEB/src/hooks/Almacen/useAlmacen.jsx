@@ -76,7 +76,6 @@ export default function useAlmacen(){
     };
 
         const postAlmacen = async(almacen) =>{
-            setLoading(true)
             const token = localStorage.getItem("token")
             try {
                 const response = await fetch("http://localhost:3000/administrador/",{
