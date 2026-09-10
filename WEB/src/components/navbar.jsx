@@ -51,6 +51,12 @@ const Navbar = () => {
         navigate('/')
     }
 
+    // En la ruta raíz (Lobby) no se muestra la navbar: esa pantalla tiene su
+    // propio layout de bienvenida sin header.
+    if (location.pathname === '/') {
+        return null;
+    }
+
     // Componente Navbar
   return(
     <div className='navbar-container'> 
