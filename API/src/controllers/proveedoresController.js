@@ -2,7 +2,7 @@ import { db } from '../../config/db.js';
 
 export const getOnlyProveedores = async(req,res)=>{
     try {
-        const [proveedores] = await db.execute('SELECT * FROM proveedores');
+        const { rows: proveedores } = await db.query('SELECT * FROM proveedores');
         res.status(200).json({ proveedores });
     } catch (error) {
         res.status(500).json({ errors: [{ msg: "Error al mostrar los proveedores." }], error: error.message});
@@ -10,8 +10,8 @@ export const getOnlyProveedores = async(req,res)=>{
 }
 export const getProveedoresConProductos = async(req,res)=>{
     try {
-        const [proveedor] = await db.execute(
-        `SELECT 
+        const { rows: proveedor } = await db.query(
+        `SELECT
                 proveedores.id AS proveedor_id,
                 proveedores.nombre AS proveedor_nombre,
                 proveedores.descripcion AS proveedor_descripcion,
@@ -30,8 +30,8 @@ export const getProveedoresConProductos = async(req,res)=>{
 export const getProveedorByID = async(req,res)=>{
     const id = req.params.id
     try {
-        const [proveedor] = await db.execute(
-            'SELECT * FROM proveedores WHERE id =?',
+        const { rows: proveedor } = await db.query(
+            'SELECT * FROM proveedores WHERE id = $1',
             [id]);
         if (proveedor.length === 0) {
             return res.status(404).json({ errors: [{ msg: "Proveedor no encontrado." }] });
@@ -45,8 +45,8 @@ export const getProveedorByID = async(req,res)=>{
 export const createProveedores = async(req, res)=>{
     const {nombre, descripcion} = req.body
     try {
-        await db.execute(
-        'INSERT INTO proveedores (nombre, descripcion) VALUES (?,?)',
+        await db.query(
+        'INSERT INTO proveedores (nombre, descripcion) VALUES ($1, $2)',
         [nombre, descripcion]);
         res.status(201).json({ message: "Proveedor creado." });
     } catch (error) {
@@ -57,8 +57,8 @@ export const createProveedores = async(req, res)=>{
 export const deleteProveedor = async(req, res)=>{
     const id = req.params.id
     try {
-        const [result] = await db.execute('DELETE FROM proveedores WHERE id =?', [id]);
-        if(result.affectedRows === 0){
+        const result = await db.query('DELETE FROM proveedores WHERE id = $1', [id]);
+        if(result.rowCount === 0){
             return res.status(404).json({ errors: [{ msg: "Proveedor no encontrado." }] });
         }
         res.status(200).json({ message: "Proveedor eliminado." });
@@ -71,8 +71,8 @@ export const updateProveedor = async(req, res)=>{
     const id = req.params.id
     const {nombre, descripcion} = req.body
     try {
-        const [result] = await db.execute('UPDATE proveedores SET nombre = ?, descripcion = ? WHERE id = ?', [nombre, descripcion, id]);
-        if(result.affectedRows === 0){
+        const result = await db.query('UPDATE proveedores SET nombre = $1, descripcion = $2 WHERE id = $3', [nombre, descripcion, id]);
+        if(result.rowCount === 0){
             return res.status(404).json({ errors: [{ msg: "Proveedor no encontrado." }] });
         }
         res.status(200).json({ message: "Proveedor actualizado." });

@@ -12,13 +12,13 @@ export const authConfig = () => {
   passport.use(
     new JwtStrategy(options, async (jwt_payload, done) => {
       try {
-        const [usuario] = await db.execute("SELECT * FROM usuarios WHERE id = ?", [jwt_payload.id]);
+        const { rows } = await db.query("SELECT * FROM usuarios WHERE id = $1", [jwt_payload.id]);
 
-        if (usuario.length === 0) {
-          return done(null, false); 
+        if (rows.length === 0) {
+          return done(null, false);
         }
 
-        return done(null, usuario[0]);
+        return done(null, rows[0]);
       } catch (error) {
         return done(error, false);
       }

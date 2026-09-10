@@ -5,7 +5,7 @@ import { validationResult } from "express-validator";
 // Obtener todos los usuarios
 export const getAllUsers = async (_, res) => {
   try {
-    const [usuarios] = await db.execute("SELECT * FROM usuarios");
+    const { rows: usuarios } = await db.query("SELECT * FROM usuarios");
     res.status(200).json({ usuarios });
   } catch (error) {
     res.status(500).json({ errors: [{ msg: "Error de servidor al obtener usuarios." }], error: error.message });
@@ -21,7 +21,7 @@ export const getUserByID = async (req, res) => {
 
   try {
     const id = req.params.id;
-    const [usuario] = await db.execute("SELECT * FROM usuarios WHERE id = ?", [id]);
+    const { rows: usuario } = await db.query("SELECT * FROM usuarios WHERE id = $1", [id]);
 
     if (usuario.length === 0) {
       return res.status(404).json({ errors: [{ msg: "Usuario no encontrado." }] });
@@ -43,9 +43,12 @@ export const createUser = async (req, res) => {
   try {
     const { user, password } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
-    const [result] = await db.execute("INSERT INTO usuarios (user, password) VALUES (?, ?)", [user, hashedPassword]);
+    const { rows } = await db.query(
+      'INSERT INTO usuarios ("user", password) VALUES ($1, $2) RETURNING id',
+      [user, hashedPassword]
+    );
 
-    res.status(201).json({ message: "Usuario creado.", result });
+    res.status(201).json({ message: "Usuario creado.", result: { insertId: rows[0].id } });
   } catch (error) {
     res.status(500).json({ errors: [{ msg: "Error de servidor al crear el usuario." }], error: error.message });
   }
@@ -60,9 +63,9 @@ export const deleteUser = async (req, res) => {
 
   try {
     const id = req.params.id;
-    const [result] = await db.execute("DELETE FROM usuarios WHERE id = ?", [id]);
+    const result = await db.query("DELETE FROM usuarios WHERE id = $1", [id]);
 
-    if (result.affectedRows === 0) {
+    if (result.rowCount === 0) {
       return res.status(404).json({ errors: [{ msg: "Usuario no encontrado." }] });
     }
 
@@ -83,12 +86,12 @@ export const updateUser = async (req, res) => {
     const id = req.params.id;
     const { user, password, rol } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
-    const [result] = await db.execute(
-      "UPDATE usuarios SET user = ?, password = ?, rol = ? WHERE id = ?",
+    const result = await db.query(
+      'UPDATE usuarios SET "user" = $1, password = $2, rol = $3 WHERE id = $4',
       [user, hashedPassword, rol, id]
     );
 
-    if (result.affectedRows === 0) {
+    if (result.rowCount === 0) {
       return res.status(404).json({ errors: [{ msg: "Usuario no encontrado." }] });
     }
 

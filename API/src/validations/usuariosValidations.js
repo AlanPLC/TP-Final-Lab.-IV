@@ -10,7 +10,7 @@ export const validateBody = [
     .isLength({min: 3, max: 20}).withMessage('El usuario debe contener de 3 a 20 carácteres.')
     // Verifica si el usuario ya existe, lógica pensada para que en un PUT se pueda mantener el mismo nombre.
     .custom(async (user, {req})=>{
-        const [existente] = await db.execute("SELECT * FROM usuarios WHERE user = ?",[user]);
+        const { rows: existente } = await db.query('SELECT * FROM usuarios WHERE "user" = $1', [user]);
 
         if (existente.length > 0 && existente[0].id !== parseInt(req.params.id)) {
             throw new Error('Este usuario ya existe.');

@@ -9,7 +9,7 @@ export const validateBody = [
     .isLength({min: 3, max: 50  }).withMessage('El nombre debe contener de 3 a 50 carácteres.')
     
     .custom(async (proveedor, {req})=>{
-        const [existente] = await db.execute("SELECT id FROM proveedores WHERE nombre = ?", [proveedor]);
+        const { rows: existente } = await db.query("SELECT id FROM proveedores WHERE nombre = $1", [proveedor]);
         if (existente.length > 0 && existente[0].id !== parseInt(req.params.id)) {
             throw new Error('Este proveedor ya existe.');
         }

@@ -13,19 +13,19 @@ export const loginUser = async (req, res) => {
 
     try {
         const { user, password } = req.body;
-        const [usuario] = await db.execute("SELECT * FROM usuarios WHERE user = ?", [user]);
+        const { rows } = await db.query('SELECT * FROM usuarios WHERE "user" = $1', [user]);
 
-        if (usuario.length === 0) {
+        if (rows.length === 0) {
             return res.status(400).json({ errors: [{ msg: "Usuario o contraseña incorrectos." }] });
         }
 
-        const comparacion = await bcrypt.compare(password, usuario[0].password);
+        const comparacion = await bcrypt.compare(password, rows[0].password);
         if (!comparacion) {
             return res.status(400).json({ errors: [{ msg: "Usuario o contraseña incorrectos." }] });
         }
 
         // Generar y enviar el token JWT
-        const payload = { id: usuario[0].id, user: usuario[0].user, rol: usuario[0].rol };
+        const payload = { id: rows[0].id, user: rows[0].user, rol: rows[0].rol };
         const token = jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: '1h' });
 
         res.json({ token });

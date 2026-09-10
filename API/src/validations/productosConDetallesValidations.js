@@ -10,7 +10,7 @@ export const validateBody = [
     .isLength({min: 3, max: 20  }).withMessage('El nombre debe contener de 3 a 20 carácteres.')
     // Verifica si el producto ya existe, lógica pensada para que en un PUT se pueda mantener el mismo nombre.
     .custom(async (product, {req})=>{
-        const [existente] = await db.execute("SELECT id FROM productos WHERE nombre = ?",[product]);
+        const { rows: existente } = await db.query("SELECT id FROM productos WHERE nombre = $1", [product]);
 
         if (existente.length > 0 && existente[0].id !== parseInt(req.params.id)) {
             throw new Error('Este producto ya existe.');
