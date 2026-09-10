@@ -1,23 +1,42 @@
 import './styles/lobby.css'
-import { Link } from 'react-router-dom'
-import { useEffect, useState } from 'react'
-import { LogIn, Store, ArrowRight } from 'lucide-react'
+import { useOutlet, useLocation } from 'react-router-dom'
+import { useRef, useState } from 'react'
+import { Store } from 'lucide-react'
+import { AnimatePresence, motion } from 'framer-motion'
 
-const COLABORADORES = [
-  'Alarcón Mauro',
-  'Carrizo Alan',
-  'Cuello Joaquín',
-  'Brizuela Francisco',
-]
+// Orden lineal de las pantallas dentro de la sidebar, usado solo para saber
+// hacia qué lado animar el slide (adelante = entra por la derecha / sale por
+// la izquierda; atrás = al revés). No representa jerarquía real entre rutas.
+const ORDER = { '/': 0, '/login': 1, '/register': 2 }
+
+const slideVariants = {
+  enter: (direction) => ({ x: direction >= 0 ? '100%' : '-100%', opacity: 0 }),
+  center: { x: 0, opacity: 1 },
+  exit: (direction) => ({ x: direction >= 0 ? '-100%' : '100%', opacity: 0 }),
+}
+
+// <Outlet/> normal sigue la ruta EN VIVO: si se lo usa directo adentro del
+// motion.div que AnimatePresence mantiene montado para animar la salida, ese
+// panel "saliente" cambia de golpe a mostrar el contenido nuevo (porque el
+// Outlet se re-renderiza con el match actual), y lo que termina deslizando
+// hacia afuera es una copia del panel ENTRANTE, no el anterior. Congelando
+// el elemento del outlet una sola vez por instancia (con useState) el panel
+// que sale se queda con SU contenido original durante toda la animación.
+function FrozenOutlet() {
+  const outlet = useOutlet()
+  const [frozen] = useState(outlet)
+  return frozen
+}
 
 function Lobby() {
-  // Si ya hay sesión iniciada, el botón de abajo lleva directo a la app
-  // en vez de mandar de nuevo al login.
-  const [autenticado, setAutenticado] = useState(false)
-
-  useEffect(() => {
-    setAutenticado(Boolean(localStorage.getItem('token')))
-  }, [])
+  const location = useLocation()
+  const currentOrder = ORDER[location.pathname] ?? 0
+  // Se actualiza durante el render (patrón estándar de Framer Motion con
+  // react-router): para cuando el efecto normal correría, la animación de
+  // salida ya arrancó con la dirección vieja.
+  const prevOrderRef = useRef(currentOrder)
+  const direction = currentOrder === prevOrderRef.current ? 0 : currentOrder > prevOrderRef.current ? 1 : -1
+  prevOrderRef.current = currentOrder
 
   return (
     <div className="lobby-container">
@@ -30,41 +49,25 @@ function Lobby() {
       </div>
 
       <aside className="lobby-sidebar">
-        <div className="lobby-sidebar-top">
-          <h2 className="lobby-subtitle">Introducción</h2>
-          <p className="desc">
-            Proyecto universitario sobre aplicación de enfoque vendedor de un
-            minimarket, con el objetivo de administrar productos para su venta
-            con generación de ticket de la misma mostrando todos sus detalles.
-          </p>
-        </div>
-
-        <div className="lobby-sidebar-mid">
-          <h2 className="lobby-subtitle">Colaboradores</h2>
-          <ul>
-            {COLABORADORES.map((nombre) => (
-              <li key={nombre} className="colaborador-item">
-                <span className="colaborador-marker" aria-hidden="true" />
-                <p className="nombres">{nombre}</p>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div className="lobby-sidebar-bottom">
-          <Link to={autenticado ? '/productos' : '/login'} className="lobby-cta">
-            {autenticado ? (
-              <>
-                Ir a Productos
-                <ArrowRight size={18} />
-              </>
-            ) : (
-              <>
-                <LogIn size={18} />
-                Iniciar Sesión
-              </>
-            )}
-          </Link>
+        <div className="lobby-sidebar-viewport">
+          <AnimatePresence custom={direction} initial={false}>
+            <motion.div
+              key={location.pathname}
+              custom={direction}
+              variants={slideVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{
+                x: { type: 'tween', duration: 0.35, ease: 'easeInOut' },
+                opacity: { duration: 0.25 },
+              }}
+              className="lobby-panel"
+            >
+              {/* Welcome, Login o Register según la ruta actual (ver App.jsx) */}
+              <FrozenOutlet />
+            </motion.div>
+          </AnimatePresence>
         </div>
       </aside>
     </div>

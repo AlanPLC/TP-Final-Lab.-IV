@@ -51,9 +51,9 @@ const Navbar = () => {
         navigate('/')
     }
 
-    // En la ruta raíz (Lobby) no se muestra la navbar: esa pantalla tiene su
-    // propio layout de bienvenida sin header.
-    if (location.pathname === '/') {
+    // El Lobby (bienvenida, login y register viven ahí embebidos, ver
+    // App.jsx) tiene su propio layout de pantalla completa sin header.
+    if (['/', '/login', '/register'].includes(location.pathname)) {
         return null;
     }
 

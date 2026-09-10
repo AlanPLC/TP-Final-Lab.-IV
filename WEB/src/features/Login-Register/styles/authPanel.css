@@ -1,0 +1,208 @@
+/* Estilos compartidos para los paneles de Login y Register embebidos en la
+   sidebar del Lobby. Antes eran dos páginas separadas (una azul, una
+   naranja) para diferenciarlas; ahora que ambas viven en el mismo panel
+   (en momentos distintos, con un slide entre ellas) no hace falta
+   diferenciarlas por color: comparten la misma paleta azul. */
+
+/* Envoltorio de toda la pantalla del panel: el botón "INTRODUCCIÓN" (mismo
+   estilo que .lobby-cta) queda fijo arriba, con el mismo margen que ese
+   botón tiene abajo en el panel de Bienvenida (ambos vienen del padding
+   simétrico de .lobby-panel, 3rem arriba y abajo - ver lobby.css). Debajo,
+   .auth-panel se queda con el resto del alto disponible, centrando SU
+   contenido ahí adentro. Al ser el único hijo directo de .lobby-panel (que
+   tiene justify-content: space-between), esto también neutraliza ese
+   space-between (eso lo sigue necesitando el panel de bienvenida, que sí
+   usa 3 hijos directos). */
+.auth-screen {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+}
+
+/* Toma el resto del alto que deja el botón de arriba, y centra su propio
+   contenido (ícono, título, form, pregunta) ahí en el medio. */
+.auth-panel {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.75rem;
+    width: 100%;
+}
+
+.auth-panel-top {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.9rem;
+    width: 100%;
+}
+
+.auth-icon-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background: rgba(79, 140, 255, 0.15);
+    color: #4f8cff;
+}
+
+.auth-title {
+    color: #fff;
+    font-family: var(--font-display);
+    font-size: 1.65rem;
+    font-weight: 700;
+    letter-spacing: 0.03rem;
+    text-align: center;
+    margin: 0;
+}
+
+.auth-success-banner {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(56, 193, 114, 0.15);
+    color: #6fe3a2;
+    border: 1px solid rgba(56, 193, 114, 0.35);
+    border-radius: 6px;
+    padding: 0.6rem 0.8rem;
+    font-size: 0.95rem;
+    width: 100%;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+    width: 100%;
+}
+
+.auth-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+/* Misma altura que .auth-submit (2.9rem): inputs y botón quedan del mismo
+   tamaño en vez de que el botón se vea más grande que los campos. */
+.auth-input {
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 6px;
+    height: 2.9rem;
+    width: 100%;
+    padding: 0 0.85rem;
+    background-color: rgba(8, 10, 18, 0.55);
+    color: #fff;
+    font-size: 0.95rem;
+}
+.auth-input::placeholder {
+    color: #97a0c2;
+}
+.auth-input:focus {
+    outline: none;
+    border-color: #4f8cff;
+}
+
+.auth-password-field {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+.auth-password-field .auth-input {
+    padding-right: 2.6rem;
+}
+.auth-toggle-visibility {
+    position: absolute;
+    right: 0.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    color: #97a0c2;
+    cursor: pointer;
+    padding: 0.2rem;
+}
+.auth-toggle-visibility:hover {
+    color: #fff;
+}
+
+.auth-submit {
+    height: 2.9rem;
+    width: 100%;
+    border: none;
+    border-radius: 6px;
+    color: #fff;
+    background-color: #4f8cff;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.03rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+.auth-submit:hover:not(:disabled) {
+    background-color: #3d78e6;
+}
+.auth-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.auth-error {
+    color: #ff6b6b;
+    font-size: 0.9rem;
+    text-align: center;
+    margin: 0.4rem 0 0;
+}
+
+.auth-switch {
+    color: #c7cbe0;
+    font-size: 0.95rem;
+    text-align: center;
+    width: 100%;
+    margin: 0;
+}
+.auth-link {
+    color: #5c9aff;
+    font-weight: 600;
+    text-decoration: none;
+}
+.auth-link:hover {
+    text-decoration: underline;
+}
+
+/* Nota con la cuenta de prueba, solo en el panel de Login. Borde punteado
+   para que se lea como "aparte" del formulario, no como parte de él. */
+.auth-demo-note {
+    width: 100%;
+    border: 1px dashed rgba(255, 255, 255, 0.25);
+    border-radius: 6px;
+    padding: 0.75rem 0.9rem;
+    text-align: center;
+}
+
+.auth-demo-note p {
+    margin: 0;
+    color: #97a0c2;
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+.auth-demo-note p:first-child {
+    color: #c7cbe0;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+}
+
+.auth-demo-note strong {
+    color: #fff;
+    font-weight: 700;
+}

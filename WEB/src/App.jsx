@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from "./components/navbar.jsx"
 import Lobby from "./features/Lobby/lobby.jsx"
+import WelcomePanel from "./features/Lobby/welcomePanel.jsx"
 import Login from "./features/Login-Register/login.jsx"
 import Register from "./features/Login-Register/register.jsx"
 import Productos from './features/Productos/productos.jsx';
@@ -19,9 +20,15 @@ function App() {
       <Router>
         <Navbar />
         <Routes>
-          <Route path="/" element={<Lobby />}/>
-          <Route path="/login" element={<Login/>}/>
-          <Route path="/register" element={<Register/>}/>
+          {/* Lobby es un layout persistente (gif + sidebar): el panel que se
+              ve dentro de la sidebar cambia según la sub-ruta, animado con
+              un slide (ver lobby.jsx). Login/Register ya no son páginas
+              propias, viven embebidos ahí. */}
+          <Route path="/" element={<Lobby />}>
+            <Route index element={<WelcomePanel />}/>
+            <Route path="login" element={<Login/>}/>
+            <Route path="register" element={<Register/>}/>
+          </Route>
 
           {/*como debería utilizarse protectedRoute */}
           <Route path="/productos" element={

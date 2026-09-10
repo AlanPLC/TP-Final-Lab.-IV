@@ -69,16 +69,36 @@
     right: 0;
     height: 100%;
     width: min(26rem, 100%);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    gap: 2rem;
-    padding: 3rem 2.5rem;
     background: rgba(15, 17, 26, 0.5);
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
     border-left: 1px solid rgba(255, 255, 255, 0.12);
     z-index: 2;
+    /* Recorta el slide de los paneles (Welcome/Login/Register) a los
+       límites de la sidebar: la animación no se ve fuera de esta franja. */
+    overflow: hidden;
+}
+
+/* Contenedor relativo donde AnimatePresence superpone el panel saliente
+   y el entrante mientras dura la transición (ver lobby.jsx). */
+.lobby-sidebar-viewport {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+/* Cada panel (Welcome/Login/Register) ocupa toda la sidebar y define su
+   propio layout interno en 3 bloques (top/mid/bottom) separados con
+   space-between, igual que antes cuando esto vivía directo en .lobby-sidebar. */
+.lobby-panel {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 2rem;
+    padding: 3rem 2.5rem;
+    overflow-y: auto;
 }
 
 .desc {
@@ -145,10 +165,6 @@
 .colaborador-item:hover .nombres {
     color: #ffd500;
     transform: translateX(4px);
-}
-
-.lobby-sidebar-bottom {
-    display: flex;
 }
 
 /* Botón "estilo Destino Turístico": transparente y cuadrado (radius 0), con
