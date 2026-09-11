@@ -1,0 +1,178 @@
+.dashboard-container {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Misma paleta azul que Login/Register (ver authPanel.css): #4f8cff de
+   acento sobre fondo oscuro, para que toda la experiencia de usuario
+   logueado (login -> dashboard) se sienta como un mismo sistema visual. */
+.dashboard-sidebar {
+    width: 17rem;
+    flex-shrink: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 2rem 1.5rem;
+    background-color: #151a2e;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    overflow-y: auto;
+}
+
+.dashboard-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: #fff;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.3rem;
+    letter-spacing: 0.02rem;
+    margin-bottom: 2.5rem;
+}
+
+.dashboard-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    /* Fondo explícito (en vez de heredar el de .dashboard-sidebar sin más):
+       durante el slide de pantalla completa, un elemento con transform en
+       un ancestro puede dejar una costura de 1px en los bordes redondeados
+       de .dashboard-nav-link si el navegador no lo promueve a su propia
+       capa - esto se lo garantiza. */
+    background-color: #151a2e;
+}
+
+.dashboard-nav-link {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.7rem 0.6rem;
+    border-radius: 6px;
+    color: #97a0c2;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-align: left;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    /* Promueve el link a su propia capa de composición: evita la costura de
+       1px que Chrome a veces deja en bordes redondeados cuando un ancestro
+       (la pantalla completa, al deslizarse) tiene un transform activo. */
+    transform: translateZ(0);
+}
+.dashboard-nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.06);
+    color: #fff;
+}
+/* NavLink de react-router agrega esta clase sola cuando la ruta está activa */
+.dashboard-nav-link.active {
+    background-color: rgba(79, 140, 255, 0.15);
+    color: #4f8cff;
+}
+
+/* "Introducción" separado del resto (vuelve a la zona pública, no es una
+   sección de trabajo más) con una línea arriba y un poco más de aire. */
+.dashboard-nav-link-intro {
+    margin-top: 0.75rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 0;
+}
+
+.dashboard-sidebar-bottom {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.dashboard-user {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.dashboard-user-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.2rem;
+    height: 2.2rem;
+    border-radius: 50%;
+    background: rgba(79, 140, 255, 0.15);
+    color: #4f8cff;
+    flex-shrink: 0;
+}
+
+.dashboard-user-name {
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.95rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.dashboard-logout {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    padding: 0.65rem 0.9rem;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+.dashboard-logout:hover {
+    background-color: rgba(255, 99, 99, 0.12);
+    border-color: rgba(255, 99, 99, 0.4);
+    color: #ff8080;
+}
+
+/* El fondo de esta área no se toca a propósito (queda transparente): se
+   sigue viendo el fondo global del sitio definido en App.css, igual que
+   antes de este rediseño - solo cambió la navegación (sidebar en vez de
+   navbar de arriba), no el fondo de la página. */
+.dashboard-content {
+    flex: 1;
+    height: 100%;
+    overflow-y: auto;
+    padding: 2.5rem;
+}
+
+.dashboard-home h1 {
+    font-family: var(--font-display);
+    font-size: 1.8rem;
+    color: #252B42;
+    margin: 0 0 0.5rem;
+}
+.dashboard-home p {
+    color: #444;
+    font-size: 1rem;
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .dashboard-container {
+        flex-direction: column;
+        height: auto;
+        min-height: 100vh;
+        overflow: visible;
+    }
+    .dashboard-sidebar {
+        width: 100%;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+}
