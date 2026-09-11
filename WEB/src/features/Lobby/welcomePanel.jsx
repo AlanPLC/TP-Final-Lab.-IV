@@ -44,10 +44,10 @@ function WelcomePanel() {
       </div>
 
       <div className="lobby-panel-bottom">
-        <Link to={autenticado ? '/productos' : '/login'} className="lobby-cta">
+        <Link to={autenticado ? '/dashboard' : '/login'} className="lobby-cta">
           {autenticado ? (
             <>
-              Ir a Productos
+              Ir al Dashboard
               <ArrowRight size={18} />
             </>
           ) : (

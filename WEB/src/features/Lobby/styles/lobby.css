@@ -79,8 +79,7 @@
     overflow: hidden;
 }
 
-/* Contenedor relativo donde AnimatePresence superpone el panel saliente
-   y el entrante mientras dura la transición (ver lobby.jsx). */
+/* Contenedor relativo donde se ve el slide entre paneles (ver lobby.jsx). */
 .lobby-sidebar-viewport {
     position: relative;
     width: 100%;
@@ -99,6 +98,32 @@
     gap: 2rem;
     padding: 3rem 2.5rem;
     overflow-y: auto;
+    transform: translateX(0);
+    opacity: 1;
+    transition: transform 0.35s ease-in-out, opacity 0.25s ease-in-out;
+}
+
+/* Saliendo: la transition de la clase base sigue activa, así que esto anima. */
+.lobby-panel-out-left {
+    transform: translateX(-100%);
+    opacity: 0;
+}
+.lobby-panel-out-right {
+    transform: translateX(100%);
+    opacity: 0;
+}
+
+/* Entrando: arranca "teletransportado" afuera sin animar (transition: none);
+   recién cuando se le saca esta clase anima hacia el centro. */
+.lobby-panel-in-from-right {
+    transform: translateX(100%);
+    opacity: 0;
+    transition: none;
+}
+.lobby-panel-in-from-left {
+    transform: translateX(-100%);
+    opacity: 0;
+    transition: none;
 }
 
 .desc {

@@ -20,19 +20,21 @@ function Login() {
     const recienRegistrado = Boolean(location.state?.registered)
 
     // Si el usuario ya inició sesión, no tiene sentido quedarse en el panel
-    // de login: se vuelve al panel de bienvenida.
+    // de login: se va directo al Dashboard.
     useEffect(() => {
       const token = localStorage.getItem('token')
       if(token) {
-        navigate("/")
+        navigate("/dashboard")
       }
     }, [navigate])
 
+    // Login exitoso: slide de pantalla completa hacia el Dashboard (ver
+    // RootTransition.jsx), no vuelve al panel de bienvenida.
     const handleSubmit = async(e) => {
         e.preventDefault()
         const result = await login(user, password)
         if(result.success){
-          navigate("/")
+          navigate("/dashboard")
         }
     }
 

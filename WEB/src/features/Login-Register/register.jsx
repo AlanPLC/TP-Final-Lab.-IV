@@ -16,10 +16,12 @@ function Register() {
 
     const navigate = useNavigate();
 
+    // Si el usuario ya inició sesión, no tiene sentido quedarse en el panel
+    // de register: se va directo al Dashboard.
     useEffect(() => {
       const token = localStorage.getItem('token')
       if(token) {
-        navigate("/")
+        navigate("/dashboard")
       }
     }, [navigate])
 

@@ -1,0 +1,34 @@
+.root-transition-viewport {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.root-transition-pane {
+    position: absolute;
+    inset: 0;
+    transform: translateX(0);
+    transition: transform 0.4s ease-in-out;
+}
+
+/* Saliendo: anima desde el centro hacia afuera (la transition de la clase
+   base sigue activa, así que esto sí se anima). */
+.rt-out-left {
+    transform: translateX(-100%);
+}
+.rt-out-right {
+    transform: translateX(100%);
+}
+
+/* Entrando: arranca "teletransportado" afuera de la pantalla, SIN animar
+   (transition: none) - recién cuando se le saca esta clase (queda solo
+   .root-transition-pane, que sí tiene transition) anima hacia el centro. */
+.rt-in-from-right {
+    transform: translateX(100%);
+    transition: none;
+}
+.rt-in-from-left {
+    transform: translateX(-100%);
+    transition: none;
+}
