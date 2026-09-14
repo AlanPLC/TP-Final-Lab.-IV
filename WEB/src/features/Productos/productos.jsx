@@ -4,6 +4,7 @@ import useProductos from '../../hooks/Productos/useProductos.jsx';
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 import { jwtDecode } from "jwt-decode";
+import { getProductIcon } from '../../constants/productIcons.js';
 
 const Productos = () => {
   const { getProductosConDetalles, postVentas, controlStock} = useProductos()
@@ -174,10 +175,12 @@ const Productos = () => {
               <input type="text" placeholder="Buscar producto..." onChange={(e)=>buscador(e.target.value)}/>
             </div>
             <ul>
-              {listaProductos.map((prod)=>(
+              {listaProductos.map((prod)=>{
+                const ProductoIcon = getProductIcon(prod.imagen_url)
+                return (
                 <li key={prod.producto_id}>
                   <div className='img-container'>
-                    <img src={prod.imagen_url} alt="imagen" className='imagen'/>
+                    <ProductoIcon size={72} strokeWidth={1.5} className='imagen' aria-hidden="true"/>
                   </div>
                   <div className='p-container'>
                     <p className='P1' title={prod.producto_nombre}>{prod.producto_nombre}</p>
@@ -189,7 +192,7 @@ const Productos = () => {
                     (<button className='boton-deshabilitado'>SIN STOCK</button>) : 
                     (<button onClick={()=> agregarProducto(prod)}>AGREGAR</button>)}
                 </li>
-              ))}              
+              )})}
             </ul>
         </div>
         <div className='productos-venta-container'>

@@ -1,6 +1,11 @@
 import { useState, useEffect } from 'react';
 import './styles/almacen.css'
 import useAlmacen from '../../hooks/Almacen/useAlmacen.jsx';
+import { PRODUCT_ICONS, getProductIcon } from '../../constants/productIcons.js';
+
+// Mismo tope que valida el backend (ver API/src/controllers/productosConDetallesController.js)
+// - acá solo es para dar feedback temprano, la verdad la tiene el servidor.
+const MAX_PRODUCTOS = 30;
 
 function Almacen() {
   const {getAlmacen, getCategorias, getProveedores, postAlmacen, putAlmacen, deleteAlmacen, setError,error} =useAlmacen()
@@ -33,7 +38,9 @@ function Almacen() {
     formData.precio > 0 &&
     formData.cantidad > 0 &&
     formData.imagen.trim();
-    
+
+  const limiteAlcanzado = !onEdit && todosLosProductos.length >= MAX_PRODUCTOS;
+
     const handleChange = (e) => {
       const { name, value } = e.target;
       setFormData({
@@ -181,10 +188,14 @@ function Almacen() {
               <input type="text" placeholder="Buscar producto..." onChange={(e)=>buscador(e.target.value)}/>
             </div>
         {listaProductos && listaProductos.length > 0 ? (
-            listaProductos.map((producto, index)  => (
+            listaProductos.map((producto, index)  => {
+            const ProductoIcon = getProductIcon(producto.imagen_url)
+            return (
             <li key={index}>
               <div className='pre-general'>
-                <img src={producto.imagen_url} alt={producto.nombre} />
+                <div className='producto-icono' aria-hidden="true">
+                  <ProductoIcon size={48} strokeWidth={1.8} />
+                </div>
                 <div className='s-general'>
                   <div className='s1'>
                     <div>   
@@ -215,7 +226,7 @@ function Almacen() {
               </div>
               <hr />
             </li>
-            ))
+            )})
           ) : (
             <p>No hay productos disponibles.</p>
           )}
@@ -324,15 +335,28 @@ function Almacen() {
                 </div>
               </div>
 
-              <label>Imagen URL</label>
-              <input
-                id="imagen"
-                type="url"
-                name="imagen" 
-                placeholder='URL de la imágen del producto'
-                value={formData.imagen}
-                onChange={handleChange}
-              />
+              <label>Logo</label>
+              <div className="icon-picker" role="radiogroup" aria-label="Logo del producto">
+                {PRODUCT_ICONS.map(({ key, label, Icon }) => (
+                  <button
+                    key={key}
+                    type="button"
+                    role="radio"
+                    aria-checked={formData.imagen === key}
+                    title={label}
+                    className={`icon-picker-option${formData.imagen === key ? ' selected' : ''}`}
+                    onClick={() => setFormData((prev) => ({ ...prev, imagen: key }))}
+                  >
+                    <Icon size={22} strokeWidth={1.8} />
+                  </button>
+                ))}
+              </div>
+
+              {limiteAlcanzado && (
+                <p className="limite-productos">
+                  Alcanzaste el máximo de {MAX_PRODUCTOS} productos. Eliminá alguno para poder cargar otro.
+                </p>
+              )}
 
               {onEdit ? (
                 <div className="buttons-cont">
@@ -347,7 +371,7 @@ function Almacen() {
                     type="button"
                     className="b2"
                     onClick={() => {
-                      setFormData(datosIniciales); 
+                      setFormData(datosIniciales);
                       setOnEdit(false);
                     }}
                   >
@@ -355,7 +379,7 @@ function Almacen() {
                   </button>
                 </div>
               ) : (
-                <button type="submit" disabled={!validarForm}>
+                <button type="submit" disabled={!validarForm || limiteAlcanzado}>
                   Agregar Producto
                 </button>
               )}
