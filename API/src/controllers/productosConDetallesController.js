@@ -3,8 +3,9 @@ import { db } from '../../config/db.js';
 // Tope de catálogo: la app es para un minimarket chico, no hace falta más.
 const MAX_PRODUCTOS = 30;
 
-// Postgres error code para violación de foreign key (categoria_id/proveedor_id
-// que no existen) - se usa para devolver un 400 claro en vez de un 500 crudo.
+// Postgres error code para violación de foreign key (categoria_id que no
+// existe, o intentar borrar un producto que tiene lotes cargados) - se usa
+// para devolver un 400 claro en vez de un 500 crudo.
 const FK_VIOLATION = '23503';
 
 export const getProductosConDetalles = async(req, res)=>{
@@ -17,14 +18,15 @@ export const getProductosConDetalles = async(req, res)=>{
         productos.imagen_url,
         productos_categorias.id AS categoria_id,
         productos_categorias.nombre AS categoria_nombre,
-        producto_stock.cantidad_disponible,
-        producto_stock.fecha_ultima_actualizacion,
-        proveedores.id AS proveedor_id,
-        proveedores.nombre AS proveedor_nombre
+        COALESCE(stock.cantidad_disponible, 0) AS cantidad_disponible
       FROM productos
       LEFT JOIN productos_categorias ON productos.categoria_id = productos_categorias.id
-      LEFT JOIN producto_stock ON productos.id = producto_stock.producto_id
-      LEFT JOIN proveedores ON productos.proveedor_id = proveedores.id
+      LEFT JOIN (
+        SELECT producto_id, SUM(cantidad_restante) AS cantidad_disponible
+        FROM lotes
+        WHERE cantidad_restante > 0
+        GROUP BY producto_id
+      ) stock ON stock.producto_id = productos.id
       ORDER BY productos.id`)
       res.status(200).json({ productosConDetalles });
     } catch (error) {
@@ -52,16 +54,16 @@ export const getProductosConDetallesByID = async(req, res)=>{
           productos.imagen_url,
           productos_categorias.id AS categoria_id,
           productos_categorias.nombre AS categoria_nombre,
-          producto_stock.cantidad_disponible,
-          producto_stock.fecha_ultima_actualizacion,
-          proveedores.id AS proveedor_id,
-          proveedores.nombre AS proveedor_nombre
+          COALESCE(stock.cantidad_disponible, 0) AS cantidad_disponible
         FROM productos
         LEFT JOIN productos_categorias ON productos.categoria_id = productos_categorias.id
-        LEFT JOIN producto_stock ON productos.id = producto_stock.producto_id
-        LEFT JOIN proveedores ON productos.proveedor_id = proveedores.id
-        WHERE productos.id = $1
-        ORDER BY productos.id`, [id])
+        LEFT JOIN (
+          SELECT producto_id, SUM(cantidad_restante) AS cantidad_disponible
+          FROM lotes
+          WHERE cantidad_restante > 0
+          GROUP BY producto_id
+        ) stock ON stock.producto_id = productos.id
+        WHERE productos.id = $1`, [id])
       if (rows.length === 0) {
         return res.status(404).json({ errors: [{ msg: "Producto no encontrado." }] });
       }
@@ -71,111 +73,67 @@ export const getProductosConDetallesByID = async(req, res)=>{
   }
 }
 
+// Crea solo la ficha del producto (catálogo): nombre, descripción, precio de
+// venta, categoría y logo. El stock se carga aparte, por lote (ver
+// lotesController.js) - un producto recién creado empieza con 0 unidades.
 export const createProductoConDetalles = async (req, res) => {
-  const client = await db.connect();
   try {
-    const { nombre, descripcion, precio, categoria_id, proveedor_id, imagen_url, cantidad_disponible } = req.body;
+    const { nombre, descripcion, precio, categoria_id, imagen_url } = req.body;
 
-    await client.query('BEGIN');
-
-    // Tope de catálogo: se chequea dentro de la misma transacción para que
-    // dos altas simultáneas no puedan colarse juntas por encima del límite.
-    const { rows: countRows } = await client.query('SELECT COUNT(*) FROM productos');
+    const { rows: countRows } = await db.query('SELECT COUNT(*) FROM productos');
     if (Number(countRows[0].count) >= MAX_PRODUCTOS) {
-      await client.query('ROLLBACK');
       return res.status(400).json({ errors: [{ msg: `Se alcanzó el máximo de ${MAX_PRODUCTOS} productos.` }] });
     }
 
-    // Inserta el producto
-    const { rows } = await client.query(
-      "INSERT INTO productos (nombre, descripcion, precio, categoria_id, proveedor_id, imagen_url) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",
-      [nombre, descripcion, precio, categoria_id, proveedor_id, imagen_url]
+    const { rows } = await db.query(
+      "INSERT INTO productos (nombre, descripcion, precio, categoria_id, imagen_url) VALUES ($1, $2, $3, $4, $5) RETURNING id",
+      [nombre, descripcion, precio, categoria_id, imagen_url]
     );
 
-    const productoId = rows[0].id;
-
-    // Insertar stock
-    await client.query(
-      "INSERT INTO producto_stock (producto_id, cantidad_disponible, fecha_ultima_actualizacion) VALUES ($1, $2, NOW())",
-      [productoId, cantidad_disponible]
-    );
-
-    // Confirmar la transacción
-    await client.query('COMMIT');
-    res.status(201).json({ message: "Producto creado con detalles exitosamente." });
-
+    res.status(201).json({ message: "Producto creado exitosamente.", id: rows[0].id });
   } catch (error) {
-    // Revertir la transacción en caso de error
-    await client.query('ROLLBACK');
     if (error.code === FK_VIOLATION) {
-      return res.status(400).json({ errors: [{ msg: "La categoría o el proveedor seleccionado no existe." }] });
+      return res.status(400).json({ errors: [{ msg: "La categoría seleccionada no existe." }] });
     }
-    res.status(500).json({ errors: [{ msg: "Error al crear el producto con detalles." }], error: error.message});
-  } finally {
-    client.release();
+    res.status(500).json({ errors: [{ msg: "Error al crear el producto." }], error: error.message});
   }
 };
 
 export const updateProductoConDetalles = async(req,res)=>{
   const id = req.params.id;
-  const { nombre, descripcion, precio, categoria_id, proveedor_id, imagen_url, cantidad_disponible } = req.body;
-  const client = await db.connect();
+  const { nombre, descripcion, precio, categoria_id, imagen_url } = req.body;
   try {
-    await client.query('BEGIN');
-
-    const result = await client.query(
-      'UPDATE productos SET nombre = $1, descripcion = $2, precio = $3, categoria_id = $4, proveedor_id = $5, imagen_url = $6 WHERE id = $7',
-      [nombre, descripcion, precio, categoria_id, proveedor_id, imagen_url, id]
+    const result = await db.query(
+      'UPDATE productos SET nombre = $1, descripcion = $2, precio = $3, categoria_id = $4, imagen_url = $5 WHERE id = $6',
+      [nombre, descripcion, precio, categoria_id, imagen_url, id]
     )
     if(result.rowCount === 0){
-      await client.query('ROLLBACK');
       return res.status(404).json({ errors: [{ msg: "No se encontró el producto." }] });
     }
-    const stockResult = await client.query(
-      'UPDATE producto_stock SET cantidad_disponible = $1, fecha_ultima_actualizacion = NOW() WHERE producto_id = $2',
-      [cantidad_disponible, id]
-    )
-    if(stockResult.rowCount === 0){
-      await client.query('ROLLBACK');
-      return res.status(404).json({ errors: [{ msg: "No se encontró el stock del producto." }] });
-    }
-    await client.query('COMMIT');
-    res.status(200).json({ message: "Producto actualizado con detalles exitosamente." });
+    res.status(200).json({ message: "Producto actualizado exitosamente." });
   } catch (error) {
-    await client.query('ROLLBACK');
     if (error.code === FK_VIOLATION) {
-      return res.status(400).json({ errors: [{ msg: "La categoría o el proveedor seleccionado no existe." }] });
+      return res.status(400).json({ errors: [{ msg: "La categoría seleccionada no existe." }] });
     }
-    res.status(500).json({ errors: [{ msg: "Error al actualizar el producto con detalles." }], error: error.message});
-  } finally {
-    client.release();
+    res.status(500).json({ errors: [{ msg: "Error al actualizar el producto." }], error: error.message});
   }
 }
 
 export const deleteProductoConDetalles = async(req,res)=>{
   const id = Number(req.params.id);
-  const client = await db.connect();
   try {
-    await client.query('BEGIN');
-
-    // producto_stock tiene ON DELETE CASCADE sobre productos, así que borrar
-    // productos alcanza - y el 404 se decide sobre ESE delete (antes se
-    // decidía sobre el de producto_stock, lo que daba 404 si un producto
-    // hubiera quedado sin fila de stock aunque siguiera existiendo).
-    const result = await client.query('DELETE FROM productos WHERE id = $1', [id])
-
+    const result = await db.query('DELETE FROM productos WHERE id = $1', [id])
     if(result.rowCount === 0){
-      await client.query('ROLLBACK');
       return res.status(404).json({ errors: [{ msg: "No se encontró el producto." }] });
     }
-
-    await client.query('COMMIT');
-    res.status(200).json({ message: "Producto y detalles eliminados exitosamente." });
-
+    res.status(200).json({ message: "Producto eliminado exitosamente." });
   } catch (error) {
-    await client.query('ROLLBACK');
+    // lotes.producto_id es RESTRICT a propósito (ver schema.sql): no se puede
+    // borrar un producto que ya tiene lotes cargados, para no perder el
+    // historial de stock/costos/ventas asociado.
+    if (error.code === FK_VIOLATION) {
+      return res.status(400).json({ errors: [{ msg: "No se puede eliminar: el producto tiene lotes cargados." }] });
+    }
     res.status(500).json({ errors: [{ msg: "Error al eliminar el producto." }], error: error.message});
-  } finally {
-    client.release();
   }
 }

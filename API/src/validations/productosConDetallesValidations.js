@@ -28,10 +28,6 @@ export const validateBody = [
     .notEmpty().withMessage('El precio del producto es obligatorio.')
     .isFloat({gt:0}).withMessage('El precio del producto debe ser mayor a 0.'),
 
-    body('proveedor_id')
-    .notEmpty().withMessage('El id del proveedor es obligatorio.')
-    .isInt({gt:0}).withMessage('El id del proveedor debe ser mayor a 0.'),
-
     body('categoria_id')
     .notEmpty().withMessage('La categoría del producto es obligatoria.')
     .isInt({gt:0}).withMessage('El id de la categoría debe ser mayor a 0.'),
@@ -43,8 +39,8 @@ export const validateBody = [
         .notEmpty().withMessage("Elegí un logo para el producto.")
         .isIn(PRODUCT_ICON_KEYS).withMessage("El logo elegido no es válido."),
 
-    body("cantidad_disponible")
-        .isInt({ min: 0 , max: 200}).withMessage("La cantidad disponible debe ser un número entero entre 0 y 200."),
+    // Proveedor y stock ya no son parte de la ficha del producto: el stock
+    // se carga aparte, por lote (ver lotesValidations.js).
 
     (req,res,next)=>{
         const errors = validationResult(req);

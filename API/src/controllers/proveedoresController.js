@@ -1,5 +1,10 @@
 import { db } from '../../config/db.js';
 
+// Tope de proveedores: la app es para un minimarket chico, no hace falta más.
+const MAX_PROVEEDORES = 5;
+
+const FK_VIOLATION = '23503';
+
 export const getOnlyProveedores = async(req,res)=>{
     try {
         const { rows: proveedores } = await db.query('SELECT * FROM proveedores');
@@ -10,6 +15,9 @@ export const getOnlyProveedores = async(req,res)=>{
 }
 export const getProveedoresConProductos = async(req,res)=>{
     try {
+        // Un proveedor ya no está vinculado a un producto directamente, sino
+        // a través de los lotes que le cargaron (ver schema.sql) - "sus
+        // productos" son los que tienen al menos un lote de ese proveedor.
         const { rows: proveedor } = await db.query(
         `SELECT
                 proveedores.id AS proveedor_id,
@@ -18,7 +26,9 @@ export const getProveedoresConProductos = async(req,res)=>{
                 productos.id AS producto_id,
                 productos.nombre AS producto_nombre
             FROM proveedores
-            LEFT JOIN productos ON proveedores.id = productos.proveedor_id
+            LEFT JOIN (SELECT DISTINCT producto_id, proveedor_id FROM lotes) lotes_proveedor
+                ON lotes_proveedor.proveedor_id = proveedores.id
+            LEFT JOIN productos ON productos.id = lotes_proveedor.producto_id
             ORDER BY proveedores.id, productos.id`);
 
         res.status(200).json({ proveedor });
@@ -45,6 +55,11 @@ export const getProveedorByID = async(req,res)=>{
 export const createProveedores = async(req, res)=>{
     const {nombre, descripcion} = req.body
     try {
+        const { rows: countRows } = await db.query('SELECT COUNT(*) FROM proveedores');
+        if (Number(countRows[0].count) >= MAX_PROVEEDORES) {
+            return res.status(400).json({ errors: [{ msg: `Se alcanzó el máximo de ${MAX_PROVEEDORES} proveedores.` }] });
+        }
+
         await db.query(
         'INSERT INTO proveedores (nombre, descripcion) VALUES ($1, $2)',
         [nombre, descripcion]);
@@ -63,6 +78,11 @@ export const deleteProveedor = async(req, res)=>{
         }
         res.status(200).json({ message: "Proveedor eliminado." });
     } catch (error) {
+        // lotes.proveedor_id es RESTRICT (ver schema.sql): no se puede borrar
+        // un proveedor que ya tiene lotes cargados.
+        if (error.code === FK_VIOLATION) {
+            return res.status(400).json({ errors: [{ msg: "No se puede eliminar: el proveedor tiene lotes cargados." }] });
+        }
         res.status(500).json({ errors: [{ msg: "Error al eliminar proveedor." }], error: error.message});
     }
 }
