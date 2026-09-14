@@ -8,6 +8,7 @@ import loginRouter from "./src/routes/authRoutes.js";
 import ventasRouter from "./src/routes/ventasRoutes.js"
 import proveedoresRouter from "./src/routes/proveedoresRoutes.js";
 import productosConDetalles from "./src/routes/productosConDetallesRoutes.js";
+import lotesRouter from "./src/routes/lotesRoutes.js";
 
 // Conectar a DB
 conectarDB();
@@ -32,6 +33,7 @@ app.use(usuariosRouter);
 app.use(ventasRouter);
 app.use(proveedoresRouter);
 app.use(productosConDetalles)
+app.use(lotesRouter)
 app.listen(port, () => {
   console.log(`La aplicacion esta funcionando en: ${port}`);
 });
