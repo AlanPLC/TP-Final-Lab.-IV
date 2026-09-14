@@ -7,6 +7,7 @@ import autoTable from "jspdf-autotable";
 import { jwtDecode } from "jwt-decode";
 import { getProductIcon } from '../../constants/productIcons.js';
 import { Search, X, Plus, Minus } from 'lucide-react';
+import SmoothHeight from '../../components/ui/SmoothHeight.jsx';
 
 const Productos = () => {
   const { getProductosConDetalles, postVentas, error } = useProductos()
@@ -164,7 +165,7 @@ const Productos = () => {
                 <input type="text" className="panel-search" placeholder="Buscar producto..." onChange={(e)=>buscador(e.target.value)}/>
               </div>
             </div>
-            <ul className="productos-grid panel-scroll">
+            <ul className="productos-grid">
               {listaProductos.map((prod)=>{
                 const ProductoIcon = getProductIcon(prod.imagen_url)
                 return (
@@ -188,8 +189,11 @@ const Productos = () => {
         <div className='productos-venta-section'>
           <h2 className="panel-heading">Boleta de Precio</h2>
           <div className='productos-venta'>
+              <SmoothHeight>
+              {productosVenta.length > 0 && (
+              <>
               <h3>Productos</h3>
-              <ul className="panel-scroll">
+              <ul>
                 {productosVenta.map((prod,index)=>(
                   <li key={index}>
                     <div className='item-container'>
@@ -223,6 +227,9 @@ const Productos = () => {
                   </li>
                 ))}
               </ul>
+              </>
+              )}
+              </SmoothHeight>
               <hr />
               <p className='tp1'>Total</p>
               <p className='tp2'>${productosVenta.reduce((acc, curr) => acc + curr.precio*curr.cantidad, 0)}</p>
@@ -230,6 +237,7 @@ const Productos = () => {
                 className='panel-button panel-button-primary venta-button'
                 onClick={()=> confirmarVenta()}
                 disabled={productosVenta.length == 0}>Realizar Venta</button>
+              <SmoothHeight>
               {Array.isArray(error) && error.length > 0 && (
                 <div className='panel-error-list venta-errores'>
                   {error.map((err, index) => (
@@ -237,6 +245,7 @@ const Productos = () => {
                   ))}
                 </div>
               )}
+              </SmoothHeight>
           </div>
         </div>
       </div>
