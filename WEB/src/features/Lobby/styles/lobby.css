@@ -138,7 +138,7 @@
 }
 
 .lobby-subtitle {
-    color: #ffd500;
+    color: #4f8cff;
     font-family: var(--font-display);
     font-size: 0.9rem;
     font-weight: 600;
@@ -173,7 +173,7 @@
     flex-shrink: 0;
     width: 0.55rem;
     height: 0.55rem;
-    background-color: #ffd500;
+    background-color: #4f8cff;
 }
 
 .nombres {
@@ -188,7 +188,7 @@
 }
 
 .colaborador-item:hover .nombres {
-    color: #ffd500;
+    color: #4f8cff;
     transform: translateX(4px);
 }
 
