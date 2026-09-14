@@ -186,3 +186,14 @@
     color: #ffffff;
     font-weight: 700;
 }
+.calendar-day:disabled:not(.empty) {
+    color: #c7cfe6;
+    cursor: not-allowed;
+}
+.calendar-header button:disabled {
+    color: #c7cfe6;
+    cursor: not-allowed;
+}
+.calendar-header button:disabled:hover {
+    background-color: transparent;
+}

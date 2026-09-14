@@ -18,10 +18,13 @@ function toISODate(date) {
 // Calendario propio (en vez de <input type="date">, que el navegador dibuja
 // con su UI nativa y no se puede llevar a la paleta/tipografía del resto de
 // la app). value/onChange trabajan con fechas "YYYY-MM-DD" en texto.
+// minDate (mismo formato) deshabilita cualquier día anterior - lo usa el
+// vencimiento de un lote, que no tiene sentido que sea una fecha pasada.
 // eslint-disable-next-line react/prop-types
-function Calendar({ value, onChange }) {
+function Calendar({ value, onChange, minDate }) {
   const selected = value ? new Date(`${value}T00:00:00`) : null
-  const [viewDate, setViewDate] = useState(selected ?? new Date())
+  const minDateObj = minDate ? new Date(`${minDate}T00:00:00`) : null
+  const [viewDate, setViewDate] = useState(selected ?? minDateObj ?? new Date())
 
   const year = viewDate.getFullYear()
   const month = viewDate.getMonth()
@@ -45,10 +48,21 @@ function Calendar({ value, onChange }) {
     return hoy.getFullYear() === year && hoy.getMonth() === month && hoy.getDate() === d
   }
 
+  const esDeshabilitado = (d) => !!minDateObj && new Date(year, month, d) < minDateObj
+
+  // No tiene sentido dejar navegar a un mes que va a salir 100% deshabilitado.
+  const mesAnteriorDeshabilitado =
+    !!minDateObj && year === minDateObj.getFullYear() && month <= minDateObj.getMonth()
+
   return (
     <div className="calendar">
       <div className="calendar-header">
-        <button type="button" onClick={() => setViewDate(new Date(year, month - 1, 1))} aria-label="Mes anterior">
+        <button
+          type="button"
+          onClick={() => setViewDate(new Date(year, month - 1, 1))}
+          disabled={mesAnteriorDeshabilitado}
+          aria-label="Mes anterior"
+        >
           <ChevronLeft size={16} />
         </button>
         <span>{MESES[month]} {year}</span>
@@ -66,7 +80,7 @@ function Calendar({ value, onChange }) {
             type="button"
             tabIndex={d ? 0 : -1}
             className={`calendar-day${d ? '' : ' empty'}${d && esSeleccionado(d) ? ' selected' : ''}${d && esHoy(d) ? ' today' : ''}`}
-            disabled={!d}
+            disabled={!d || esDeshabilitado(d)}
             onClick={() => d && onChange(toISODate(new Date(year, month, d)))}
           >
             {d ?? ''}
