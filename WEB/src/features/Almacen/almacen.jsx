@@ -34,8 +34,13 @@ const datosInicialesProducto = {
 const datosInicialesLote = {
   producto_id: 0,
   proveedor_id: 0,
-  precio_costo: "",
-  cantidad: 0,
+  // Lo que se tipea es el costo TOTAL del lote (lo que de verdad se paga al
+  // comprar stock), no el costo por unidad - el costo unitario que se manda
+  // al backend (y que se usa después para el margen de cada venta, ver
+  // ventasController.js) se calcula dividiendo por la cantidad al enviar
+  // (ver cargarLote).
+  costoLote: "",
+  cantidad: "",
   fecha_vencimiento: "",
 };
 
@@ -65,17 +70,24 @@ function Almacen() {
   const [lotesPorProducto, setLotesPorProducto] = useState({})
   const [cargandoLotes, setCargandoLotes] = useState(false)
 
+  // Costo unitario del lote más reciente del producto en edición, para
+  // guiar qué precio de venta poner (ver handleEditProducto). null = no hay
+  // lotes todavía, o se está creando un producto nuevo.
+  const [costoUltimaCompra, setCostoUltimaCompra] = useState(null)
+
   const validarFormProducto =
     formData.nombre.trim() &&
     formData.descripcion.trim() &&
     formData.categoria > 0 &&
-    formData.precio > 0 &&
+    // El precio es opcional: se puede cargar el producto primero y ponerle
+    // precio después de ver cuánto costó el primer lote.
+    (formData.precio === "" || formData.precio > 0) &&
     formData.imagen.trim();
 
   const validarFormLote =
     loteData.producto_id > 0 &&
     loteData.proveedor_id > 0 &&
-    loteData.precio_costo > 0 &&
+    loteData.costoLote > 0 &&
     loteData.cantidad > 0;
 
   const limiteAlcanzado = !onEdit && todosLosProductos.length >= MAX_PRODUCTOS;
@@ -84,15 +96,20 @@ function Almacen() {
       const { name, value } = e.target;
       setFormData({
         ...formData,
-        [name]: name === "precio" ? parseFloat(value) || 0 : value,
+        // Si se borra el campo no debe "rebotar" a 0 - value queda "" (vacío)
+        // hasta que se tipee un número de nuevo.
+        [name]: name === "precio" ? (value === "" ? "" : parseFloat(value) || 0) : value,
       });
     };
 
     const handleLoteChange = (e) => {
       const { name, value } = e.target;
+      const esNumerico = name === "costoLote" || name === "cantidad";
       setLoteData((prev) => ({
         ...prev,
-        [name]: name === "precio_costo" || name === "cantidad" ? parseFloat(value) || 0 : value,
+        // Igual que en handleChange: si se borra el campo, queda "" en vez
+        // de rebotar a 0.
+        [name]: esNumerico ? (value === "" ? "" : parseFloat(value) || 0) : value,
       }));
     };
 
@@ -162,7 +179,7 @@ function Almacen() {
         nombre: formData.nombre,
         descripcion: formData.descripcion,
         categoria_id: formData.categoria,
-        precio: formData.precio,
+        precio: formData.precio === "" ? null : formData.precio,
         imagen_url: formData.imagen
       }
       const result = await postAlmacen(nuevoProducto)
@@ -176,7 +193,7 @@ function Almacen() {
       }
     }
 
-    const handleEditProducto = (producto) => {
+    const handleEditProducto = async (producto) => {
       setProductoId(producto.producto_id)
       setOnEdit(true)
       setTab('producto')
@@ -184,9 +201,19 @@ function Almacen() {
         nombre: producto.producto_nombre,
         descripcion: producto.descripcion,
         categoria: producto.categoria_id,
-        precio: producto.precio,
+        precio: producto.precio ?? "",
         imagen: producto.imagen_url,
       })
+
+      // Costo de la compra más reciente, como referencia para poner precio.
+      setCostoUltimaCompra(null)
+      const result = await getLotes(producto.producto_id)
+      if (result.success && result.data.length > 0) {
+        const masReciente = result.data.reduce((latest, lote) =>
+          new Date(lote.fecha_ingreso) > new Date(latest.fecha_ingreso) ? lote : latest
+        )
+        setCostoUltimaCompra(masReciente.precio_costo)
+      }
     }
 
     const modificarProducto = async()=>{
@@ -195,7 +222,7 @@ function Almacen() {
         nombre: formData.nombre,
         descripcion: formData.descripcion,
         categoria_id: formData.categoria,
-        precio: formData.precio,
+        precio: formData.precio === "" ? null : formData.precio,
         imagen_url: formData.imagen
       }
 
@@ -205,11 +232,13 @@ function Almacen() {
           console.log("Productos Modificado con éxito.", result.data)
           setFormData(datosInicialesProducto)
           setOnEdit(false)
+          setCostoUltimaCompra(null)
           setError(null)
         } else{
           console.error("Error al Modificar los Productos.", result.message)
           setFormData(datosInicialesProducto)
           setOnEdit(false)
+          setCostoUltimaCompra(null)
         }
     }
 
@@ -228,10 +257,14 @@ function Almacen() {
     // Carga de mercadería: crea un lote para un producto ya existente.
     const cargarLote = async (e) => {
       e.preventDefault()
+      // El backend (y el margen por venta, ver ventasController.js) trabaja
+      // con costo POR UNIDAD - se calcula acá a partir del costo total del
+      // lote que cargó el usuario, redondeado a centavos.
+      const costoUnitario = Math.round((loteData.costoLote / loteData.cantidad) * 100) / 100
       const nuevoLote = {
         producto_id: loteData.producto_id,
         proveedor_id: loteData.proveedor_id,
-        precio_costo: loteData.precio_costo,
+        precio_costo: costoUnitario,
         cantidad: loteData.cantidad,
         fecha_vencimiento: loteData.fecha_vencimiento || null,
       }
@@ -304,8 +337,7 @@ function Almacen() {
                 </div>
                 <div className='s-general'>
                   <div className='s1'>
-                    <div>
-                      <p className='p1'>#{producto.producto_id}</p>
+                    <div className='nombre-categoria'>
                       <p className='p2'>{producto.producto_nombre}</p>
                       <p className='p3'>{producto.categoria_nombre}</p>
                     </div>
@@ -332,9 +364,13 @@ function Almacen() {
                     <p>{producto.descripcion}</p>
                   </div>
                   <div className='s3'>
+                    {producto.precio != null ? (
+                      <p className='p3'>${producto.precio}</p>
+                    ) : (
+                      <p className='p3 sin-precio'>(Precio de venta no definido)</p>
+                    )}
                     <p className='p1'>Cant.:</p>
                     <p className='p2'>{producto.cantidad_disponible}</p>
-                    <p className='p3'>${producto.precio}</p>
                   </div>
                   <button
                     type="button"
@@ -471,15 +507,30 @@ function Almacen() {
                 ))}
               </SelectField>
 
-              <label className="panel-label">Precio</label>
-              <input
-                id="precio"
-                type="number"
-                name="precio"
-                className="panel-input"
-                value={formData.precio}
-                onChange={handleChange}
-              />
+              {/* Al crear un producto todavía no se sabe cuánto va a costar
+                  por unidad (eso se sabe recién con el primer lote), así que
+                  el precio de venta solo se carga al editar. */}
+              {onEdit && (
+                <>
+                  <label className="panel-label">Precio <span className="panel-label-optional">(opcional)</span></label>
+                  <SmoothHeight>
+                    {costoUltimaCompra != null && (
+                      <p className="precio-hint">Última compra: ${costoUltimaCompra} c/u</p>
+                    )}
+                  </SmoothHeight>
+                  <div className="price-input-wrap">
+                    <span className="price-prefix" aria-hidden="true">$</span>
+                    <input
+                      id="precio"
+                      type="number"
+                      name="precio"
+                      className="panel-input price-input"
+                      value={formData.precio}
+                      onChange={handleChange}
+                    />
+                  </div>
+                </>
+              )}
 
               <label className="panel-label">Logo</label>
               <div className="icon-picker" role="radiogroup" aria-label="Logo del producto">
@@ -519,6 +570,7 @@ function Almacen() {
                     onClick={() => {
                       setFormData(datosInicialesProducto);
                       setOnEdit(false);
+                      setCostoUltimaCompra(null);
                     }}
                   >
                     Cancelar
@@ -569,15 +621,18 @@ function Almacen() {
                 ))}
               </SelectField>
 
-              <label className="panel-label">Costo de compra (por unidad)</label>
-              <input
-                id="lote-precio-costo"
-                type="number"
-                name="precio_costo"
-                className="panel-input"
-                value={loteData.precio_costo}
-                onChange={handleLoteChange}
-              />
+              <label className="panel-label">Costo del lote <span className="panel-label-optional">(Costo total)</span></label>
+              <div className="price-input-wrap">
+                <span className="price-prefix" aria-hidden="true">$</span>
+                <input
+                  id="lote-costo"
+                  type="number"
+                  name="costoLote"
+                  className="panel-input price-input"
+                  value={loteData.costoLote}
+                  onChange={handleLoteChange}
+                />
+              </div>
 
               <label className="panel-label">Cantidad</label>
               <input

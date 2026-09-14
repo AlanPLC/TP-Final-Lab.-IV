@@ -111,30 +111,27 @@
 .s1 p, .s2 p, .s3 p {
     margin: 0;
 }
-.s1 .p1{
-    font-weight: 700;
-    font-size: 0.75rem;
-    color: #9aa2bf;
-}
 .s1 .p2{
     font-family: var(--font-display);
-    font-size: 1rem;
+    font-size: 1.15rem;
     font-weight: 700;
     color: #151a2e;
 }
 .s1 .p3{
-    font-size: 0.7rem;
+    font-size: 0.78rem;
     font-weight: 700;
     color: #4f8cff;
     background-color: #eef2fc;
-    padding: 0.15rem 0.5rem;
+    padding: 0.2rem 0.55rem;
     border-radius: 6px;
-    align-self: flex-start;
 }
-.s1 div:first-of-type{
+.nombre-categoria{
     display: flex;
-    flex-direction: column;
-    gap: 0.2rem;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    min-width: 0;
 }
 .s1 .buttons{
     display: flex;
@@ -147,7 +144,7 @@
 
 .s2 p{
     font-weight: 400;
-    font-size: 0.85rem;
+    font-size: 0.92rem;
     color: #6b7597;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -155,20 +152,36 @@
 }
 
 .s3 .p1{
+    margin-left: 0.6rem;
     font-weight: 600;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     color: #9aa2bf;
 }
 .s3 .p2{
     font-weight: 700;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     color: #151a2e;
 }
 .s3 .p3{
-    margin-left: 0.4rem;
     font-weight: 700;
-    font-size: 0.9rem;
+    font-size: 1rem;
     color: #2a9d5c;
+}
+.s3 .p3.sin-precio{
+    color: #9aa2bf;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 0.85rem;
+}
+
+.precio-hint {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #4f8cff;
+    background-color: #eef2fc;
+    border-radius: 6px;
+    padding: 0.4rem 0.6rem;
+    margin: 0 0 0.4rem;
 }
 
 .ver-lotes {
@@ -181,7 +194,7 @@
     border: none;
     color: #4f8cff;
     font-family: var(--font-body);
-    font-size: 0.78rem;
+    font-size: 0.84rem;
     font-weight: 700;
     padding: 0;
     margin-top: 0.15rem;
@@ -204,7 +217,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 0.6rem;
-    font-size: 0.78rem;
+    font-size: 0.84rem;
     color: #4c5675;
     border-bottom: 1px solid #e3e6f0;
     padding-bottom: 0.3rem;
@@ -218,7 +231,7 @@
     color: #151a2e;
 }
 .lotes-vacio {
-    font-size: 0.78rem;
+    font-size: 0.84rem;
     color: #9aa2bf;
     margin: 0;
 }
@@ -266,6 +279,26 @@
 
 .buttons-cont{
     margin-top: 1rem;
+}
+
+/* "$" fijo delante del precio: vive afuera del input (no es texto editable),
+   así que no se puede borrar ni se manda en el body del fetch - el value
+   sigue siendo solo el número, esto es 100% visual. */
+.price-input-wrap {
+    position: relative;
+}
+.price-prefix {
+    position: absolute;
+    left: 0.85rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6b7597;
+    font-weight: 700;
+    font-size: 0.9rem;
+    pointer-events: none;
+}
+.price-input {
+    padding-left: 2rem;
 }
 
 .categoria-nueva-toggle {
