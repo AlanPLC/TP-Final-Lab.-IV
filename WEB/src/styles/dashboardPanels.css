@@ -77,6 +77,28 @@
     margin: 0 0 0.35rem;
 }
 
+/* Label con un tick al lado (ej. "¿tiene vencimiento?") en vez de en su
+   propia línea - el checkbox comparte la fila con el label. */
+.panel-label-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.35rem;
+}
+.panel-label-row .panel-label {
+    margin: 0;
+}
+.panel-checkbox {
+    width: 1.05rem;
+    height: 1.05rem;
+    accent-color: #4f8cff;
+    cursor: pointer;
+}
+
+.calendar-wrap {
+    margin-bottom: 0.5rem;
+}
+
 .panel-button {
     font-family: var(--font-body);
     font-weight: 700;

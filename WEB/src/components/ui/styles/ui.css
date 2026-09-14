@@ -1,0 +1,188 @@
+/* SmoothHeight: anima el alto de un contenedor ante cualquier cambio de
+   contenido (ver SmoothHeight.jsx). */
+.smooth-height {
+    flex-shrink: 0;
+    overflow: hidden;
+    transition: height 0.3s ease-in-out, min-height 0.3s ease-in-out;
+}
+.smooth-height-inner {
+    display: flow-root;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+.smooth-height-inner.has-content {
+    opacity: 1;
+    transition-delay: 0.1s;
+}
+
+/* SelectField: reemplaza al <select> nativo (no se puede estilizar) con un
+   botón + listbox propios, mismo look que el resto de los inputs. */
+.select-field {
+    position: relative;
+}
+.select-trigger {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    border: 1px solid #d8dce8;
+    border-radius: 8px;
+    padding: 0.6rem 0.85rem;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: #151a2e;
+    background-color: #f7f8fc;
+    cursor: pointer;
+    text-align: left;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+.select-trigger svg {
+    flex-shrink: 0;
+    color: #9aa2bf;
+    transition: transform 0.15s ease;
+}
+.select-trigger.open {
+    border-color: #4f8cff;
+    box-shadow: 0 0 0 3px rgba(79, 140, 255, 0.15);
+    background-color: #ffffff;
+}
+.select-trigger.open svg {
+    transform: rotate(180deg);
+}
+.select-trigger:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+.select-value {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.select-placeholder {
+    color: #a4abc4;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.select-listbox {
+    position: absolute;
+    top: calc(100% + 0.3rem);
+    left: 0;
+    right: 0;
+    z-index: 30;
+    margin: 0;
+    padding: 0.3rem;
+    list-style: none;
+    max-height: 14rem;
+    overflow-y: auto;
+    background-color: #ffffff;
+    border: 1px solid #d8dce8;
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(21, 26, 46, 0.14);
+}
+.select-option {
+    padding: 0.55rem 0.7rem;
+    border-radius: 6px;
+    font-size: 0.88rem;
+    color: #151a2e;
+    cursor: pointer;
+}
+.select-option:hover {
+    background-color: #f0f3fb;
+}
+.select-option.selected {
+    background-color: #eef2fc;
+    color: #4f8cff;
+    font-weight: 700;
+}
+.select-option-empty {
+    padding: 0.55rem 0.7rem;
+    font-size: 0.85rem;
+    color: #9aa2bf;
+    font-style: italic;
+}
+
+/* Calendar: reemplaza a <input type="date"> (dibujado por el SO, sin forma
+   de estilizarlo) por un calendario propio. */
+.calendar {
+    border: 1px solid #d8dce8;
+    border-radius: 8px;
+    padding: 0.7rem;
+    background-color: #f7f8fc;
+}
+.calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+}
+.calendar-header span {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: #151a2e;
+    text-transform: capitalize;
+}
+.calendar-header button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.6rem;
+    height: 1.6rem;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: #6b7597;
+    cursor: pointer;
+}
+.calendar-header button:hover {
+    background-color: #eef2fc;
+    color: #4f8cff;
+}
+.calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    margin-bottom: 0.2rem;
+}
+.calendar-weekdays span {
+    text-align: center;
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #9aa2bf;
+    text-transform: uppercase;
+}
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.15rem;
+}
+.calendar-day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: #151a2e;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+.calendar-day:hover:not(:disabled) {
+    background-color: #eef2fc;
+}
+.calendar-day.empty {
+    cursor: default;
+    visibility: hidden;
+}
+.calendar-day.today {
+    font-weight: 700;
+    color: #4f8cff;
+}
+.calendar-day.selected {
+    background-color: #4f8cff;
+    color: #ffffff;
+    font-weight: 700;
+}
