@@ -134,7 +134,6 @@ const Proveedores = () => {
                         <li className='prov-li-main' key={prov.proveedor_id} >
                             <div className='proveedor'>
                                 <div>
-                                    <p className='p1'>#{prov.proveedor_id}</p>
                                     <p className='p3'>{prov.nombre}</p>
                                 </div>
                                 <div className="buttons">
@@ -163,7 +162,6 @@ const Proveedores = () => {
                                     <ul className='prov-lista-productos'>
                                     {prov.productos.map((producto, index) => (
                                         <li key={index} className='prov-producto'>
-                                            <span className='p-id'>#{producto.producto_id}</span>
                                             <span>{producto.producto_nombre}</span>
                                         </li>
                                     ))}
@@ -178,10 +176,7 @@ const Proveedores = () => {
             </div>
             <div className='prov-edit-section'>
                 {!onEdit ? (<h3 className="panel-heading">Agregar Proveedor</h3>) :
-                (<div className='edit-title'>
-                    <h3 className="panel-heading">Editar Proveedor</h3>
-                    <span>#{proveedorID}</span>
-                </div>)}
+                    (<h3 className="panel-heading">Editar Proveedor</h3>)}
                 <form className='entryes' onSubmit={agregarProv}>
                     <label className="panel-label" htmlFor="nombre">Nombre del Proveedor</label>
                     <input

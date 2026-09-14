@@ -74,8 +74,8 @@ const Ventas = () => {
                     <li className='venta-item' key={venta.venta_id} >
                         <div className='venta'>
                             <div>
-                                <p className='p1'>Venta #{venta.venta_id}</p>
-                                <p className='p2'>{new Date(venta.fecha).toLocaleDateString()} · {venta.usuario}</p>
+                                <p className='p1'>{new Date(venta.fecha).toLocaleString()}</p>
+                                <p className='p2'>{venta.usuario}</p>
                             </div>
                             <div className="venta-total">
                                 <p className='p4'>Total</p>
@@ -85,7 +85,6 @@ const Ventas = () => {
                         <ul className='lista-productos'>
                             {venta.productos.map((producto, index) => (
                                 <li key={index} className='producto'>
-                                    <span className='p-id'>#{producto.producto_id}</span>
                                     <span className="producto-nombre">{producto.producto_nombre}</span>
                                     <span>Cant.: {producto.cantidad_producto}</span>
                                     <span>${producto.precio_unitario} c/u</span>

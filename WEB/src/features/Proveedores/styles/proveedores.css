@@ -60,12 +60,6 @@
     flex-direction: column;
     gap: 0.15rem;
 }
-.proveedor .p1{
-    font-weight: 700;
-    font-size: 0.72rem;
-    color: #9aa2bf;
-    margin: 0;
-}
 .proveedor .p3{
     font-family: var(--font-display);
     font-size: 1rem;
@@ -120,11 +114,6 @@
     font-size: 0.82rem;
     color: #4c5675;
 }
-.p-id{
-    font-weight: 700;
-    color: #4f8cff;
-}
-
 /* Sección de alta/edición */
 .prov-edit-section{
     width: 19rem;
@@ -135,21 +124,6 @@
 }
 .prov-edit-section .panel-heading{
     margin-bottom: 1rem;
-}
-.edit-title{
-    display: flex;
-    flex-direction: row;
-    gap: 0.5rem;
-    align-items: baseline;
-    margin-bottom: 1rem;
-}
-.edit-title .panel-heading{
-    margin-bottom: 0;
-}
-.edit-title span{
-    font-size: 0.85rem;
-    color: #9aa2bf;
-    font-weight: 700;
 }
 
 .entryes{
