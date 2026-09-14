@@ -19,6 +19,12 @@
    botón + listbox propios, mismo look que el resto de los inputs. */
 .select-field {
     position: relative;
+    /* Los inputs nativos reciben su espacio de abajo "gratis" del margin-top
+       del label que viene después - acá no siempre hay uno (ej. el último
+       campo de un formulario, justo antes del botón), así que el propio
+       select necesita su margen para no quedar pegado/cortado visualmente
+       contra lo que sigue. */
+    margin-bottom: 0.5rem;
 }
 .select-trigger {
     width: 100%;
@@ -66,12 +72,13 @@
     white-space: nowrap;
 }
 
+/* position:fixed + posición en coordenadas de viewport (calculadas en JS,
+   ver SelectField.jsx) en vez de absolute relativo al trigger: así el
+   listbox vive en un portal a document.body y no lo recorta el
+   overflow:hidden de ningún panel/contenedor por el que ande el trigger. */
 .select-listbox {
-    position: absolute;
-    top: calc(100% + 0.3rem);
-    left: 0;
-    right: 0;
-    z-index: 30;
+    position: fixed;
+    z-index: 1000;
     margin: 0;
     padding: 0.3rem;
     list-style: none;
