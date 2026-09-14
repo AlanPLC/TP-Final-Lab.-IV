@@ -3,7 +3,7 @@ import '../../styles/dashboardPanels.css'
 import './styles/almacen.css'
 import useAlmacen from '../../hooks/Almacen/useAlmacen.jsx';
 import { PRODUCT_ICONS, getProductIcon } from '../../constants/productIcons.js';
-import { Pencil, Trash2, ChevronDown, ChevronUp, Search } from 'lucide-react';
+import { Pencil, Trash2, ChevronDown, ChevronUp, Search, Plus, X } from 'lucide-react';
 import SmoothHeight from '../../components/ui/SmoothHeight.jsx';
 import SelectField from '../../components/ui/SelectField.jsx';
 import Calendar from '../../components/ui/Calendar.jsx';
@@ -11,6 +11,17 @@ import Calendar from '../../components/ui/Calendar.jsx';
 // Mismo tope que valida el backend (ver API/src/controllers/productosConDetallesController.js)
 // - acá solo es para dar feedback temprano, la verdad la tiene el servidor.
 const MAX_PRODUCTOS = 30;
+
+// Fecha de hoy en horario local ("YYYY-MM-DD"), para no permitir cargar un
+// vencimiento pasado - toISOString() usa UTC y podía dar la fecha de ayer o
+// de mañana según la hora del día en huso horario negativo (ej. Argentina).
+function hoyISO() {
+  const hoy = new Date();
+  const y = hoy.getFullYear();
+  const m = String(hoy.getMonth() + 1).padStart(2, '0');
+  const d = String(hoy.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
 
 const datosInicialesProducto = {
   nombre: "",
@@ -29,7 +40,7 @@ const datosInicialesLote = {
 };
 
 function Almacen() {
-  const {getAlmacen, getCategorias, getProveedores, postAlmacen, putAlmacen, deleteAlmacen, getLotes, postLote, setError, error} = useAlmacen()
+  const {getAlmacen, getCategorias, postCategoria, getProveedores, postAlmacen, putAlmacen, deleteAlmacen, getLotes, postLote, setError, error} = useAlmacen()
 
   // "producto": crear/editar la ficha del producto (catálogo).
   // "lote": cargar mercadería (stock) de un producto ya existente.
@@ -40,6 +51,8 @@ function Almacen() {
   const [onEdit, setOnEdit] = useState(false)
   const [reload, setReload] = useState(false)
   const [listaCategorias, setListaCategorias] = useState([])
+  const [mostrarNuevaCategoria, setMostrarNuevaCategoria] = useState(false)
+  const [nuevaCategoriaNombre, setNuevaCategoriaNombre] = useState('')
   const [listaProveedores, setListaProveedores] = useState([])
   const [todosLosProductos, setTodosLosProductos] = useState([])
 
@@ -118,6 +131,25 @@ function Almacen() {
       fetchProveedores();
       fetchCategorias();
     }, []);
+
+    // Alta rápida de categoría, en el mismo lugar donde hace falta (no había
+    // ninguna pantalla para cargarlas, así que con 0 categorías era
+    // imposible crear un producto).
+    const crearCategoria = async (e) => {
+      e.preventDefault()
+      const nombre = nuevaCategoriaNombre.trim()
+      if (!nombre) return
+      const result = await postCategoria({ nombre })
+      if (result.success) {
+        setListaCategorias((prev) => [...prev, result.data])
+        setFormData((prev) => ({ ...prev, categoria: result.data.id }))
+        setNuevaCategoriaNombre('')
+        setMostrarNuevaCategoria(false)
+        setError(null)
+      } else {
+        console.error("Error al crear la categoría.", result.message)
+      }
+    }
 
     useEffect(() => {
       mostrarProductos();
@@ -388,7 +420,41 @@ function Almacen() {
                 onChange={handleChange}
               />
 
-              <label className="panel-label">Categoria</label>
+              <div className="panel-label-row">
+                <label className="panel-label" htmlFor="categoria">Categoria</label>
+                <button
+                  type="button"
+                  className="categoria-nueva-toggle"
+                  title={mostrarNuevaCategoria ? "Cancelar" : "Nueva categoría"}
+                  onClick={() => {
+                    setMostrarNuevaCategoria((v) => !v)
+                    setNuevaCategoriaNombre('')
+                  }}
+                >
+                  {mostrarNuevaCategoria ? <X size={14} /> : <Plus size={14} />}
+                </button>
+              </div>
+              <SmoothHeight>
+                {mostrarNuevaCategoria && (
+                  <div className="categoria-nueva-form">
+                    <input
+                      type="text"
+                      className="panel-input"
+                      placeholder="Nombre de la nueva categoría"
+                      value={nuevaCategoriaNombre}
+                      onChange={(e) => setNuevaCategoriaNombre(e.target.value)}
+                    />
+                    <button
+                      type="button"
+                      className="panel-button panel-button-primary"
+                      disabled={!nuevaCategoriaNombre.trim()}
+                      onClick={crearCategoria}
+                    >
+                      Agregar
+                    </button>
+                  </div>
+                )}
+              </SmoothHeight>
               <SelectField
                 id="categoria"
                 name="categoria"
@@ -543,6 +609,7 @@ function Almacen() {
                     <Calendar
                       value={loteData.fecha_vencimiento || null}
                       onChange={(iso) => setLoteData((prev) => ({ ...prev, fecha_vencimiento: iso }))}
+                      minDate={hoyISO()}
                     />
                   </div>
                 )}

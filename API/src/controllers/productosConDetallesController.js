@@ -7,6 +7,8 @@ const MAX_PRODUCTOS = 30;
 // existe, o intentar borrar un producto que tiene lotes cargados) - se usa
 // para devolver un 400 claro en vez de un 500 crudo.
 const FK_VIOLATION = '23503';
+// Postgres error code para violación de UNIQUE (nombre de categoría repetido).
+const UNIQUE_VIOLATION = '23505';
 
 export const getProductosConDetalles = async(req, res)=>{
     try {
@@ -40,6 +42,22 @@ export const getCategoria = async(_, res)=>{
     res.status(200).json({ categorias });
   } catch (error) {
     res.status(500).json({ errors: [{ msg: "Error al mostrar las Categorias con detalles." }], error: error.message});
+  }
+}
+
+export const createCategoria = async(req, res)=>{
+  try {
+    const { nombre } = req.body;
+    const { rows } = await db.query(
+      'INSERT INTO productos_categorias (nombre) VALUES ($1) RETURNING id, nombre',
+      [nombre]
+    );
+    res.status(201).json({ message: "Categoría creada exitosamente.", categoria: rows[0] });
+  } catch (error) {
+    if (error.code === UNIQUE_VIOLATION) {
+      return res.status(400).json({ errors: [{ msg: "Ya existe una categoría con ese nombre." }] });
+    }
+    res.status(500).json({ errors: [{ msg: "Error al crear la categoría." }], error: error.message});
   }
 }
 

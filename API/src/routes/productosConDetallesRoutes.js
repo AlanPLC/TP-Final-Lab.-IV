@@ -1,6 +1,6 @@
 import express from 'express';
-import {getProductosConDetalles, getCategoria, getProductosConDetallesByID, createProductoConDetalles, updateProductoConDetalles, deleteProductoConDetalles} from '../controllers/productosConDetallesController.js'
-import { validateBody } from '../validations/productosConDetallesValidations.js';
+import {getProductosConDetalles, getCategoria, createCategoria, getProductosConDetallesByID, createProductoConDetalles, updateProductoConDetalles, deleteProductoConDetalles} from '../controllers/productosConDetallesController.js'
+import { validateBody, validateCategoriaBody } from '../validations/productosConDetallesValidations.js';
 import { validateID } from '../middlewares/idValidator.js';
 import passport from "passport"
 
@@ -10,9 +10,14 @@ productosConDetalles.get('/administrador',
     passport.authenticate("jwt", { session: false }),
     getProductosConDetalles)
 
-productosConDetalles.get('/categorias', 
+productosConDetalles.get('/categorias',
     passport.authenticate("jwt", { session: false }),
     getCategoria)
+
+productosConDetalles.post('/categorias',
+    passport.authenticate("jwt", { session: false }),
+    validateCategoriaBody,
+    createCategoria)
 
 
 productosConDetalles.get('/administrador/:id', 

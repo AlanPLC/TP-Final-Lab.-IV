@@ -268,6 +268,39 @@
     margin-top: 1rem;
 }
 
+.categoria-nueva-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.3rem;
+    height: 1.3rem;
+    flex-shrink: 0;
+    border: 1px solid #d8dce8;
+    border-radius: 6px;
+    background-color: #f7f8fc;
+    color: #4f8cff;
+    cursor: pointer;
+    padding: 0;
+}
+.categoria-nueva-toggle:hover {
+    background-color: #eef2fc;
+    border-color: #4f8cff;
+}
+
+.categoria-nueva-form {
+    display: flex;
+    gap: 0.4rem;
+    margin-bottom: 0.5rem;
+}
+.categoria-nueva-form .panel-input {
+    margin-bottom: 0;
+}
+.categoria-nueva-form .panel-button {
+    flex-shrink: 0;
+    padding: 0.6rem 0.8rem;
+    font-size: 0.8rem;
+}
+
 .icon-picker {
     display: grid;
     grid-template-columns: repeat(5, 1fr);

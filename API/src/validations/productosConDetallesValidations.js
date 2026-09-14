@@ -50,3 +50,19 @@ export const validateBody = [
         next();
     }
 ];
+
+// Validar Body Categorías
+export const validateCategoriaBody = [
+    body('nombre')
+    .notEmpty().withMessage('El nombre de la categoría es obligatorio.')
+    .isString().withMessage('El nombre de la categoría solo puede contener letras y números.')
+    .isLength({min: 3, max: 50}).withMessage('El nombre debe contener de 3 a 50 carácteres.'),
+
+    (req,res,next)=>{
+        const errors = validationResult(req);
+        if(!errors.isEmpty()){
+            return res.status(400).json({ errors: errors.array() });
+        }
+        next();
+    }
+];
