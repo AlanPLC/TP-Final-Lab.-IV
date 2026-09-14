@@ -88,6 +88,13 @@
 .panel-label-row .panel-label {
     margin: 0;
 }
+.panel-label-optional {
+    text-transform: none;
+    font-weight: 400;
+    letter-spacing: normal;
+    color: #a4abc4;
+}
+
 .panel-checkbox {
     width: 1.05rem;
     height: 1.05rem;
