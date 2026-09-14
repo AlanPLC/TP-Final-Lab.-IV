@@ -1,7 +1,6 @@
 import express from 'express';
 import {getAllUsers, getUserByID, createUser, deleteUser, updateUser} from '../controllers/usuariosController.js';
 import { validateBody } from '../validations/usuariosValidations.js';
-import { authorizeAdmin } from '../middlewares/authorize.js';
 import { validateID } from '../middlewares/idValidator.js'
 import passport from "passport"
 
@@ -21,17 +20,15 @@ usuariosRouter.post('/usuarios',
     validateBody, 
     createUser);
 
-usuariosRouter.delete('/usuarios/:id', 
-    passport.authenticate("jwt", { session: false }), 
-    authorizeAdmin, 
-    validateID, 
+usuariosRouter.delete('/usuarios/:id',
+    passport.authenticate("jwt", { session: false }),
+    validateID,
     deleteUser);
 
-usuariosRouter.put('/usuarios/:id', 
-    passport.authenticate("jwt", { session: false }), 
-    authorizeAdmin, 
-    validateID, 
-    validateBody, 
+usuariosRouter.put('/usuarios/:id',
+    passport.authenticate("jwt", { session: false }),
+    validateID,
+    validateBody,
     updateUser);
 
 

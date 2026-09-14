@@ -55,15 +55,12 @@ function DashboardLayout() {
               <History size={18} />
               Historial de Ventas
             </NavLink>
-            {/* Antes "Administrar" -> /dashboard/administracion: es la misma
-                pantalla (Almacen.jsx) que ya permite cargar/editar/eliminar
-                productos, solo que con un nombre que no reflejaba lo que hace. */}
-            {usuario?.rol === 'administrador' && (
-              <NavLink to="/dashboard/inventario" className="dashboard-nav-link">
-                <Warehouse size={18} />
-                Gestionar Inventario
-              </NavLink>
-            )}
+            {/* No hay rol "administrador": cualquier cuenta tiene acceso
+                completo, así que esta sección se muestra siempre. */}
+            <NavLink to="/dashboard/inventario" className="dashboard-nav-link">
+              <Warehouse size={18} />
+              Gestionar Inventario
+            </NavLink>
 
             {/* Vuelve a la zona pública (Lobby): al cruzar de /dashboard a "/"
                 RootTransition anima el mismo slide de pantalla completa que

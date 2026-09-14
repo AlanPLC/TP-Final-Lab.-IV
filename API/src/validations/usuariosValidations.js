@@ -25,9 +25,11 @@ export const validateBody = [
         .matches(/[A-Z]/).withMessage('Debe contener al menos una mayúscula')
         .matches(/\d/).withMessage('Debe contener al menos un número'),
 
+    // Ya no existe el rol "administrador": cualquier cuenta tiene acceso
+    // completo al sistema, así que el único valor válido es "vendedor".
     body('rol')
         .optional()
-        .isIn(['administrador', 'vendedor']).withMessage('El rol debe ser "administrador" o "vendedor".'),
+        .isIn(['vendedor']).withMessage('El rol debe ser "vendedor".'),
 
     (req,res,next)=>{
         const errors = validationResult(req);
