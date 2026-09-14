@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import '../../styles/dashboardPanels.css'
 import './styles/almacen.css'
 import useAlmacen from '../../hooks/Almacen/useAlmacen.jsx';
-import { PRODUCT_ICONS, getProductIcon } from '../../constants/productIcons.js';
+import { PRODUCT_ICONS, getProductIcon, LOGO_CATEGORY_KEY, LOGO_CATEGORY_LABELS } from '../../constants/productIcons.js';
 import { Pencil, Trash2, ChevronDown, ChevronUp, Search, Plus, X } from 'lucide-react';
 import SmoothHeight from '../../components/ui/SmoothHeight.jsx';
 import SelectField from '../../components/ui/SelectField.jsx';
@@ -60,6 +60,8 @@ function Almacen() {
   const [nuevaCategoriaNombre, setNuevaCategoriaNombre] = useState('')
   const [listaProveedores, setListaProveedores] = useState([])
   const [todosLosProductos, setTodosLosProductos] = useState([])
+  const [terminoBusqueda, setTerminoBusqueda] = useState('')
+  const [filtroCategoria, setFiltroCategoria] = useState('')
 
   const [formData, setFormData] = useState(datosInicialesProducto);
   const [loteData, setLoteData] = useState(datosInicialesLote);
@@ -91,6 +93,14 @@ function Almacen() {
     loteData.cantidad > 0;
 
   const limiteAlcanzado = !onEdit && todosLosProductos.length >= MAX_PRODUCTOS;
+
+  // Logo y categoría van de la mano: elegir un logo (salvo "Otro") define la
+  // categoría también, buscando la categoría "de logo" con ese mismo nombre
+  // (se siembran en API/db/schema.sql). "Otro" es la excepción: ahí no hay
+  // una categoría automática, así que se muestra el select de categorías
+  // propias en su lugar (ver categoriasPropias más abajo).
+  const mostrarCategoriaPropia = formData.imagen === LOGO_CATEGORY_KEY;
+  const categoriasPropias = listaCategorias.filter((c) => !LOGO_CATEGORY_LABELS.has(c.nombre));
 
     const handleChange = (e) => {
       const { name, value } = e.target;
@@ -165,6 +175,29 @@ function Almacen() {
         setError(null)
       } else {
         console.error("Error al crear la categoría.", result.message)
+      }
+    }
+
+    // Al elegir un logo (salvo "Otro"), resuelve la categoría "de logo" con
+    // ese mismo nombre - ya sembrada en la base (ver schema.sql). El
+    // fallback de crearla acá es solo por las dudas (entorno viejo sin
+    // migrar, por ejemplo), en el uso normal ya existe.
+    const elegirCategoriaDeLogo = async (icon) => {
+      if (icon.key === LOGO_CATEGORY_KEY) {
+        setFormData((prev) => ({ ...prev, imagen: icon.key, categoria: 0 }))
+        return
+      }
+      const existente = listaCategorias.find((c) => c.nombre === icon.label)
+      if (existente) {
+        setFormData((prev) => ({ ...prev, imagen: icon.key, categoria: existente.id }))
+        return
+      }
+      const result = await postCategoria({ nombre: icon.label })
+      if (result.success) {
+        setListaCategorias((prev) => [...prev, result.data])
+        setFormData((prev) => ({ ...prev, imagen: icon.key, categoria: result.data.id }))
+      } else {
+        console.error("Error al resolver la categoría del logo.", result.message)
       }
     }
 
@@ -302,16 +335,19 @@ function Almacen() {
       }
     }
 
-    // Buscador de productos.
-    const buscador = (nombre) => {
-      if (nombre === "") {
-        setListaProductos(todosLosProductos);
-      } else {
-        setListaProductos(
-          todosLosProductos.filter((prod) => prod.producto_nombre.toLowerCase().includes(nombre.toLowerCase()))
-        );
+    // Buscador + filtro por categoría, combinados: se recalcula la lista
+    // visible cada vez que cambia el texto buscado, la categoría elegida, o
+    // llega una lista nueva de productos.
+    useEffect(() => {
+      let filtrados = todosLosProductos
+      if (filtroCategoria) {
+        filtrados = filtrados.filter((prod) => String(prod.categoria_id) === String(filtroCategoria))
       }
-    }
+      if (terminoBusqueda.trim()) {
+        filtrados = filtrados.filter((prod) => prod.producto_nombre.toLowerCase().includes(terminoBusqueda.trim().toLowerCase()))
+      }
+      setListaProductos(filtrados)
+    }, [todosLosProductos, terminoBusqueda, filtroCategoria]);
   return(
     <div className='almacen-container'>
       <div className="panel-card almacen-panel">
@@ -319,9 +355,30 @@ function Almacen() {
         <div className='almacen-list-section'>
             <div className='almacen-list-head'>
               <h1 className="panel-heading">Listado del Almacén</h1>
-              <div className="almacen-search">
-                <Search size={16} />
-                <input type="text" className="panel-search" placeholder="Buscar producto..." onChange={(e)=>buscador(e.target.value)}/>
+              <div className="almacen-search-row">
+                <div className="almacen-search">
+                  <Search size={16} />
+                  <input
+                    type="text"
+                    className="panel-search"
+                    placeholder="Buscar producto..."
+                    value={terminoBusqueda}
+                    onChange={(e) => setTerminoBusqueda(e.target.value)}
+                  />
+                </div>
+                <div className="almacen-filtro-categoria">
+                  <SelectField
+                    value={filtroCategoria}
+                    onChange={(e) => setFiltroCategoria(e.target.value)}
+                  >
+                    <option value="">Todas las categorías</option>
+                    {listaCategorias.map((cate) => (
+                      <option key={cate.id} value={cate.id}>
+                        {cate.nombre}
+                      </option>
+                    ))}
+                  </SelectField>
+                </div>
               </div>
             </div>
         <ul className="almacen-list">
@@ -456,56 +513,82 @@ function Almacen() {
                 onChange={handleChange}
               />
 
-              <div className="panel-label-row">
-                <label className="panel-label" htmlFor="categoria">Categoria</label>
-                <button
-                  type="button"
-                  className="categoria-nueva-toggle"
-                  title={mostrarNuevaCategoria ? "Cancelar" : "Nueva categoría"}
-                  onClick={() => {
-                    setMostrarNuevaCategoria((v) => !v)
-                    setNuevaCategoriaNombre('')
-                  }}
-                >
-                  {mostrarNuevaCategoria ? <X size={14} /> : <Plus size={14} />}
-                </button>
+              {/* Logo y categoría unificados: elegir un logo define ambos a
+                  la vez (van de la mano). "Otro" es la excepción - ahí
+                  aparece el select con las categorías propias. */}
+              <label className="panel-label">Categoría</label>
+              <div className="icon-picker" role="radiogroup" aria-label="Categoría del producto">
+                {PRODUCT_ICONS.map((icon) => (
+                  <button
+                    key={icon.key}
+                    type="button"
+                    role="radio"
+                    aria-checked={formData.imagen === icon.key}
+                    title={icon.label}
+                    className={`icon-picker-option${formData.imagen === icon.key ? ' selected' : ''}`}
+                    onClick={() => elegirCategoriaDeLogo(icon)}
+                  >
+                    <icon.Icon size={20} strokeWidth={1.8} />
+                  </button>
+                ))}
               </div>
+
               <SmoothHeight>
-                {mostrarNuevaCategoria && (
-                  <div className="categoria-nueva-form">
-                    <input
-                      type="text"
-                      className="panel-input"
-                      placeholder="Nombre de la nueva categoría"
-                      value={nuevaCategoriaNombre}
-                      onChange={(e) => setNuevaCategoriaNombre(e.target.value)}
-                    />
-                    <button
-                      type="button"
-                      className="panel-button panel-button-primary"
-                      disabled={!nuevaCategoriaNombre.trim()}
-                      onClick={crearCategoria}
+                {mostrarCategoriaPropia && (
+                  <div className="categoria-propia">
+                    <div className="panel-label-row">
+                      <label className="panel-label" htmlFor="categoria">Categoría propia</label>
+                      <button
+                        type="button"
+                        className="categoria-nueva-toggle"
+                        title={mostrarNuevaCategoria ? "Cancelar" : "Nueva categoría"}
+                        onClick={() => {
+                          setMostrarNuevaCategoria((v) => !v)
+                          setNuevaCategoriaNombre('')
+                        }}
+                      >
+                        {mostrarNuevaCategoria ? <X size={14} /> : <Plus size={14} />}
+                      </button>
+                    </div>
+                    <SmoothHeight>
+                      {mostrarNuevaCategoria && (
+                        <div className="categoria-nueva-form">
+                          <input
+                            type="text"
+                            className="panel-input"
+                            placeholder="Nombre de la nueva categoría"
+                            value={nuevaCategoriaNombre}
+                            onChange={(e) => setNuevaCategoriaNombre(e.target.value)}
+                          />
+                          <button
+                            type="button"
+                            className="panel-button panel-button-primary"
+                            disabled={!nuevaCategoriaNombre.trim()}
+                            onClick={crearCategoria}
+                          >
+                            Agregar
+                          </button>
+                        </div>
+                      )}
+                    </SmoothHeight>
+                    <SelectField
+                      id="categoria"
+                      name="categoria"
+                      value={formData.categoria || ""}
+                      onChange={handleChange}
                     >
-                      Agregar
-                    </button>
+                      <option value="" disabled>
+                        Categoría
+                      </option>
+                      {categoriasPropias.map((cate) => (
+                        <option key={cate.id} value={cate.id}>
+                          {cate.nombre}
+                        </option>
+                      ))}
+                    </SelectField>
                   </div>
                 )}
               </SmoothHeight>
-              <SelectField
-                id="categoria"
-                name="categoria"
-                value={formData.categoria || ""}
-                onChange={handleChange}
-              >
-                <option value="" disabled>
-                  Categoría
-                </option>
-                {listaCategorias.map((cate) => (
-                  <option key={cate.id} value={cate.id}>
-                    {cate.nombre}
-                  </option>
-                ))}
-              </SelectField>
 
               {/* Al crear un producto todavía no se sabe cuánto va a costar
                   por unidad (eso se sabe recién con el primer lote), así que
@@ -531,23 +614,6 @@ function Almacen() {
                   </div>
                 </>
               )}
-
-              <label className="panel-label">Logo</label>
-              <div className="icon-picker" role="radiogroup" aria-label="Logo del producto">
-                {PRODUCT_ICONS.map(({ key, label, Icon }) => (
-                  <button
-                    key={key}
-                    type="button"
-                    role="radio"
-                    aria-checked={formData.imagen === key}
-                    title={label}
-                    className={`icon-picker-option${formData.imagen === key ? ' selected' : ''}`}
-                    onClick={() => setFormData((prev) => ({ ...prev, imagen: key }))}
-                  >
-                    <Icon size={20} strokeWidth={1.8} />
-                  </button>
-                ))}
-              </div>
 
               <SmoothHeight>
                 {limiteAlcanzado && (
