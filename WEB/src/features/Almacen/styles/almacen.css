@@ -34,9 +34,15 @@
     margin-bottom: 1rem;
 }
 
+.almacen-search-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
 .almacen-search {
     position: relative;
-    width: 14rem;
+    width: 13rem;
     flex-shrink: 0;
     display: flex;
     align-items: center;
@@ -51,13 +57,28 @@
     padding-left: 2.1rem;
 }
 
+.almacen-filtro-categoria {
+    width: 14rem;
+    flex-shrink: 0;
+}
+/* SelectField trae su propio margin-bottom (pensado para cuando se apila
+   arriba de otro campo) - acá va en una fila horizontal junto al buscador,
+   así que ese margen sobra y corre el centrado vertical de la fila. */
+.almacen-filtro-categoria .select-field {
+    margin-bottom: 0;
+}
+
 .almacen-list {
     list-style: none;
     margin: 0;
     padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    align-items: start;
+    gap: 0.6rem;
+}
+.almacen-list .panel-empty {
+    grid-column: 1 / -1;
 }
 
 .almacen-item {
@@ -340,6 +361,15 @@
     gap: 0.4rem;
     margin-top: 0.4rem;
 }
+
+/* Select de categoría propia, que aparece solo al elegir el logo "Otro"
+   (ver mostrarCategoriaPropia en almacen.jsx). */
+.categoria-propia {
+    margin-top: 0.6rem;
+}
+.categoria-propia .panel-label-row {
+    margin-top: 0;
+}
 .icon-picker-option {
     width: 100%;
     aspect-ratio: 1;
@@ -383,6 +413,15 @@
         border-bottom: 1px solid #eef0f7;
     }
     .almacen-form-section {
+        width: 100%;
+    }
+    .almacen-list {
+        grid-template-columns: 1fr;
+    }
+    .almacen-search-row {
+        flex-wrap: wrap;
+    }
+    .almacen-search, .almacen-filtro-categoria {
         width: 100%;
     }
 }
