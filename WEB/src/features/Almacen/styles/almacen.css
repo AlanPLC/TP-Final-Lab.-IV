@@ -317,6 +317,71 @@
     border: 2px solid #000000;
 }
 
+.ver-lotes {
+    align-self: flex-start;
+    width: auto;
+    background: none;
+    filter: none;
+    color: #9db3ff;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-decoration: underline;
+    padding: 0;
+    height: auto;
+}
+.ver-lotes:hover {
+    transform: none;
+    color: #ffffff;
+}
+
+.lotes-detalle {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    background-color: rgba(0, 0, 0, 0.25);
+    border-radius: 6px;
+    padding: 0.5rem;
+}
+.lote-item {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    font-size: 0.8rem;
+    color: #ddd;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    padding-bottom: 0.3rem;
+}
+.lote-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+.lote-proveedor {
+    font-weight: bold;
+    color: #ffffff;
+}
+.lotes-vacio {
+    font-size: 0.8rem;
+    color: #ccc;
+    margin: 0;
+}
+
+.almacen-tabs {
+    display: flex;
+    gap: 0.4rem;
+    margin-bottom: 0.8rem;
+}
+.almacen-tab {
+    flex: 1;
+    background-color: #ccc;
+    color: #000000;
+    border: 2px solid #000000;
+    margin: 0;
+}
+.almacen-tab.active {
+    background-color: #252B42;
+    color: #ffffff;
+}
+
 .icon-picker {
     display: grid;
     grid-template-columns: repeat(5, 1fr);

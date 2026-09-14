@@ -256,3 +256,10 @@
     color: red;
 }
 
+.limite-proveedores{
+    color: #b00020;
+    font-size: 0.8rem;
+    font-weight: bold;
+    margin: 0.3rem 0;
+}
+

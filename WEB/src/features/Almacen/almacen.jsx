@@ -7,37 +7,57 @@ import { PRODUCT_ICONS, getProductIcon } from '../../constants/productIcons.js';
 // - acá solo es para dar feedback temprano, la verdad la tiene el servidor.
 const MAX_PRODUCTOS = 30;
 
+const datosInicialesProducto = {
+  nombre: "",
+  descripcion: "",
+  categoria: 0,
+  precio: null,
+  imagen: "",
+};
+
+const datosInicialesLote = {
+  producto_id: 0,
+  proveedor_id: 0,
+  precio_costo: null,
+  cantidad: 0,
+  fecha_vencimiento: "",
+};
+
 function Almacen() {
-  const {getAlmacen, getCategorias, getProveedores, postAlmacen, putAlmacen, deleteAlmacen, setError,error} =useAlmacen()
+  const {getAlmacen, getCategorias, getProveedores, postAlmacen, putAlmacen, deleteAlmacen, getLotes, postLote, setError, error} = useAlmacen()
+
+  // "producto": crear/editar la ficha del producto (catálogo).
+  // "lote": cargar mercadería (stock) de un producto ya existente.
+  const [tab, setTab] = useState('producto')
+
   const [productoId, setProductoId] = useState(0)
   const [listaProductos, setListaProductos] = useState([])
   const [onEdit, setOnEdit] = useState(false)
   const [reload, setReload] = useState(false)
-  const [listaCategorias, setListaCategorias] = useState([]) 
+  const [listaCategorias, setListaCategorias] = useState([])
   const [listaProveedores, setListaProveedores] = useState([])
   const [todosLosProductos, setTodosLosProductos] = useState([])
 
-  // Variables formulario.
-  const datosIniciales = {
-    nombre: "",
-    descripcion: "",
-    categoria: 0,
-    proveedor: 0,
-    precio: null,
-    cantidad: 0,
-    imagen: "",
-  };
-  const [formData, setFormData] = useState(datosIniciales); 
+  const [formData, setFormData] = useState(datosInicialesProducto);
+  const [loteData, setLoteData] = useState(datosInicialesLote);
 
-  // Validar campos del formulario.
-  const validarForm =
+  // Detalle de lotes de un producto (expandible en el listado).
+  const [productoExpandidoId, setProductoExpandidoId] = useState(null)
+  const [lotesPorProducto, setLotesPorProducto] = useState({})
+  const [cargandoLotes, setCargandoLotes] = useState(false)
+
+  const validarFormProducto =
     formData.nombre.trim() &&
     formData.descripcion.trim() &&
     formData.categoria > 0 &&
-    formData.proveedor > 0 &&
     formData.precio > 0 &&
-    formData.cantidad > 0 &&
     formData.imagen.trim();
+
+  const validarFormLote =
+    loteData.producto_id > 0 &&
+    loteData.proveedor_id > 0 &&
+    loteData.precio_costo > 0 &&
+    loteData.cantidad > 0;
 
   const limiteAlcanzado = !onEdit && todosLosProductos.length >= MAX_PRODUCTOS;
 
@@ -45,8 +65,16 @@ function Almacen() {
       const { name, value } = e.target;
       setFormData({
         ...formData,
-        [name]: name === "precio" || name === "cantidad" ? parseFloat(value) || 0 : value,
+        [name]: name === "precio" ? parseFloat(value) || 0 : value,
       });
+    };
+
+    const handleLoteChange = (e) => {
+      const { name, value } = e.target;
+      setLoteData((prev) => ({
+        ...prev,
+        [name]: name === "precio_costo" || name === "cantidad" ? parseFloat(value) || 0 : value,
+      }));
     };
 
     const mostrarProductos = async ()=>{
@@ -63,71 +91,62 @@ function Almacen() {
     const fetchProveedores = async () => {
       const result = await getProveedores();
       console.log('Proveedor recibido:', result);
-      
-      // Verifica la estructura de result
-      console.log('Proveedores de result:', JSON.stringify(result, null, 2));
-      
-      setListaProveedores(result.data.proveedores, result.success);
-      console.log("PROVEEDOR", listaProveedores);
+      if (result.success) {
+        setListaProveedores(result.data.proveedores);
+      } else {
+        console.error(result.message || result.errors);
+      }
     };
 
     const fetchCategorias = async () => {
       const result = await getCategorias();
       console.log('Categoria recibida:', result);
-      console.log('Categoria de result:', JSON.stringify(result, null, 2));
       if (result.success ) {
         setListaCategorias(result.data);
-        console.log("CATEGORIA",listaCategorias )
       } else {
         console.error(result.message || result.errors);
       }
     };
-    
+
     useEffect(() => {
       fetchProveedores();
       fetchCategorias();
     }, []);
-      
+
     useEffect(() => {
       mostrarProductos();
     }, [reload]);
-     
+
     const agregarProducto = async (e) =>{
       e.preventDefault()
-      
+
       const nuevoProducto = {
         nombre: formData.nombre,
         descripcion: formData.descripcion,
         categoria_id: formData.categoria,
-        proveedor_id: formData.proveedor,
         precio: formData.precio,
-        cantidad_disponible: formData.cantidad,
         imagen_url: formData.imagen
       }
       const result = await postAlmacen(nuevoProducto)
       if(result.success){
           setReload(!reload)
-          console.log("Errores:", error)
           console.log("Producto creado con éxito.", result.data)
-          setFormData(datosIniciales)
+          setFormData(datosInicialesProducto)
           setError(null)
       } else{
-          console.error("Error al crear el producto.", result.message)  
+          console.error("Error al crear el producto.", result.message)
       }
-      
-      
     }
 
     const handleEditProducto = (producto) => {
       setProductoId(producto.producto_id)
       setOnEdit(true)
+      setTab('producto')
       setFormData({
         nombre: producto.producto_nombre,
         descripcion: producto.descripcion,
         categoria: producto.categoria_id,
-        proveedor: producto.proveedor_id,
         precio: producto.precio,
-        cantidad: producto.cantidad_disponible,
         imagen: producto.imagen_url,
       })
     }
@@ -138,9 +157,7 @@ function Almacen() {
         nombre: formData.nombre,
         descripcion: formData.descripcion,
         categoria_id: formData.categoria,
-        proveedor_id: formData.proveedor,
         precio: formData.precio,
-        cantidad_disponible: formData.cantidad,
         imagen_url: formData.imagen
       }
 
@@ -148,27 +165,71 @@ function Almacen() {
         if(result.success){
           setReload(!reload)
           console.log("Productos Modificado con éxito.", result.data)
-          setFormData(datosIniciales)
+          setFormData(datosInicialesProducto)
           setOnEdit(false)
           setError(null)
         } else{
           console.error("Error al Modificar los Productos.", result.message)
-          setFormData(datosIniciales)
+          setFormData(datosInicialesProducto)
           setOnEdit(false)
         }
-    } 
-    
+    }
+
     const eliminarProducto = async (id) => {
       if(confirm(`¿Quieres eliminar el producto Nº${id}?`)){
         const result = await deleteAlmacen(id)
         if(result.success){
             setReload(!reload)
-            console.log("Proveedor eliminado con éxito.", result.data)
+            console.log("Producto eliminado con éxito.", result.data)
         } else{
-            console.error("Error al eliminar el proveedor.", result.message)
+            console.error("Error al eliminar el producto.", result.message)
         }
-      }     
+      }
     }
+
+    // Carga de mercadería: crea un lote para un producto ya existente.
+    const cargarLote = async (e) => {
+      e.preventDefault()
+      const nuevoLote = {
+        producto_id: loteData.producto_id,
+        proveedor_id: loteData.proveedor_id,
+        precio_costo: loteData.precio_costo,
+        cantidad: loteData.cantidad,
+        fecha_vencimiento: loteData.fecha_vencimiento || null,
+      }
+      const result = await postLote(nuevoLote)
+      if (result.success) {
+        setReload(!reload)
+        setLotesPorProducto((prev) => {
+          const next = { ...prev }
+          delete next[String(nuevoLote.producto_id)]
+          return next
+        })
+        setLoteData(datosInicialesLote)
+        setError(null)
+      } else {
+        console.error("Error al cargar el lote.", result.message)
+      }
+    }
+
+    // Muestra/oculta el detalle de lotes de un producto (orden FEFO: el que
+    // vence antes primero, ver API/src/controllers/lotesController.js).
+    const toggleLotesProducto = async (productoId) => {
+      if (productoExpandidoId === productoId) {
+        setProductoExpandidoId(null)
+        return
+      }
+      setProductoExpandidoId(productoId)
+      if (!lotesPorProducto[productoId]) {
+        setCargandoLotes(true)
+        const result = await getLotes(productoId)
+        if (result.success) {
+          setLotesPorProducto((prev) => ({ ...prev, [productoId]: result.data }))
+        }
+        setCargandoLotes(false)
+      }
+    }
+
     // Buscador de productos.
     const buscador = (nombre) => {
       if (nombre === "") {
@@ -190,6 +251,7 @@ function Almacen() {
         {listaProductos && listaProductos.length > 0 ? (
             listaProductos.map((producto, index)  => {
             const ProductoIcon = getProductIcon(producto.imagen_url)
+            const expandido = productoExpandidoId === producto.producto_id
             return (
             <li key={index}>
               <div className='pre-general'>
@@ -198,18 +260,18 @@ function Almacen() {
                 </div>
                 <div className='s-general'>
                   <div className='s1'>
-                    <div>   
+                    <div>
                       <p className='p1'>#{producto.producto_id}</p>
                       <p className='p2'>{producto.producto_nombre}</p>
                       <p className='p3'>{producto.categoria_nombre}</p>
                     </div>
                     <div className='buttons'>
-                      <button 
-                        className="modificar" 
+                      <button
+                        className="modificar"
                         onClick={() =>handleEditProducto(producto)}
                         disabled={onEdit}/>
-                      <button 
-                        className="eliminar" 
+                      <button
+                        className="eliminar"
                         onClick={() => eliminarProducto(producto.producto_id)}
                         disabled={onEdit}/>
                     </div>
@@ -222,7 +284,32 @@ function Almacen() {
                     <p className='p2'>{producto.cantidad_disponible}</p>
                     <p className='p3'>${producto.precio}</p>
                   </div>
-                </div> 
+                  <button
+                    type="button"
+                    className="ver-lotes"
+                    onClick={() => toggleLotesProducto(producto.producto_id)}
+                  >
+                    {expandido ? 'Ocultar lotes' : 'Ver lotes'}
+                  </button>
+                  {expandido && (
+                    <div className="lotes-detalle">
+                      {cargandoLotes && !lotesPorProducto[producto.producto_id] ? (
+                        <p className="lotes-vacio">Cargando...</p>
+                      ) : lotesPorProducto[producto.producto_id]?.length > 0 ? (
+                        lotesPorProducto[producto.producto_id].map((lote) => (
+                          <div key={lote.id} className="lote-item">
+                            <span className="lote-proveedor">{lote.proveedor_nombre}</span>
+                            <span>{lote.cantidad_restante}/{lote.cantidad_inicial} u.</span>
+                            <span>${lote.precio_costo} c/u</span>
+                            <span>{lote.fecha_vencimiento ? `Vence: ${new Date(lote.fecha_vencimiento).toLocaleDateString()}` : 'Sin vencimiento'}</span>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="lotes-vacio">Este producto no tiene lotes cargados.</p>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
               <hr />
             </li>
@@ -233,6 +320,26 @@ function Almacen() {
       </div>
       {/* Segundo contenedor (Formulario) */}
       <div className='contenedor-entradas'>
+            <div className="almacen-tabs">
+              <button
+                type="button"
+                className={`almacen-tab${tab === 'producto' ? ' active' : ''}`}
+                onClick={() => setTab('producto')}
+              >
+                Producto
+              </button>
+              <button
+                type="button"
+                className={`almacen-tab${tab === 'lote' ? ' active' : ''}`}
+                onClick={() => setTab('lote')}
+                disabled={onEdit}
+              >
+                Cargar Stock
+              </button>
+            </div>
+
+            {tab === 'producto' ? (
+            <>
             {onEdit ? (<h3>Editando Producto #{productoId}</h3>) : (<h3>Agregar Producto</h3>)}
             <form onSubmit={onEdit ? modificarProducto : agregarProducto}>
               <label>Nombre</label>
@@ -249,7 +356,7 @@ function Almacen() {
               <input
                 id="descripcion"
                 type="text"
-                name="descripcion" 
+                name="descripcion"
                 placeholder='Descripción del producto'
                 value={formData.descripcion}
                 onChange={handleChange}
@@ -272,68 +379,14 @@ function Almacen() {
                 ))}
               </select>
 
-              <label>Proveedor</label>
-              <select
-                id="proveedor"
-                name="proveedor"
-                value={formData.proveedor || ""}
+              <label>Precio</label>
+              <input
+                id="precio"
+                type="number"
+                name="precio"
+                value={formData.precio}
                 onChange={handleChange}
-              >
-                <option value="" disabled>
-                  Proveedor
-                </option>
-                {listaProveedores.map((prov) => (
-                  <option key={prov.id} value={prov.id}>
-                    {prov.nombre}
-                  </option>
-                ))}
-              </select>
-              
-              <div className='p-c'>
-                <div className='p-c-1'>
-                  <label>Precio</label>
-                  <div>
-                    <input
-                      id="precio"
-                      type="number"
-                      name="precio" 
-                      value={formData.precio}
-                      onChange={handleChange}
-                    />
-                  </div>
-                </div>
-                <div className='p-c-2'>
-                  <label>Stock</label>
-                  <div className='p-c-cant'>
-                    <button 
-                      className="b1" 
-                      type="button" 
-                      onClick={() =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          cantidad: Math.max(0, prev.cantidad - 1), 
-                        }))
-                      }
-                      disabled={formData.cantidad <= 0}/>
-                    <input
-                      id="cantidad"
-                      type="number"
-                      name="cantidad" 
-                      value={formData.cantidad}
-                      onChange={handleChange}
-                    />
-                    <button 
-                      className="b2" 
-                      type="button"  
-                      onClick={() =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        cantidad: Math.max(0, prev.cantidad + 1), 
-                      }))
-                    }/>
-                  </div>
-                </div>
-              </div>
+              />
 
               <label>Logo</label>
               <div className="icon-picker" role="radiogroup" aria-label="Logo del producto">
@@ -363,7 +416,7 @@ function Almacen() {
                   <button
                     type="button"
                     className="b1"
-                    disabled={!validarForm}
+                    disabled={!validarFormProducto}
                     onClick={modificarProducto}
                   > Modificar
                   </button>
@@ -371,7 +424,7 @@ function Almacen() {
                     type="button"
                     className="b2"
                     onClick={() => {
-                      setFormData(datosIniciales);
+                      setFormData(datosInicialesProducto);
                       setOnEdit(false);
                     }}
                   >
@@ -379,11 +432,83 @@ function Almacen() {
                   </button>
                 </div>
               ) : (
-                <button type="submit" disabled={!validarForm || limiteAlcanzado}>
+                <button type="submit" disabled={!validarFormProducto || limiteAlcanzado}>
                   Agregar Producto
                 </button>
               )}
             </form>
+            </>
+            ) : (
+            <>
+            <h3>Cargar Stock</h3>
+            <form onSubmit={cargarLote}>
+              <label>Producto</label>
+              <select
+                id="lote-producto"
+                name="producto_id"
+                value={loteData.producto_id || ""}
+                onChange={handleLoteChange}
+              >
+                <option value="" disabled>
+                  Producto
+                </option>
+                {todosLosProductos.map((prod) => (
+                  <option key={prod.producto_id} value={prod.producto_id}>
+                    {prod.producto_nombre}
+                  </option>
+                ))}
+              </select>
+
+              <label>Proveedor</label>
+              <select
+                id="lote-proveedor"
+                name="proveedor_id"
+                value={loteData.proveedor_id || ""}
+                onChange={handleLoteChange}
+              >
+                <option value="" disabled>
+                  Proveedor
+                </option>
+                {listaProveedores.map((prov) => (
+                  <option key={prov.id} value={prov.id}>
+                    {prov.nombre}
+                  </option>
+                ))}
+              </select>
+
+              <label>Costo de compra (por unidad)</label>
+              <input
+                id="lote-precio-costo"
+                type="number"
+                name="precio_costo"
+                value={loteData.precio_costo}
+                onChange={handleLoteChange}
+              />
+
+              <label>Cantidad</label>
+              <input
+                id="lote-cantidad"
+                type="number"
+                name="cantidad"
+                value={loteData.cantidad}
+                onChange={handleLoteChange}
+              />
+
+              <label>Vencimiento (opcional)</label>
+              <input
+                id="lote-vencimiento"
+                type="date"
+                name="fecha_vencimiento"
+                value={loteData.fecha_vencimiento}
+                onChange={handleLoteChange}
+              />
+
+              <button type="submit" disabled={!validarFormLote}>
+                Cargar Lote
+              </button>
+            </form>
+            </>
+            )}
             {Array.isArray(error) && error.length > 0 ? (
                 <div className='errores'>
                     {error.map((err, index) => (

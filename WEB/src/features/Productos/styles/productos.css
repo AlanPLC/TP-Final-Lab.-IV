@@ -266,6 +266,16 @@
     background-color: #ccc;
     color: #000;
 }
+.venta-errores{
+    margin-top: 0.5rem;
+    max-width: 14rem;
+    text-align: center;
+}
+.venta-errores p{
+    font-size: 0.85rem;
+    font-weight: bold;
+    margin: 0.2rem 0;
+}
 .productos-venta .tp1{
     color: black;
     font-weight:500;

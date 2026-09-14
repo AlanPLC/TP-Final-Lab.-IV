@@ -7,7 +7,7 @@ import { jwtDecode } from "jwt-decode";
 import { getProductIcon } from '../../constants/productIcons.js';
 
 const Productos = () => {
-  const { getProductosConDetalles, postVentas, controlStock} = useProductos()
+  const { getProductosConDetalles, postVentas, error } = useProductos()
   const [listaProductos, setListaProductos] = useState([])
   const [productosVenta, setProductosVenta] = useState([])
   const [reload, setReload] = useState(false)
@@ -95,33 +95,17 @@ const Productos = () => {
       }
     })
     console.log("Cuerpo generado:", productosBody);
-    try {
-      // Creo la venta según la lista de productos cargados.
-      const response1 = await postVentas(productosBody)
-      if(response1.success){
-        console.log("Venta creada con éxito.", response1.data)
-      }
-      
-      // Actualizo el stock de los productos vendidos.
-      for (const producto of productosVenta){
-        const actualizarStock = {
-          producto_id: producto.producto_id,
-          cantidad_disponible: producto.cantidad_disponible - producto.cantidad
-        }
-        console.log("Stock a actualizar:", actualizarStock)
-        const response2 = await controlStock(actualizarStock)
-        if(response2.success){
-          console.log("Stock actualizado con éxito.", response2.data)
-        }
-      }
-      
-      // Genero el PDF con los datos de la venta.
+    // El backend crea la venta y descuenta el stock (por lotes, FIFO) en la
+    // misma operación - si no hay stock suficiente la venta se rechaza
+    // entera y no se genera el ticket.
+    const response = await postVentas(productosBody)
+    if(response.success){
+      console.log("Venta creada con éxito.", response.data)
       generarPDF(productosVenta)
-      
       setProductosVenta([])
       setReload(!reload)
-    } catch (error) {
-      console.error(error);
+    } else {
+      console.error("Error al confirmar la venta.", response.message || response.errors)
     }
   }
 
@@ -231,10 +215,17 @@ const Productos = () => {
               <p className='tp1'>Total</p>
               <p className='tp2'>${productosVenta.reduce((acc, curr) => acc + curr.precio*curr.cantidad, 0)}</p>
               <hr />
-              <button 
-                className='venta-button' 
+              <button
+                className='venta-button'
                 onClick={()=> confirmarVenta()}
                 disabled={productosVenta.length == 0}>Realizar Venta</button>
+              {Array.isArray(error) && error.length > 0 && (
+                <div className='venta-errores'>
+                  {error.map((err, index) => (
+                    <p key={index} style={{ color: 'red' }}>{err.msg}</p>
+                  ))}
+                </div>
+              )}
           </div>
         </div>
     </div>

@@ -1,6 +1,10 @@
 import './styles/proveedores.css';
 import useProveedores from '../../hooks/Proveedores/useProveedores.jsx';
 import {useState, useEffect} from 'react';
+
+// Mismo tope que valida el backend (ver API/src/controllers/proveedoresController.js).
+const MAX_PROVEEDORES = 5;
+
 const Proveedores = () => {
     const { getProveedor, postProveedor, deleteProveedor, updateProveedor, setError, error } = useProveedores();
     const [listaProveedores, setListaProveedores] = useState([])
@@ -115,6 +119,8 @@ const Proveedores = () => {
         console.log("Lista actualizada: ", listaProveedores);
     }, [listaProveedores]);
 
+    const limiteAlcanzado = !onEdit && listaProveedores.length >= MAX_PROVEEDORES;
+
     return (
         <div className='proveedor-main-container'>
             <div className='prov-lista-container'>
@@ -186,7 +192,12 @@ const Proveedores = () => {
                     placeholder='Ingrese la descripción del proveedor...' 
                     value={descripcion}
                     onChange={(e)=>setDescripcion(e.target.value)}/>
-                    {onEdit ? 
+                    {limiteAlcanzado && (
+                        <p className="limite-proveedores">
+                            Alcanzaste el máximo de {MAX_PROVEEDORES} proveedores. Eliminá alguno para poder cargar otro.
+                        </p>
+                    )}
+                    {onEdit ?
                     (<div className="buttons">
                         <button type="button" onClick={()=> actualizarProv()} disabled={!nombre?.trim() || !descripcion?.trim()}>Editar</button>
                         <button type="button"
@@ -197,7 +208,7 @@ const Proveedores = () => {
                             setProveedorID(null)
                         }}>Cancelar</button>
                     </div>) :
-                    (<button type='submit' disabled={!nombre.trim() || !descripcion.trim()}>Agregar Proveedor</button>)}
+                    (<button type='submit' disabled={!nombre.trim() || !descripcion.trim() || limiteAlcanzado}>Agregar Proveedor</button>)}
                 </form>
                 
                 {Array.isArray(error) && error.length > 0 ? (
