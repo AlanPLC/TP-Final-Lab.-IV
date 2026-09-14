@@ -40,6 +40,12 @@ function DashboardLayout() {
               <LayoutDashboard size={18} />
               Inicio
             </NavLink>
+            {/* No hay rol "administrador": cualquier cuenta tiene acceso
+                completo, así que esta sección se muestra siempre. */}
+            <NavLink to="/dashboard/inventario" className="dashboard-nav-link">
+              <Warehouse size={18} />
+              Gestionar Inventario
+            </NavLink>
             {/* Antes "Productos": ya funciona como el punto de venta (elegís
                 productos y generás el ticket), el nombre lo reflejaba poco. */}
             <NavLink to="/dashboard/productos" className="dashboard-nav-link">
@@ -54,12 +60,6 @@ function DashboardLayout() {
             <NavLink to="/dashboard/ventas" className="dashboard-nav-link">
               <History size={18} />
               Historial de Ventas
-            </NavLink>
-            {/* No hay rol "administrador": cualquier cuenta tiene acceso
-                completo, así que esta sección se muestra siempre. */}
-            <NavLink to="/dashboard/inventario" className="dashboard-nav-link">
-              <Warehouse size={18} />
-              Gestionar Inventario
             </NavLink>
 
             {/* Vuelve a la zona pública (Lobby): al cruzar de /dashboard a "/"

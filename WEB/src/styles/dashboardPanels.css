@@ -1,0 +1,219 @@
+/* Sistema visual compartido por las pantallas de gestión del Dashboard
+   (Almacen, Productos/Realizar Venta, Proveedores): antes cada una tenía
+   dos contenedores separados (uno oscuro para el listado, uno blanco para
+   el formulario/acciones) - ahora es UN solo contenedor blanco por
+   pantalla, dividido en secciones internas. Misma paleta azul (#4f8cff)
+   y tipografías (Space Grotesk / Montserrat) que ya usan
+   Login/Register/Dashboard, con el radio "cuadrado, no píldora" de
+   Destino Turístico (8-12px, nunca full-round salvo círculos reales).
+
+   `.panel-*` = la ficha genérica. Cada pantalla puede agregar sus propias
+   clases para el layout interno (grillas, listas), pero color/tipografía/
+   radio salen siempre de acá para que las tres pantallas se sientan una
+   misma familia. */
+
+.panel-card {
+    background-color: #ffffff;
+    border: 1px solid #e3e6f0;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(21, 26, 46, 0.08);
+    display: flex;
+    overflow: hidden;
+}
+
+.panel-heading {
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: #151a2e;
+    margin: 0;
+}
+
+.panel-subtext {
+    color: #7c86a8;
+    font-size: 0.85rem;
+    margin: 0;
+}
+
+.panel-search,
+.panel-input,
+.panel-select,
+.panel-textarea {
+    width: 100%;
+    border: 1px solid #d8dce8;
+    border-radius: 8px;
+    padding: 0.6rem 0.85rem;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: #151a2e;
+    background-color: #f7f8fc;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+.panel-textarea {
+    resize: none;
+}
+.panel-search:focus,
+.panel-input:focus,
+.panel-select:focus,
+.panel-textarea:focus {
+    outline: none;
+    border-color: #4f8cff;
+    box-shadow: 0 0 0 3px rgba(79, 140, 255, 0.15);
+    background-color: #ffffff;
+}
+.panel-search::placeholder,
+.panel-input::placeholder,
+.panel-textarea::placeholder {
+    color: #a4abc4;
+}
+
+.panel-label {
+    display: block;
+    font-family: var(--font-body);
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #7c86a8;
+    margin: 0 0 0.35rem;
+}
+
+.panel-button {
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 0.9rem;
+    border-radius: 8px;
+    padding: 0.7rem 1.1rem;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+.panel-button-primary {
+    background-color: #4f8cff;
+    color: #ffffff;
+}
+.panel-button-primary:hover:not(:disabled) {
+    opacity: 0.9;
+}
+.panel-button-primary:disabled {
+    background-color: #d6dcee;
+    color: #94a0c2;
+    cursor: not-allowed;
+}
+
+.panel-icon-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 6px;
+    border: 1px solid #e3e6f0;
+    background-color: #ffffff;
+    color: #6b7597;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+.panel-icon-button:hover:not(:disabled) {
+    background-color: #eef2fc;
+    border-color: #4f8cff;
+    color: #4f8cff;
+}
+.panel-icon-button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+.panel-icon-button.danger:hover:not(:disabled) {
+    background-color: #fdecec;
+    border-color: #e05555;
+    color: #e05555;
+}
+
+/* Barra de acciones "segmentada": un solo contenedor con borde y
+   divisores internos, en vez de botones sueltos con gap - un par
+   Modificar/Cancelar, Guardar/Cancelar, o un switch de 2 pestañas se lee
+   como "un control con N opciones", no como botones sueltos flotando. */
+.segmented-bar {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    border: 1px solid #d8dce8;
+    border-radius: 8px;
+    overflow: hidden;
+    /* Sin esto, un .segmented-bar dentro de un contenedor flex en columna
+       (el form-section de Almacen/Proveedores) colapsa a ~0px: al tener
+       overflow != visible, su "automatic minimum size" como ítem flex pasa
+       a ser 0 en vez del alto de su contenido (spec de flexbox), y con
+       flex-shrink:1 por default el navegador lo encoge a ese mínimo. */
+    flex-shrink: 0;
+}
+.segmented-bar button {
+    border: none;
+    border-right: 1px solid #d8dce8;
+    background-color: #ffffff;
+    color: #151a2e;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 0.65rem;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+.segmented-bar button:last-child {
+    border-right: none;
+}
+.segmented-bar button:hover:not(:disabled):not(.active) {
+    background-color: #f0f3fb;
+}
+.segmented-bar button.active {
+    background-color: #4f8cff;
+    color: #ffffff;
+}
+.segmented-bar button:disabled {
+    color: #b6bcd4;
+    cursor: not-allowed;
+}
+
+.panel-error-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    background-color: #fdecec;
+    border: 1px solid #f3c6c6;
+    border-radius: 8px;
+    padding: 0.6rem 0.8rem;
+    max-height: 8rem;
+    overflow-y: auto;
+}
+.panel-error-list p {
+    margin: 0;
+    color: #c22b2b;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.panel-empty {
+    color: #9aa2bf;
+    font-size: 0.9rem;
+    text-align: center;
+    padding: 2rem 0;
+}
+
+/* Scroll fino y discreto, mismo criterio que el resto de Destino
+   Turístico: un detalle, no un protagonista. */
+.panel-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: #c7cfe6 transparent;
+}
+.panel-scroll::-webkit-scrollbar {
+    width: 8px;
+}
+.panel-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+.panel-scroll::-webkit-scrollbar-thumb {
+    background-color: #c7cfe6;
+    border-radius: 8px;
+}
+.panel-scroll::-webkit-scrollbar-thumb:hover {
+    background-color: #4f8cff;
+}
