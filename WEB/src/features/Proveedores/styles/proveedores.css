@@ -12,8 +12,7 @@
 
 .proveedores-panel {
     width: 100%;
-    max-width: 60rem;
-    height: 40rem;
+    max-width: 74rem;
     align-items: stretch;
 }
 
@@ -35,8 +34,7 @@
     flex-direction: column;
     gap: 0.7rem;
     margin: 0;
-    padding: 0 0.25rem 0 0;
-    overflow-y: auto;
+    padding: 0;
     list-style: none;
 }
 
@@ -134,13 +132,19 @@
     display: flex;
     flex-direction: column;
     padding: 1.5rem;
-    overflow-y: auto;
+}
+.prov-edit-section .panel-heading{
+    margin-bottom: 1rem;
 }
 .edit-title{
     display: flex;
     flex-direction: row;
     gap: 0.5rem;
     align-items: baseline;
+    margin-bottom: 1rem;
+}
+.edit-title .panel-heading{
+    margin-bottom: 0;
 }
 .edit-title span{
     font-size: 0.85rem;

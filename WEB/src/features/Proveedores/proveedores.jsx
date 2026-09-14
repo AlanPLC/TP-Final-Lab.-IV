@@ -3,6 +3,7 @@ import './styles/proveedores.css';
 import useProveedores from '../../hooks/Proveedores/useProveedores.jsx';
 import {useState, useEffect} from 'react';
 import { Pencil, Trash2 } from 'lucide-react';
+import SmoothHeight from '../../components/ui/SmoothHeight.jsx';
 
 // Mismo tope que valida el backend (ver API/src/controllers/proveedoresController.js).
 const MAX_PROVEEDORES = 5;
@@ -128,7 +129,7 @@ const Proveedores = () => {
             <div className="panel-card proveedores-panel">
             <div className='prov-lista-section'>
                 <h1 className="panel-heading">Proveedores</h1>
-                <ul className='prov-lista panel-scroll'>
+                <ul className='prov-lista'>
                     {listaProveedores.map((prov) => (
                         <li className='prov-li-main' key={prov.proveedor_id} >
                             <div className='proveedor'>
@@ -199,11 +200,13 @@ const Proveedores = () => {
                     placeholder='Ingrese la descripción del proveedor...'
                     value={descripcion}
                     onChange={(e)=>setDescripcion(e.target.value)}/>
+                    <SmoothHeight>
                     {limiteAlcanzado && (
                         <p className="limite-proveedores">
                             Alcanzaste el máximo de {MAX_PROVEEDORES} proveedores. Eliminá alguno para poder cargar otro.
                         </p>
                     )}
+                    </SmoothHeight>
                     {onEdit ?
                     (<div className="segmented-bar edit-buttons">
                         <button type="button" onClick={()=> actualizarProv()} disabled={!nombre?.trim() || !descripcion?.trim()}>Editar</button>
@@ -218,6 +221,7 @@ const Proveedores = () => {
                     (<button type='submit' className="panel-button panel-button-primary prov-submit" disabled={!nombre.trim() || !descripcion.trim() || limiteAlcanzado}>Agregar Proveedor</button>)}
                 </form>
 
+                <SmoothHeight>
                 {Array.isArray(error) && error.length > 0 && (
                 <div className="panel-error-list prov-errors">
                     {error.map((err, index) => (
@@ -225,6 +229,7 @@ const Proveedores = () => {
                     ))}
                 </div>
                 )}
+                </SmoothHeight>
             </div>
             </div>
         </div>
