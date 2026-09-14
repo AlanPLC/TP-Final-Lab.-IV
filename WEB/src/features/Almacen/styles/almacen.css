@@ -13,7 +13,6 @@
 .almacen-panel {
     width: 100%;
     max-width: 74rem;
-    height: 40rem;
     align-items: stretch;
 }
 
@@ -55,11 +54,10 @@
 .almacen-list {
     list-style: none;
     margin: 0;
-    padding: 0 0.25rem 0 0;
+    padding: 0;
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    overflow-y: auto;
 }
 
 .almacen-item {
@@ -233,7 +231,6 @@
     flex-direction: column;
     gap: 0;
     padding: 1.5rem;
-    overflow-y: auto;
 }
 
 .almacen-tabs {
@@ -253,6 +250,12 @@
     margin-top: 0.7rem;
 }
 .almacen-form-section .panel-label:first-of-type {
+    margin-top: 0;
+}
+.almacen-form-section .panel-label-row {
+    margin-top: 0.7rem;
+}
+.almacen-form-section .panel-label-row .panel-label {
     margin-top: 0;
 }
 
@@ -308,7 +311,6 @@
 @media (max-width: 900px) {
     .almacen-panel {
         flex-direction: column;
-        height: auto;
     }
     .almacen-list-section {
         border-right: none;

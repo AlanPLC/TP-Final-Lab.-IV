@@ -4,6 +4,9 @@ import './styles/almacen.css'
 import useAlmacen from '../../hooks/Almacen/useAlmacen.jsx';
 import { PRODUCT_ICONS, getProductIcon } from '../../constants/productIcons.js';
 import { Pencil, Trash2, ChevronDown, ChevronUp, Search } from 'lucide-react';
+import SmoothHeight from '../../components/ui/SmoothHeight.jsx';
+import SelectField from '../../components/ui/SelectField.jsx';
+import Calendar from '../../components/ui/Calendar.jsx';
 
 // Mismo tope que valida el backend (ver API/src/controllers/productosConDetallesController.js)
 // - acá solo es para dar feedback temprano, la verdad la tiene el servidor.
@@ -42,6 +45,7 @@ function Almacen() {
 
   const [formData, setFormData] = useState(datosInicialesProducto);
   const [loteData, setLoteData] = useState(datosInicialesLote);
+  const [tieneVencimiento, setTieneVencimiento] = useState(false);
 
   // Detalle de lotes de un producto (expandible en el listado).
   const [productoExpandidoId, setProductoExpandidoId] = useState(null)
@@ -208,6 +212,7 @@ function Almacen() {
           return next
         })
         setLoteData(datosInicialesLote)
+        setTieneVencimiento(false)
         setError(null)
       } else {
         console.error("Error al cargar el lote.", result.message)
@@ -254,7 +259,7 @@ function Almacen() {
                 <input type="text" className="panel-search" placeholder="Buscar producto..." onChange={(e)=>buscador(e.target.value)}/>
               </div>
             </div>
-        <ul className="almacen-list panel-scroll">
+        <ul className="almacen-list">
         {listaProductos && listaProductos.length > 0 ? (
             listaProductos.map((producto, index)  => {
             const ProductoIcon = getProductIcon(producto.imagen_url)
@@ -307,24 +312,26 @@ function Almacen() {
                     {expandido ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                     {expandido ? 'Ocultar lotes' : 'Ver lotes'}
                   </button>
-                  {expandido && (
-                    <div className="lotes-detalle">
-                      {cargandoLotes && !lotesPorProducto[producto.producto_id] ? (
-                        <p className="lotes-vacio">Cargando...</p>
-                      ) : lotesPorProducto[producto.producto_id]?.length > 0 ? (
-                        lotesPorProducto[producto.producto_id].map((lote) => (
-                          <div key={lote.id} className="lote-item">
-                            <span className="lote-proveedor">{lote.proveedor_nombre}</span>
-                            <span>{lote.cantidad_restante}/{lote.cantidad_inicial} u.</span>
-                            <span>${lote.precio_costo} c/u</span>
-                            <span>{lote.fecha_vencimiento ? `Vence: ${new Date(lote.fecha_vencimiento).toLocaleDateString()}` : 'Sin vencimiento'}</span>
-                          </div>
-                        ))
-                      ) : (
-                        <p className="lotes-vacio">Este producto no tiene lotes cargados.</p>
-                      )}
-                    </div>
-                  )}
+                  <SmoothHeight>
+                    {expandido && (
+                      <div className="lotes-detalle">
+                        {cargandoLotes && !lotesPorProducto[producto.producto_id] ? (
+                          <p className="lotes-vacio">Cargando...</p>
+                        ) : lotesPorProducto[producto.producto_id]?.length > 0 ? (
+                          lotesPorProducto[producto.producto_id].map((lote) => (
+                            <div key={lote.id} className="lote-item">
+                              <span className="lote-proveedor">{lote.proveedor_nombre}</span>
+                              <span>{lote.cantidad_restante}/{lote.cantidad_inicial} u.</span>
+                              <span>${lote.precio_costo} c/u</span>
+                              <span>{lote.fecha_vencimiento ? `Vence: ${new Date(lote.fecha_vencimiento).toLocaleDateString()}` : 'Sin vencimiento'}</span>
+                            </div>
+                          ))
+                        ) : (
+                          <p className="lotes-vacio">Este producto no tiene lotes cargados.</p>
+                        )}
+                      </div>
+                    )}
+                  </SmoothHeight>
                 </div>
               </div>
             </li>
@@ -354,6 +361,7 @@ function Almacen() {
               </button>
             </div>
 
+            <SmoothHeight>
             {tab === 'producto' ? (
             <>
             {onEdit ? (<h3 className="panel-heading">Editando Producto #{productoId}</h3>) : (<h3 className="panel-heading">Agregar Producto</h3>)}
@@ -381,10 +389,9 @@ function Almacen() {
               />
 
               <label className="panel-label">Categoria</label>
-              <select
+              <SelectField
                 id="categoria"
                 name="categoria"
-                className="panel-select"
                 value={formData.categoria || ""}
                 onChange={handleChange}
               >
@@ -396,7 +403,7 @@ function Almacen() {
                     {cate.nombre}
                   </option>
                 ))}
-              </select>
+              </SelectField>
 
               <label className="panel-label">Precio</label>
               <input
@@ -425,11 +432,13 @@ function Almacen() {
                 ))}
               </div>
 
-              {limiteAlcanzado && (
-                <p className="limite-productos">
-                  Alcanzaste el máximo de {MAX_PRODUCTOS} productos. Eliminá alguno para poder cargar otro.
-                </p>
-              )}
+              <SmoothHeight>
+                {limiteAlcanzado && (
+                  <p className="limite-productos">
+                    Alcanzaste el máximo de {MAX_PRODUCTOS} productos. Eliminá alguno para poder cargar otro.
+                  </p>
+                )}
+              </SmoothHeight>
 
               {onEdit ? (
                 <div className="segmented-bar buttons-cont">
@@ -461,10 +470,9 @@ function Almacen() {
             <h3 className="panel-heading">Cargar Stock</h3>
             <form onSubmit={cargarLote}>
               <label className="panel-label">Producto</label>
-              <select
+              <SelectField
                 id="lote-producto"
                 name="producto_id"
-                className="panel-select"
                 value={loteData.producto_id || ""}
                 onChange={handleLoteChange}
               >
@@ -476,13 +484,12 @@ function Almacen() {
                     {prod.producto_nombre}
                   </option>
                 ))}
-              </select>
+              </SelectField>
 
               <label className="panel-label">Proveedor</label>
-              <select
+              <SelectField
                 id="lote-proveedor"
                 name="proveedor_id"
-                className="panel-select"
                 value={loteData.proveedor_id || ""}
                 onChange={handleLoteChange}
               >
@@ -494,7 +501,7 @@ function Almacen() {
                     {prov.nombre}
                   </option>
                 ))}
-              </select>
+              </SelectField>
 
               <label className="panel-label">Costo de compra (por unidad)</label>
               <input
@@ -516,15 +523,30 @@ function Almacen() {
                 onChange={handleLoteChange}
               />
 
-              <label className="panel-label">Vencimiento (opcional)</label>
-              <input
-                id="lote-vencimiento"
-                type="date"
-                name="fecha_vencimiento"
-                className="panel-input"
-                value={loteData.fecha_vencimiento}
-                onChange={handleLoteChange}
-              />
+              <div className="panel-label-row">
+                <label className="panel-label" htmlFor="lote-vencimiento-check">Vencimiento</label>
+                <input
+                  id="lote-vencimiento-check"
+                  type="checkbox"
+                  className="panel-checkbox"
+                  checked={tieneVencimiento}
+                  onChange={(e) => {
+                    const checked = e.target.checked
+                    setTieneVencimiento(checked)
+                    if (!checked) setLoteData((prev) => ({ ...prev, fecha_vencimiento: "" }))
+                  }}
+                />
+              </div>
+              <SmoothHeight>
+                {tieneVencimiento && (
+                  <div className="calendar-wrap">
+                    <Calendar
+                      value={loteData.fecha_vencimiento || null}
+                      onChange={(iso) => setLoteData((prev) => ({ ...prev, fecha_vencimiento: iso }))}
+                    />
+                  </div>
+                )}
+              </SmoothHeight>
 
               <button type="submit" className="panel-button panel-button-primary almacen-submit" disabled={!validarFormLote}>
                 Cargar Lote
@@ -532,6 +554,8 @@ function Almacen() {
             </form>
             </>
             )}
+            </SmoothHeight>
+            <SmoothHeight>
             {Array.isArray(error) && error.length > 0 ? (
                 <div className='panel-error-list almacen-errors'>
                     {error.map((err, index) => (
@@ -540,6 +564,7 @@ function Almacen() {
                 </div>
                 ) : null
               }
+            </SmoothHeight>
         </div>
       </div>
     </div>
