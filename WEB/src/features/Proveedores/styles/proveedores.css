@@ -1,265 +1,186 @@
+/* Proveedores: un solo panel blanco (.panel-card, ver dashboardPanels.css)
+   dividido en dos secciones internas - listado a la izquierda, alta/edición
+   a la derecha. Antes eran dos contenedores separados (uno oscuro, uno
+   blanco); ahora comparten fondo, tipografía y paleta con el resto del
+   Dashboard. */
+
 .proveedor-main-container{
     display: flex;
-    align-items: center;
     justify-content: center;
-    flex-direction: row;
-    gap: 1rem;
-    width: 100%;
+    margin-top: 0.5rem;
 }
 
+.proveedores-panel {
+    width: 100%;
+    max-width: 60rem;
+    height: 40rem;
+    align-items: stretch;
+}
 
-/* Contenedor Lista de Proveedores */
-.prov-lista-container{
-    margin-top: 2rem;
+/* Sección de listado */
+.prov-lista-section{
+    flex: 1;
     display: flex;
     flex-direction: column;
-    width: 36rem;
-    align-items: center;
-    justify-content: flex-start;
-    height: 38rem;
-    overflow-y: auto; /* Habilita el scroll vertical */
-    border: 3px solid #000000;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+    min-width: 0;
+    padding: 1.5rem;
+    border-right: 1px solid #eef0f7;
+}
+.prov-lista-section .panel-heading{
     margin-bottom: 1rem;
-    background: rgb(37,43,66);
-    background: linear-gradient(90deg, rgba(37,43,66,1) 0%, rgba(42,49,75,1) 20%, rgba(49,57,88,1) 40%, rgba(49,57,88,1) 60%, rgba(42,49,75,1) 80%, rgba(37,43,64,1) 100%);
-    padding-bottom: 1rem;
-}
-/* Estilo Scrollbar en container Proveedores  */
-.prov-lista-container::-webkit-scrollbar {
-    width: 1rem;      
 }
 
-.prov-lista-container::-webkit-scrollbar-thumb {
-    border: 2px solid #ffff;
-    background-color: #252B42;
-    border-radius: 4px;   
-}
-
-.prov-lista-container::-webkit-scrollbar-thumb:hover {
-    background-color: #8d8d8d; 
-}
-
-.prov-lista-container::-webkit-scrollbar-track {
-    background-color: #ccc; 
-}
-
-/* H1 */
-.prov-titulo{
-    margin: 0.5rem;
-    color: #ffff;
-    font-weight: bolder;
-    border-bottom: 4px solid #ffff;
-    border-bottom-left-radius: 2px;
-    border-bottom-right-radius: 2px;
-    margin: 1rem auto 1.5rem;
-    text-align: center;
-    max-width: fit-content;
-    text-shadow:#000000 2px 2px;
-    box-shadow: #000000 0 2px;er-bottom: 3px solid #ffffff;
-}
-/* 1er UL */
 .prov-lista{
     display: flex;
     flex-direction: column;
-    gap: 1rem;
-    width: 30rem;
+    gap: 0.7rem;
     margin: 0;
-    padding: 0;
+    padding: 0 0.25rem 0 0;
+    overflow-y: auto;
+    list-style: none;
 }
 
 .prov-li-main {
     display: flex;
     flex-direction: column;
-    gap: 0;
-    border: #000 solid 1px;
-    padding: 1rem;
+    gap: 0.3rem;
+    border: 1px solid #eef0f7;
+    padding: 0.9rem;
     width: 100%;
-    background-color: #ffff;
-    border-radius: 5px;
-    margin: 0;
+    background-color: #fbfcfe;
+    border-radius: 10px;
 }
 .proveedor{
     display: flex;
     flex-direction: row;
-    font-size: 16px;
-    margin: 0;
-    align-items: center;
-}
-.proveedor div{
-    display: flex;
-    flex-direction: row;
-    gap: 0.5rem;
-    margin-left: auto;
-}
-.edit-pic, .delete-pic{
-    width: 20px;
-    height: 20px;   
-    cursor: pointer;
-}
-.prov-lista h4{
-    margin: 0.4rem;
-}
-.non-products{
-    margin: 0.4rem;
-    font-style: italic;
-    font-weight: normal;
-}
-
-.proveedor p{
-    margin: 0.4rem
-}
-.proveedor div{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-}
-
-/* 2do UL */
-.prov-lista-productos{
-    display: flex;
-    flex-direction: column;
-    gap: 0;
+    justify-content: space-between;
     align-items: flex-start;
-}
-.prov-producto{
-    display: flex;
-    flex-direction: row;
-    border: none;
-    font-style: italic;
-    gap: 0.2rem;
     margin: 0;
-    font-size: 16px;
 }
-.prov-producto p {
-    margin: 0.2rem;
-    line-height: 1rem;
-}
-.prov-producto hr{
-    height:15px;
-    margin-top:4px;
-    padding: 0;
-}
-
-.p-id{
-    font-weight: bolder;
-}
-
-/* Contenedor edición proveedor */
-.prov-edit-container{
-    margin-top: 1rem;
+.proveedor > div:first-child{
     display: flex;
     flex-direction: column;
-    width: 20rem;
-    align-items: center;
-    height: 38rem;
-    border: 3px solid #000000;
-    border-radius: 10px;
-    padding: 0.5rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
-    background-color: #ffff;
+    gap: 0.15rem;
 }
-.prov-edit-container img{
-    margin-top: 3.5rem;
-    width: 200px;
+.proveedor .p1{
+    font-weight: 700;
+    font-size: 0.72rem;
+    color: #9aa2bf;
+    margin: 0;
 }
-.prov-edit-container h2{
-    margin-bottom: 1.5rem;
-    color: #252B42;
-    font-size: 22px;
-    border-bottom: 2px solid #252B42;
-    border-radius: 2px;
+.proveedor .p3{
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 700;
+    color: #151a2e;
+    margin: 0;
 }
-.edit-title{
+.proveedor .buttons{
     display: flex;
     flex-direction: row;
     gap: 0.4rem;
     align-items: center;
+    flex-shrink: 0;
 }
-.edit-title h2{
-    color: #252B42;
-    font-size: 22px;
-    border-bottom: 2px solid #252B42;
-    border-radius: 2px;
+
+.prov-descripcion{
+    color: #6b7597;
+    font-size: 0.85rem;
+    margin: 0;
 }
-.edit-title p{
-    font-size: 22px;
-    color: black;
-    font-weight: bolder;
-    margin-bottom: 1.8rem;
+
+.prov-lista h4{
+    margin: 0.6rem 0 0.3rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #7c86a8;
+}
+.non-products{
+    margin: 0;
+    font-style: italic;
+    font-size: 0.82rem;
+    color: #9aa2bf;
+}
+
+/* Lista de productos de cada proveedor */
+.prov-lista-productos{
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    align-items: flex-start;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.prov-producto{
+    display: flex;
+    flex-direction: row;
+    gap: 0.4rem;
+    align-items: baseline;
+    font-size: 0.82rem;
+    color: #4c5675;
+}
+.p-id{
+    font-weight: 700;
+    color: #4f8cff;
+}
+
+/* Sección de alta/edición */
+.prov-edit-section{
+    width: 19rem;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem;
+    overflow-y: auto;
+}
+.edit-title{
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    align-items: baseline;
+}
+.edit-title span{
+    font-size: 0.85rem;
+    color: #9aa2bf;
+    font-weight: 700;
 }
 
 .entryes{
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0;
 }
-.entryes label{
-    font-size:medium; ;
-    font-weight:bold;
+.entryes .panel-label{
+    margin-top: 0.7rem;
 }
-
-.entryes input{
-    width: 16rem;
-    border-radius: 5px;
-    height: 2rem;
-    margin-bottom: 0.5rem;
-    border: 2px solid #ccc; 
-    border-radius: 5px;
-    padding: 0.5rem;
-    background-color: light-dark(rgb(232, 240, 254), rgba(70, 90, 126, 0.4));
+.entryes .panel-label:first-of-type{
+    margin-top: 0;
 }
 
-.entryes textarea{
-    max-width: 16rem;
-    min-width: 16rem;
-    border-radius: 5px;
-    margin-bottom: 0.5rem;
-    border: 2px solid #ccc; 
-    padding: 0.5rem;
-    border-radius: 5px;
-    max-height: 7.5rem;
-    min-height: 7.5rem;
-    background-color: light-dark(rgb(232, 240, 254), rgba(70, 90, 126, 0.4));
+.entryes .panel-input:focus,
+.entryes .panel-textarea:focus {
+    border-color: #4f8cff;
 }
 
-.entryes input:focus, textarea:focus {
-    border-color: #252B42;
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-}
-
-.entryes button{
+.prov-submit{
     width: 100%;
-    height: 2rem;
-    border-radius: 3px;
-    background-color: #252B42;
-    color: #fff;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-
+    margin-top: 1rem;
 }
 
-.entryes button:disabled{
-    background-color: #ccc;
-    cursor: not-allowed;
-    opacity: 0.6;
-}
-
-.buttons{
-    display: flex;
-    gap: 0.5rem;
-    justify-content: flex-end;
-}
-
-.error-msg{
-    color: red;
+.edit-buttons{
+    margin-top: 1rem;
 }
 
 .limite-proveedores{
-    color: #b00020;
-    font-size: 0.8rem;
-    font-weight: bold;
-    margin: 0.3rem 0;
+    color: #c22b2b;
+    font-size: 0.78rem;
+    font-weight: 700;
+    margin: 0.6rem 0 0;
 }
 
+.prov-errors{
+    margin-top: 1rem;
+}

@@ -1,6 +1,8 @@
+import '../../styles/dashboardPanels.css';
 import './styles/proveedores.css';
 import useProveedores from '../../hooks/Proveedores/useProveedores.jsx';
 import {useState, useEffect} from 'react';
+import { Pencil, Trash2 } from 'lucide-react';
 
 // Mismo tope que valida el backend (ver API/src/controllers/proveedoresController.js).
 const MAX_PROVEEDORES = 5;
@@ -12,7 +14,7 @@ const Proveedores = () => {
     const [descripcion, setDescripcion] = useState('')
     const [onEdit, setOnEdit] = useState(false)
     const [proveedorID, setProveedorID] = useState(null)
-    const [reload, setReload] = useState(false)  
+    const [reload, setReload] = useState(false)
 
     const mostrarProveedores = async() =>{
         try {
@@ -65,7 +67,7 @@ const Proveedores = () => {
                 console.error("Error al eliminar el proveedor.", result.message)
             }
         }
-       
+
     }
 
     // Fetch a Proveedores pasandole el nuevo proveedor como objeto.
@@ -86,7 +88,7 @@ const Proveedores = () => {
         }
     }
 
-    // Fetch tipo PUT proveedores modificando con el nuevo objeto creado. 
+    // Fetch tipo PUT proveedores modificando con el nuevo objeto creado.
     const actualizarProv = async()=>{
         const nuevoProveedor = {
             id: proveedorID,
@@ -113,7 +115,7 @@ const Proveedores = () => {
 
     useEffect(() => {
         mostrarProveedores();
-    }, [reload]); 
+    }, [reload]);
 
     useEffect(() => {
         console.log("Lista actualizada: ", listaProveedores);
@@ -123,73 +125,78 @@ const Proveedores = () => {
 
     return (
         <div className='proveedor-main-container'>
-            <div className='prov-lista-container'>
-                <h1 className='prov-titulo'>Proveedores</h1>
-                <ul className='prov-lista'>
+            <div className="panel-card proveedores-panel">
+            <div className='prov-lista-section'>
+                <h1 className="panel-heading">Proveedores</h1>
+                <ul className='prov-lista panel-scroll'>
                     {listaProveedores.map((prov) => (
                         <li className='prov-li-main' key={prov.proveedor_id} >
                             <div className='proveedor'>
-                                <p className='p1'>#{prov.proveedor_id}</p>
-                                <p className='p3'>{prov.nombre}</p>
                                 <div>
-                                    <img 
-                                        className="edit-pic" 
-                                        src="/edit.png" 
-                                        alt="editar" 
+                                    <p className='p1'>#{prov.proveedor_id}</p>
+                                    <p className='p3'>{prov.nombre}</p>
+                                </div>
+                                <div className="buttons">
+                                    <button
+                                        type="button"
+                                        className="panel-icon-button"
+                                        title="Editar"
                                         onClick={()=>handleEdit(prov)}
-                                        style={{
-                                            opacity: onEdit ? 0.5 : 1,
-                                            cursor: onEdit ? "not-allowed" : "pointer",
-                                            }}/>
-                                    <img 
-                                        className="delete-pic" 
-                                        src="/delete.png" 
-                                        alt="borrar" 
+                                        disabled={onEdit}>
+                                        <Pencil size={15} />
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="panel-icon-button danger"
+                                        title="Eliminar"
                                         onClick={()=>eliminarProveedor(prov.proveedor_id)}
-                                        style={{
-                                            opacity: onEdit ? 0.5 : 1,
-                                            cursor: onEdit ? "not-allowed" : "pointer",
-                                            }}/>
+                                        disabled={onEdit}>
+                                        <Trash2 size={15} />
+                                    </button>
                                 </div>
                             </div>
-                            <p>{prov.descripcion}</p>
+                            <p className="prov-descripcion">{prov.descripcion}</p>
                             <div>
                             <h4>Productos</h4>
                                 {prov.productos[0].producto_nombre !== null ? (
                                     <ul className='prov-lista-productos'>
                                     {prov.productos.map((producto, index) => (
                                         <li key={index} className='prov-producto'>
-                                            <p className='p-id'>ID #{producto.producto_id}</p>
-                                            <hr />
-                                            <p>{producto.producto_nombre}</p>
+                                            <span className='p-id'>#{producto.producto_id}</span>
+                                            <span>{producto.producto_nombre}</span>
                                         </li>
                                     ))}
                                     </ul>
                                 ) : (
-                                    <h4 className='non-products'>No existen productos.</h4>
+                                    <p className='non-products'>No tiene productos cargados.</p>
                                 )}
                             </div>
                         </li>
                     ))}
                 </ul>
             </div>
-            <div className='prov-edit-container'>
-                {!onEdit ? (<h2>Agregar Proveedores</h2>) : 
+            <div className='prov-edit-section'>
+                {!onEdit ? (<h3 className="panel-heading">Agregar Proveedor</h3>) :
                 (<div className='edit-title'>
-                    <h2>Editar Proveedor</h2>
-                    <p>Nº{proveedorID}</p>
+                    <h3 className="panel-heading">Editar Proveedor</h3>
+                    <span>#{proveedorID}</span>
                 </div>)}
                 <form className='entryes' onSubmit={agregarProv}>
-                    <label htmlFor="nombre">Nombre del Proveedor</label>
-                    <input 
-                        type="text" 
+                    <label className="panel-label" htmlFor="nombre">Nombre del Proveedor</label>
+                    <input
+                        id="nombre"
+                        type="text"
+                        className="panel-input"
                         placeholder='Ingrese el nombre del Proveedor'
                         value={nombre}
                         onChange={(e)=>setNombre(e.target.value)}/>
-                    <label htmlFor="descripcion">Descripción del Proveedor</label>
-                    <textarea 
-                    name="descripcion" 
-                    placeholder='Ingrese la descripción del proveedor...' 
+                    <label className="panel-label" htmlFor="descripcion">Descripción del Proveedor</label>
+                    <textarea
+                    id="descripcion"
+                    name="descripcion"
+                    className="panel-textarea"
+                    rows={4}
+                    placeholder='Ingrese la descripción del proveedor...'
                     value={descripcion}
                     onChange={(e)=>setDescripcion(e.target.value)}/>
                     {limiteAlcanzado && (
@@ -198,7 +205,7 @@ const Proveedores = () => {
                         </p>
                     )}
                     {onEdit ?
-                    (<div className="buttons">
+                    (<div className="segmented-bar edit-buttons">
                         <button type="button" onClick={()=> actualizarProv()} disabled={!nombre?.trim() || !descripcion?.trim()}>Editar</button>
                         <button type="button"
                         onClick={()=> {
@@ -208,17 +215,17 @@ const Proveedores = () => {
                             setProveedorID(null)
                         }}>Cancelar</button>
                     </div>) :
-                    (<button type='submit' disabled={!nombre.trim() || !descripcion.trim() || limiteAlcanzado}>Agregar Proveedor</button>)}
+                    (<button type='submit' className="panel-button panel-button-primary prov-submit" disabled={!nombre.trim() || !descripcion.trim() || limiteAlcanzado}>Agregar Proveedor</button>)}
                 </form>
-                
-                {Array.isArray(error) && error.length > 0 ? (
-                <div>
+
+                {Array.isArray(error) && error.length > 0 && (
+                <div className="panel-error-list prov-errors">
                     {error.map((err, index) => (
-                    <p className="error" key={index} style={{ color: 'red' }}>{err.msg}</p>
+                    <p key={index}>{err.msg}</p>
                     ))}
                 </div>
-                ) : (<img src="/proveedor.png" alt="proveedor" />)
-                }
+                )}
+            </div>
             </div>
         </div>
     )

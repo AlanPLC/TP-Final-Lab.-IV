@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
+import '../../styles/dashboardPanels.css'
 import './styles/almacen.css'
 import useAlmacen from '../../hooks/Almacen/useAlmacen.jsx';
 import { PRODUCT_ICONS, getProductIcon } from '../../constants/productIcons.js';
+import { Pencil, Trash2, ChevronDown, ChevronUp, Search } from 'lucide-react';
 
 // Mismo tope que valida el backend (ver API/src/controllers/productosConDetallesController.js)
 // - acá solo es para dar feedback temprano, la verdad la tiene el servidor.
@@ -11,14 +13,14 @@ const datosInicialesProducto = {
   nombre: "",
   descripcion: "",
   categoria: 0,
-  precio: null,
+  precio: "",
   imagen: "",
 };
 
 const datosInicialesLote = {
   producto_id: 0,
   proveedor_id: 0,
-  precio_costo: null,
+  precio_costo: "",
   cantidad: 0,
   fecha_vencimiento: "",
 };
@@ -242,21 +244,26 @@ function Almacen() {
     }
   return(
     <div className='almacen-container'>
-      {/* Primer contenedor (Lista de productos) */}
-      <div className='contenedor-listado'>
-            <div className='head'>
-              <h1>Listado del Almacén</h1>
-              <input type="text" placeholder="Buscar producto..." onChange={(e)=>buscador(e.target.value)}/>
+      <div className="panel-card almacen-panel">
+        {/* Sección izquierda: listado */}
+        <div className='almacen-list-section'>
+            <div className='almacen-list-head'>
+              <h1 className="panel-heading">Listado del Almacén</h1>
+              <div className="almacen-search">
+                <Search size={16} />
+                <input type="text" className="panel-search" placeholder="Buscar producto..." onChange={(e)=>buscador(e.target.value)}/>
+              </div>
             </div>
+        <ul className="almacen-list panel-scroll">
         {listaProductos && listaProductos.length > 0 ? (
             listaProductos.map((producto, index)  => {
             const ProductoIcon = getProductIcon(producto.imagen_url)
             const expandido = productoExpandidoId === producto.producto_id
             return (
-            <li key={index}>
+            <li key={index} className="almacen-item">
               <div className='pre-general'>
                 <div className='producto-icono' aria-hidden="true">
-                  <ProductoIcon size={48} strokeWidth={1.8} />
+                  <ProductoIcon size={40} strokeWidth={1.8} />
                 </div>
                 <div className='s-general'>
                   <div className='s1'>
@@ -267,13 +274,21 @@ function Almacen() {
                     </div>
                     <div className='buttons'>
                       <button
-                        className="modificar"
+                        type="button"
+                        className="panel-icon-button"
+                        title="Modificar"
                         onClick={() =>handleEditProducto(producto)}
-                        disabled={onEdit}/>
+                        disabled={onEdit}>
+                        <Pencil size={15} />
+                      </button>
                       <button
-                        className="eliminar"
+                        type="button"
+                        className="panel-icon-button danger"
+                        title="Eliminar"
                         onClick={() => eliminarProducto(producto.producto_id)}
-                        disabled={onEdit}/>
+                        disabled={onEdit}>
+                        <Trash2 size={15} />
+                      </button>
                     </div>
                   </div>
                   <div className='s2'>
@@ -289,6 +304,7 @@ function Almacen() {
                     className="ver-lotes"
                     onClick={() => toggleLotesProducto(producto.producto_id)}
                   >
+                    {expandido ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                     {expandido ? 'Ocultar lotes' : 'Ver lotes'}
                   </button>
                   {expandido && (
@@ -311,26 +327,26 @@ function Almacen() {
                   )}
                 </div>
               </div>
-              <hr />
             </li>
             )})
           ) : (
-            <p>No hay productos disponibles.</p>
+            <p className="panel-empty">No hay productos disponibles.</p>
           )}
+        </ul>
       </div>
-      {/* Segundo contenedor (Formulario) */}
-      <div className='contenedor-entradas'>
-            <div className="almacen-tabs">
+        {/* Sección derecha: alta de producto / carga de stock */}
+        <div className='almacen-form-section'>
+            <div className="segmented-bar almacen-tabs">
               <button
                 type="button"
-                className={`almacen-tab${tab === 'producto' ? ' active' : ''}`}
+                className={tab === 'producto' ? 'active' : ''}
                 onClick={() => setTab('producto')}
               >
                 Producto
               </button>
               <button
                 type="button"
-                className={`almacen-tab${tab === 'lote' ? ' active' : ''}`}
+                className={tab === 'lote' ? 'active' : ''}
                 onClick={() => setTab('lote')}
                 disabled={onEdit}
               >
@@ -340,32 +356,35 @@ function Almacen() {
 
             {tab === 'producto' ? (
             <>
-            {onEdit ? (<h3>Editando Producto #{productoId}</h3>) : (<h3>Agregar Producto</h3>)}
+            {onEdit ? (<h3 className="panel-heading">Editando Producto #{productoId}</h3>) : (<h3 className="panel-heading">Agregar Producto</h3>)}
             <form onSubmit={onEdit ? modificarProducto : agregarProducto}>
-              <label>Nombre</label>
+              <label className="panel-label">Nombre</label>
               <input
                 id="nombre"
                 type="text"
                 name="nombre"
+                className="panel-input"
                 placeholder='Nombre del producto'
                 value={formData.nombre}
                 onChange={handleChange}
               />
 
-              <label>Descripcion</label>
+              <label className="panel-label">Descripcion</label>
               <input
                 id="descripcion"
                 type="text"
                 name="descripcion"
+                className="panel-input"
                 placeholder='Descripción del producto'
                 value={formData.descripcion}
                 onChange={handleChange}
               />
 
-              <label>Categoria</label>
+              <label className="panel-label">Categoria</label>
               <select
                 id="categoria"
                 name="categoria"
+                className="panel-select"
                 value={formData.categoria || ""}
                 onChange={handleChange}
               >
@@ -379,16 +398,17 @@ function Almacen() {
                 ))}
               </select>
 
-              <label>Precio</label>
+              <label className="panel-label">Precio</label>
               <input
                 id="precio"
                 type="number"
                 name="precio"
+                className="panel-input"
                 value={formData.precio}
                 onChange={handleChange}
               />
 
-              <label>Logo</label>
+              <label className="panel-label">Logo</label>
               <div className="icon-picker" role="radiogroup" aria-label="Logo del producto">
                 {PRODUCT_ICONS.map(({ key, label, Icon }) => (
                   <button
@@ -400,7 +420,7 @@ function Almacen() {
                     className={`icon-picker-option${formData.imagen === key ? ' selected' : ''}`}
                     onClick={() => setFormData((prev) => ({ ...prev, imagen: key }))}
                   >
-                    <Icon size={22} strokeWidth={1.8} />
+                    <Icon size={20} strokeWidth={1.8} />
                   </button>
                 ))}
               </div>
@@ -412,17 +432,15 @@ function Almacen() {
               )}
 
               {onEdit ? (
-                <div className="buttons-cont">
+                <div className="segmented-bar buttons-cont">
                   <button
                     type="button"
-                    className="b1"
                     disabled={!validarFormProducto}
                     onClick={modificarProducto}
                   > Modificar
                   </button>
                   <button
                     type="button"
-                    className="b2"
                     onClick={() => {
                       setFormData(datosInicialesProducto);
                       setOnEdit(false);
@@ -432,7 +450,7 @@ function Almacen() {
                   </button>
                 </div>
               ) : (
-                <button type="submit" disabled={!validarFormProducto || limiteAlcanzado}>
+                <button type="submit" className="panel-button panel-button-primary almacen-submit" disabled={!validarFormProducto || limiteAlcanzado}>
                   Agregar Producto
                 </button>
               )}
@@ -440,12 +458,13 @@ function Almacen() {
             </>
             ) : (
             <>
-            <h3>Cargar Stock</h3>
+            <h3 className="panel-heading">Cargar Stock</h3>
             <form onSubmit={cargarLote}>
-              <label>Producto</label>
+              <label className="panel-label">Producto</label>
               <select
                 id="lote-producto"
                 name="producto_id"
+                className="panel-select"
                 value={loteData.producto_id || ""}
                 onChange={handleLoteChange}
               >
@@ -459,10 +478,11 @@ function Almacen() {
                 ))}
               </select>
 
-              <label>Proveedor</label>
+              <label className="panel-label">Proveedor</label>
               <select
                 id="lote-proveedor"
                 name="proveedor_id"
+                className="panel-select"
                 value={loteData.proveedor_id || ""}
                 onChange={handleLoteChange}
               >
@@ -476,48 +496,52 @@ function Almacen() {
                 ))}
               </select>
 
-              <label>Costo de compra (por unidad)</label>
+              <label className="panel-label">Costo de compra (por unidad)</label>
               <input
                 id="lote-precio-costo"
                 type="number"
                 name="precio_costo"
+                className="panel-input"
                 value={loteData.precio_costo}
                 onChange={handleLoteChange}
               />
 
-              <label>Cantidad</label>
+              <label className="panel-label">Cantidad</label>
               <input
                 id="lote-cantidad"
                 type="number"
                 name="cantidad"
+                className="panel-input"
                 value={loteData.cantidad}
                 onChange={handleLoteChange}
               />
 
-              <label>Vencimiento (opcional)</label>
+              <label className="panel-label">Vencimiento (opcional)</label>
               <input
                 id="lote-vencimiento"
                 type="date"
                 name="fecha_vencimiento"
+                className="panel-input"
                 value={loteData.fecha_vencimiento}
                 onChange={handleLoteChange}
               />
 
-              <button type="submit" disabled={!validarFormLote}>
+              <button type="submit" className="panel-button panel-button-primary almacen-submit" disabled={!validarFormLote}>
                 Cargar Lote
               </button>
             </form>
             </>
             )}
             {Array.isArray(error) && error.length > 0 ? (
-                <div className='errores'>
+                <div className='panel-error-list almacen-errors'>
                     {error.map((err, index) => (
-                    <><p className="error" key={index} style={{ color: 'red' }}>{err.msg}</p><hr /></>
+                    <p key={index}>{err.msg}</p>
                     ))}
                 </div>
                 ) : null
               }
-       </div>
+        </div>
+      </div>
     </div>
   )
 };

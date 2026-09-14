@@ -1,3 +1,4 @@
+import '../../styles/dashboardPanels.css';
 import './styles/productos.css';
 import { useState, useEffect } from "react";
 import useProductos from '../../hooks/Productos/useProductos.jsx';
@@ -5,6 +6,7 @@ import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 import { jwtDecode } from "jwt-decode";
 import { getProductIcon } from '../../constants/productIcons.js';
+import { Search, X, Plus, Minus } from 'lucide-react';
 
 const Productos = () => {
   const { getProductosConDetalles, postVentas, error } = useProductos()
@@ -12,26 +14,26 @@ const Productos = () => {
   const [productosVenta, setProductosVenta] = useState([])
   const [reload, setReload] = useState(false)
   const [todosLosProductos, setTodosLosProductos] = useState([])
-  
+
   // Funcionalidad generar un PDF (ticket) con los datos de la venta realizada.
   const generarPDF = (productosVenta) => {
     const doc = new jsPDF();
     const token = localStorage.getItem('token')
     const decoded = jwtDecode(token)
-  
+
     // Título
     doc.setFontSize(18);
     doc.setFont("helvetica", "bold");
     doc.text("Minimarket Bitward", doc.internal.pageSize.getWidth() / 2, 20, {
       align: "center",
     });
-  
-    // Información de la venta 
+
+    // Información de la venta
     doc.setFontSize(12);
     doc.setFont("helvetica", "normal");
     doc.text(`Fecha: ${new Date().toLocaleString()}`, 10, 40);
     doc.text(`Vendedor: ${decoded.user}`, 10, 50);
-  
+
     // Tabla con productos
     autoTable(doc, {
       startY: 60,
@@ -53,25 +55,25 @@ const Productos = () => {
       },
       theme: "grid",
     });
-  
+
     // Total de la venta
     const total = productosVenta.reduce(
       (sum, prod) => sum + prod.cantidad * prod.precio,
       0
     );
     doc.text(`Total: $${total.toFixed(2)}`, 10, doc.previousAutoTable.finalY + 10);
-  
+
     // Guardar el PDF
     doc.save("ticket_venta.pdf");
   };
-  
+
   // Traer la lista de productos
   const mostrarProductos = async()=>{
     try {
       const response = await getProductosConDetalles()
       console.log("Data recibida: ", response)
       setListaProductos(response.data.productosConDetalles)
-      setTodosLosProductos(response.data.productosConDetalles) 
+      setTodosLosProductos(response.data.productosConDetalles)
     } catch (error) {
       console.error(error);
     }
@@ -135,7 +137,7 @@ const Productos = () => {
           : prod
       )
     );
-  };  
+  };
   // Buscador de productos.
   const buscador = (nombre) => {
     if (nombre === "") {
@@ -153,18 +155,22 @@ const Productos = () => {
 
   return(
     <div className='productos-main-container'>
-        <div className='productos-lista-container'>
-            <div className='head'>
-              <h1>Productos</h1>
-              <input type="text" placeholder="Buscar producto..." onChange={(e)=>buscador(e.target.value)}/>
+      <div className="panel-card productos-panel">
+        <div className='productos-lista-section'>
+            <div className='productos-lista-head'>
+              <h1 className="panel-heading">Productos</h1>
+              <div className="productos-search">
+                <Search size={16} />
+                <input type="text" className="panel-search" placeholder="Buscar producto..." onChange={(e)=>buscador(e.target.value)}/>
+              </div>
             </div>
-            <ul>
+            <ul className="productos-grid panel-scroll">
               {listaProductos.map((prod)=>{
                 const ProductoIcon = getProductIcon(prod.imagen_url)
                 return (
                 <li key={prod.producto_id}>
                   <div className='img-container'>
-                    <ProductoIcon size={72} strokeWidth={1.5} className='imagen' aria-hidden="true"/>
+                    <ProductoIcon size={56} strokeWidth={1.5} className='imagen' aria-hidden="true"/>
                   </div>
                   <div className='p-container'>
                     <p className='P1' title={prod.producto_nombre}>{prod.producto_nombre}</p>
@@ -172,62 +178,68 @@ const Productos = () => {
                     <p className='P3' title={prod.descripcion}>{prod.descripcion}</p>
                     <p className='P4'>${prod.precio}</p>
                   </div>
-                  {prod.cantidad_disponible <= 0 ? 
-                    (<button className='boton-deshabilitado'>SIN STOCK</button>) : 
+                  {prod.cantidad_disponible <= 0 ?
+                    (<button className='boton-deshabilitado'>SIN STOCK</button>) :
                     (<button onClick={()=> agregarProducto(prod)}>AGREGAR</button>)}
                 </li>
               )})}
             </ul>
         </div>
-        <div className='productos-venta-container'>
-          <h2>Boleta de Precio</h2>
+        <div className='productos-venta-section'>
+          <h2 className="panel-heading">Boleta de Precio</h2>
           <div className='productos-venta'>
               <h3>Productos</h3>
-              <ul>
+              <ul className="panel-scroll">
                 {productosVenta.map((prod,index)=>(
                   <li key={index}>
                     <div className='item-container'>
                       {/* Primera fila producto */}
                       <div className='d1'>
                         <p>{prod.producto_nombre}</p>
-                        <img src="/delete.png" alt="X" onClick={()=>handleEliminar(prod.producto_id)}/>
+                        <button type="button" className="quitar-item" onClick={()=>handleEliminar(prod.producto_id)}>
+                          <X size={14} />
+                        </button>
                       </div>
                       {/* Segunda fila producto */}
-                      <div className='d2'>   
+                      <div className='d2'>
                         <p>${prod.precio*prod.cantidad}</p>
                         <button
-                          className="b1" 
+                          type="button"
+                          className="b1"
                           onClick={()=>decrementarCantidad(prod.producto_id)}
-                          disabled={prod.cantidad <= 1}/>
+                          disabled={prod.cantidad <= 1}>
+                          <Minus size={12} />
+                        </button>
                         <input type="number" name="cantidad" id="cantidad" placeholder='Cant.' value={prod.cantidad} readOnly/>
-                        <button 
-                          className="b2" 
+                        <button
+                          type="button"
+                          className="b2"
                           onClick={()=>incrementarCantidad(prod.producto_id)}
-                          disabled={prod.cantidad >= prod.cantidad_disponible}/>
+                          disabled={prod.cantidad >= prod.cantidad_disponible}>
+                          <Plus size={12} />
+                        </button>
                       </div>
                     </div>
-                    <hr />
                   </li>
                 ))}
               </ul>
-              {/* <button onClick={()=>console.log("Productos a vender: ",productosVenta)}>Lista</button> */}
               <hr />
               <p className='tp1'>Total</p>
               <p className='tp2'>${productosVenta.reduce((acc, curr) => acc + curr.precio*curr.cantidad, 0)}</p>
-              <hr />
               <button
-                className='venta-button'
+                className='panel-button panel-button-primary venta-button'
                 onClick={()=> confirmarVenta()}
                 disabled={productosVenta.length == 0}>Realizar Venta</button>
               {Array.isArray(error) && error.length > 0 && (
-                <div className='venta-errores'>
+                <div className='panel-error-list venta-errores'>
                   {error.map((err, index) => (
-                    <p key={index} style={{ color: 'red' }}>{err.msg}</p>
+                    <p key={index}>{err.msg}</p>
                   ))}
                 </div>
               )}
           </div>
         </div>
+      </div>
     </div>
   );
 };
