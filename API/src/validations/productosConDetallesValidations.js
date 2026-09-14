@@ -1,5 +1,6 @@
 import {body, validationResult} from "express-validator";
 import { db } from "../../config/db.js";
+import { PRODUCT_ICON_KEYS } from "../constants/productIcons.js";
 
 // Validaciones express validator
 // Validar Body Productos Con Detalles
@@ -29,15 +30,18 @@ export const validateBody = [
 
     body('proveedor_id')
     .notEmpty().withMessage('El id del proveedor es obligatorio.')
-    .isNumeric({gt:0}).withMessage('El id del proveedor debe ser mayor a 0.'),
+    .isInt({gt:0}).withMessage('El id del proveedor debe ser mayor a 0.'),
 
     body('categoria_id')
-    .notEmpty().withMessage('El precio del producto es obligatorio.')
-    .isNumeric({gt:0}).withMessage('El precio del producto debe ser mayor a 0.'),
+    .notEmpty().withMessage('La categoría del producto es obligatoria.')
+    .isInt({gt:0}).withMessage('El id de la categoría debe ser mayor a 0.'),
 
-    // body("imagen_url")
-    //     .optional()
-    //     .isURL().withMessage("La imagen_url debe ser una URL válida."),
+    // Ya no se sube una imagen libre: se elige un logo de un catálogo
+    // cerrado (ver WEB/src/constants/productIcons.js), así que acá solo
+    // hace falta validar que la key venga en esa lista.
+    body("imagen_url")
+        .notEmpty().withMessage("Elegí un logo para el producto.")
+        .isIn(PRODUCT_ICON_KEYS).withMessage("El logo elegido no es válido."),
 
     body("cantidad_disponible")
         .isInt({ min: 0 , max: 200}).withMessage("La cantidad disponible debe ser un número entero entre 0 y 200."),

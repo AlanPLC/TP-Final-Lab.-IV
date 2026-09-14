@@ -1,5 +1,12 @@
 import { db } from '../../config/db.js';
 
+// Tope de catálogo: la app es para un minimarket chico, no hace falta más.
+const MAX_PRODUCTOS = 30;
+
+// Postgres error code para violación de foreign key (categoria_id/proveedor_id
+// que no existen) - se usa para devolver un 400 claro en vez de un 500 crudo.
+const FK_VIOLATION = '23503';
+
 export const getProductosConDetalles = async(req, res)=>{
     try {
       const { rows: productosConDetalles } = await db.query(`SELECT
@@ -56,7 +63,7 @@ export const getProductosConDetallesByID = async(req, res)=>{
         WHERE productos.id = $1
         ORDER BY productos.id`, [id])
       if (rows.length === 0) {
-        return res.status(404).json({ errors: [{ msg: "Usuario no encontrado." }] });
+        return res.status(404).json({ errors: [{ msg: "Producto no encontrado." }] });
       }
       res.status(200).json(rows[0])
   } catch (error) {
@@ -70,6 +77,14 @@ export const createProductoConDetalles = async (req, res) => {
     const { nombre, descripcion, precio, categoria_id, proveedor_id, imagen_url, cantidad_disponible } = req.body;
 
     await client.query('BEGIN');
+
+    // Tope de catálogo: se chequea dentro de la misma transacción para que
+    // dos altas simultáneas no puedan colarse juntas por encima del límite.
+    const { rows: countRows } = await client.query('SELECT COUNT(*) FROM productos');
+    if (Number(countRows[0].count) >= MAX_PRODUCTOS) {
+      await client.query('ROLLBACK');
+      return res.status(400).json({ errors: [{ msg: `Se alcanzó el máximo de ${MAX_PRODUCTOS} productos.` }] });
+    }
 
     // Inserta el producto
     const { rows } = await client.query(
@@ -92,6 +107,9 @@ export const createProductoConDetalles = async (req, res) => {
   } catch (error) {
     // Revertir la transacción en caso de error
     await client.query('ROLLBACK');
+    if (error.code === FK_VIOLATION) {
+      return res.status(400).json({ errors: [{ msg: "La categoría o el proveedor seleccionado no existe." }] });
+    }
     res.status(500).json({ errors: [{ msg: "Error al crear el producto con detalles." }], error: error.message});
   } finally {
     client.release();
@@ -113,14 +131,21 @@ export const updateProductoConDetalles = async(req,res)=>{
       await client.query('ROLLBACK');
       return res.status(404).json({ errors: [{ msg: "No se encontró el producto." }] });
     }
-    await client.query(
+    const stockResult = await client.query(
       'UPDATE producto_stock SET cantidad_disponible = $1, fecha_ultima_actualizacion = NOW() WHERE producto_id = $2',
       [cantidad_disponible, id]
     )
+    if(stockResult.rowCount === 0){
+      await client.query('ROLLBACK');
+      return res.status(404).json({ errors: [{ msg: "No se encontró el stock del producto." }] });
+    }
     await client.query('COMMIT');
-    res.status(201).json({ message: "Producto actualizado con detalles exitosamente." });
+    res.status(200).json({ message: "Producto actualizado con detalles exitosamente." });
   } catch (error) {
     await client.query('ROLLBACK');
+    if (error.code === FK_VIOLATION) {
+      return res.status(400).json({ errors: [{ msg: "La categoría o el proveedor seleccionado no existe." }] });
+    }
     res.status(500).json({ errors: [{ msg: "Error al actualizar el producto con detalles." }], error: error.message});
   } finally {
     client.release();
@@ -133,13 +158,16 @@ export const deleteProductoConDetalles = async(req,res)=>{
   try {
     await client.query('BEGIN');
 
-    const result = await client.query('DELETE FROM producto_stock WHERE producto_id = $1', [id])
+    // producto_stock tiene ON DELETE CASCADE sobre productos, así que borrar
+    // productos alcanza - y el 404 se decide sobre ESE delete (antes se
+    // decidía sobre el de producto_stock, lo que daba 404 si un producto
+    // hubiera quedado sin fila de stock aunque siguiera existiendo).
+    const result = await client.query('DELETE FROM productos WHERE id = $1', [id])
 
     if(result.rowCount === 0){
       await client.query('ROLLBACK');
       return res.status(404).json({ errors: [{ msg: "No se encontró el producto." }] });
     }
-    await client.query('DELETE FROM productos WHERE id = $1', [id])
 
     await client.query('COMMIT');
     res.status(200).json({ message: "Producto y detalles eliminados exitosamente." });
