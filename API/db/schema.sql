@@ -33,6 +33,32 @@ CREATE TABLE IF NOT EXISTS productos_categorias (
   nombre VARCHAR(50) NOT NULL UNIQUE
 );
 
+-- Categorías "de logo": el nombre de cada una coincide EXACTO con el label
+-- de su ícono en WEB/src/constants/productIcons.js (todos menos "Otros") -
+-- elegir ese logo alcanza para fijar la categoría también, sin pasos
+-- extra. Si ya existía una categoría con ese nombre (creada a mano antes de
+-- esta funcionalidad), se reusa esa fila en vez de duplicarla.
+INSERT INTO productos_categorias (nombre) VALUES
+  ('Frutas y Verduras'),
+  ('Lácteos'),
+  ('Carnes'),
+  ('Pescados y Mariscos'),
+  ('Panadería'),
+  ('Galletitas'),
+  ('Golosinas'),
+  ('Snacks'),
+  ('Bebidas y Gaseosas'),
+  ('Café e Infusiones'),
+  ('Cervezas'),
+  ('Vinos y Licores'),
+  ('Congelados'),
+  ('Helados'),
+  ('Limpieza'),
+  ('Farmacia e Higiene'),
+  ('Bebés'),
+  ('Mascotas')
+ON CONFLICT (nombre) DO NOTHING;
+
 CREATE TABLE IF NOT EXISTS productos (
   id SERIAL PRIMARY KEY,
   nombre VARCHAR(100) NOT NULL,

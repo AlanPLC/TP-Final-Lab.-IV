@@ -56,3 +56,12 @@ const ICON_BY_KEY = new Map(PRODUCT_ICONS.map((i) => [i.key, i.Icon]))
 export function getProductIcon(key) {
   return ICON_BY_KEY.get(key) ?? Package
 }
+
+// Logo y categoría van de la mano: elegir uno de estos íconos (todos menos
+// "Otros") define el logo Y la categoría del producto en un solo paso - el
+// nombre de cada categoría "de logo" coincide exactamente con estos labels
+// (se siembran así en API/db/schema.sql). "Otros" queda afuera a propósito:
+// ahí el usuario elige (o crea) una categoría propia en un select aparte.
+export const LOGO_CATEGORY_KEY = 'otros'
+export const LOGO_CATEGORY_ICONS = PRODUCT_ICONS.filter((i) => i.key !== LOGO_CATEGORY_KEY)
+export const LOGO_CATEGORY_LABELS = new Set(LOGO_CATEGORY_ICONS.map((i) => i.label))
