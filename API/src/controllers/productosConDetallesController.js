@@ -29,7 +29,7 @@ export const getProductosConDetalles = async(req, res)=>{
         WHERE cantidad_restante > 0
         GROUP BY producto_id
       ) stock ON stock.producto_id = productos.id
-      ORDER BY productos.id`)
+      ORDER BY productos.id DESC`)
       res.status(200).json({ productosConDetalles });
     } catch (error) {
       res.status(500).json({ errors: [{ msg: "Error al mostrar los productos con detalles." }], error: error.message});

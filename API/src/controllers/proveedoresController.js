@@ -29,7 +29,7 @@ export const getProveedoresConProductos = async(req,res)=>{
             LEFT JOIN (SELECT DISTINCT producto_id, proveedor_id FROM lotes) lotes_proveedor
                 ON lotes_proveedor.proveedor_id = proveedores.id
             LEFT JOIN productos ON productos.id = lotes_proveedor.producto_id
-            ORDER BY proveedores.id, productos.id`);
+            ORDER BY proveedores.id DESC, productos.id`);
 
         res.status(200).json({ proveedor });
     } catch (error) {

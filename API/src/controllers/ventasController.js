@@ -18,7 +18,7 @@ export const getVentas = async (req, res) => {
         JOIN ventadetallada ON ventas.id = ventadetallada.ventas_id
         JOIN productos ON ventadetallada.producto_id = productos.id
         JOIN usuarios ON ventas.usuario_id = usuarios.id
-        ORDER BY ventas.id`);
+        ORDER BY ventas.id DESC, ventadetallada.id`);
 
         res.status(200).json({ ventas });
     } catch (error) {
