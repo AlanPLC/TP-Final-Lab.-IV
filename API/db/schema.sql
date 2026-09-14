@@ -37,7 +37,10 @@ CREATE TABLE IF NOT EXISTS productos (
   id SERIAL PRIMARY KEY,
   nombre VARCHAR(100) NOT NULL,
   descripcion VARCHAR(255),
-  precio NUMERIC(10, 2) NOT NULL CHECK (precio > 0),
+  -- Opcional a propósito: el flujo real es cargar el producto primero y el
+  -- lote (con su costo) después - recién ahí se sabe cuánto costó de verdad
+  -- y se puede poner un precio de venta con criterio.
+  precio NUMERIC(10, 2) CHECK (precio > 0),
   categoria_id INTEGER REFERENCES productos_categorias(id) ON DELETE SET NULL,
   imagen_url TEXT
 );

@@ -24,8 +24,10 @@ export const validateBody = [
     .isString().withMessage('La descripción del producto solo puede contener letras y números.')
     .isLength({min: 3, max: 100}).withMessage('La descripción debe contener de 3 a 50 carácteres.'),
 
+    // Opcional: el flujo real es cargar el producto primero y recién decidir
+    // el precio de venta después de ver cuánto costó el primer lote.
     body('precio')
-    .notEmpty().withMessage('El precio del producto es obligatorio.')
+    .optional({ values: 'null' })
     .isFloat({gt:0}).withMessage('El precio del producto debe ser mayor a 0.'),
 
     body('categoria_id')
