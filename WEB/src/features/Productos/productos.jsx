@@ -73,8 +73,12 @@ const Productos = () => {
     try {
       const response = await getProductosConDetalles()
       console.log("Data recibida: ", response)
-      setListaProductos(response.data.productosConDetalles)
-      setTodosLosProductos(response.data.productosConDetalles)
+      // Un producto sin precio todavía no está listo para venderse (se
+      // cargó el producto pero falta ponerle precio de venta, ver
+      // Almacen.jsx) - no tiene sentido mostrarlo acá.
+      const conPrecio = response.data.productosConDetalles.filter((prod) => prod.precio != null)
+      setListaProductos(conPrecio)
+      setTodosLosProductos(conPrecio)
     } catch (error) {
       console.error(error);
     }
