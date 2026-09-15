@@ -15,8 +15,37 @@
     transition-delay: 0.1s;
 }
 
+/* Tooltip: portado a document.body con position:fixed + coordenadas en JS
+   (ver Tooltip.jsx) - mismo motivo que el listbox de SelectField, escapar
+   del overflow:hidden de .panel-card. translate(-50%, -100%) centra la
+   burbuja horizontalmente sobre el trigger y apoya su borde inferior en
+   coords.top (que ya viene con el margen de 6px restado). */
+.tooltip-bubble {
+    position: fixed;
+    transform: translate(-50%, -100%);
+    padding: 0.3rem 0.55rem;
+    border-radius: 6px;
+    background-color: #151a2e;
+    color: #ffffff;
+    font-family: var(--font-body);
+    font-size: 0.72rem;
+    font-weight: 600;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 1000;
+}
+.tooltip-bubble::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    border-top-color: #151a2e;
+}
+
 /* SmoothWidth: la versión "ancho" de SmoothHeight (ver SmoothWidth.jsx) -
-   overflow:hidden + white-space:nowrap para que el texto no llegue a
+   overflow:hidden y white-space:nowrap para que el texto no llegue a
    wrappear a la altura de un ancho intermedio mientras anima. */
 .smooth-width {
     display: inline-flex;
