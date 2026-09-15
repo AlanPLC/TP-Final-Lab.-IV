@@ -2,7 +2,7 @@ import '../../styles/dashboardPanels.css';
 import './styles/proveedores.css';
 import useProveedores from '../../hooks/Proveedores/useProveedores.jsx';
 import {useState, useEffect} from 'react';
-import { Pencil, Trash2, Package, Loader2 } from 'lucide-react';
+import { Pencil, Trash2, Package, Loader2, Search } from 'lucide-react';
 import SmoothHeight from '../../components/ui/SmoothHeight.jsx';
 import ProveedorProductosModal from './ProveedorProductosModal.jsx';
 
@@ -11,7 +11,11 @@ const MAX_PROVEEDORES = 5;
 
 const Proveedores = () => {
     const { getProveedor, postProveedor, deleteProveedor, updateProveedor, setError, error } = useProveedores();
+    // todosLosProveedores: lo que devuelve el backend, sin filtrar - listaProveedores
+    // es la vista filtrada por el buscador (ver useEffect más abajo).
+    const [todosLosProveedores, setTodosLosProveedores] = useState([])
     const [listaProveedores, setListaProveedores] = useState([])
+    const [terminoBusqueda, setTerminoBusqueda] = useState('')
     // Arranca en true: al montar, todavía no se hizo ningún fetch.
     const [cargandoProveedores, setCargandoProveedores] = useState(true)
     const [nombre, setNombre] = useState('')
@@ -60,7 +64,7 @@ const Proveedores = () => {
                 }
                 return acc;
             }, []);
-            setListaProveedores(agrupados)
+            setTodosLosProveedores(agrupados)
         } catch (error) {
             console.error(error);
         } finally {
@@ -140,16 +144,40 @@ const Proveedores = () => {
     }, [reload]);
 
     useEffect(() => {
-        console.log("Lista actualizada: ", listaProveedores);
-    }, [listaProveedores]);
+        console.log("Lista actualizada: ", todosLosProveedores);
+    }, [todosLosProveedores]);
 
-    const limiteAlcanzado = !onEdit && listaProveedores.length >= MAX_PROVEEDORES;
+    // Buscador por nombre - se recalcula cada vez que cambia el término o
+    // llega una lista nueva de proveedores.
+    useEffect(() => {
+        if (!terminoBusqueda.trim()) {
+            setListaProveedores(todosLosProveedores)
+        } else {
+            setListaProveedores(
+                todosLosProveedores.filter((prov) => prov.nombre.toLowerCase().includes(terminoBusqueda.trim().toLowerCase()))
+            )
+        }
+    }, [todosLosProveedores, terminoBusqueda]);
+
+    const limiteAlcanzado = !onEdit && todosLosProveedores.length >= MAX_PROVEEDORES;
 
     return (
         <div className='proveedor-main-container'>
             <div className="panel-card proveedores-panel">
             <div className='prov-lista-section'>
-                <h1 className="panel-heading">Proveedores</h1>
+                <div className="prov-lista-head">
+                    <h1 className="panel-heading">Proveedores</h1>
+                    <div className="prov-search">
+                        <Search size={16} />
+                        <input
+                            type="text"
+                            className="panel-search"
+                            placeholder="Buscar proveedor..."
+                            value={terminoBusqueda}
+                            onChange={(e) => setTerminoBusqueda(e.target.value)}
+                        />
+                    </div>
+                </div>
                 {cargandoProveedores ? (
                 <div className="panel-loading-container">
                     <p className="panel-loading">
@@ -157,6 +185,10 @@ const Proveedores = () => {
                         Cargando proveedores...
                     </p>
                 </div>
+                ) : listaProveedores.length === 0 ? (
+                <p className="panel-empty">
+                    {terminoBusqueda.trim() ? 'No se encontraron proveedores con ese nombre.' : 'Todavía no hay proveedores cargados.'}
+                </p>
                 ) : (
                 <ul className='prov-lista'>
                     {listaProveedores.map((prov) => (

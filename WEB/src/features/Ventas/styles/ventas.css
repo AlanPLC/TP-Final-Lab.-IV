@@ -1,34 +1,115 @@
 /* Historial de Ventas: mismo panel blanco (.panel-card, ver
    dashboardPanels.css) que el resto del Dashboard - acá es una sola
-   sección (no hay formulario, es solo lectura), a todo el ancho. */
+   sección (no hay formulario, es solo lectura), a todo el ancho.
+   A diferencia del resto de las pantallas de gestión, esta ocupa toda la
+   altura disponible (.dashboard-content ya viene con overflow-y:auto como
+   red de seguridad, pero acá el scroll real pasa a ser el de .ventas-scroll,
+   adentro de la propia ficha) - con muchas ventas tiene sentido que
+   scrollee la lista, no la pantalla entera. */
 
 .ventas-main-container{
     display: flex;
     justify-content: center;
+    /* -1rem (no -0.5rem): con margin-top:0.5rem, deja otros 0.5rem libres
+       abajo (mismo margen arriba y abajo dentro de .dashboard-content). */
+    height: calc(100% - 1rem);
     margin-top: 0.5rem;
 }
 
 .ventas-panel {
     width: 100%;
     max-width: 74rem;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
 }
 
 .ventas-list-section {
     width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
     padding: 1.5rem;
 }
-.ventas-list-section .panel-heading {
+
+.ventas-list-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-shrink: 0;
     margin-bottom: 1rem;
 }
 
-.lista{
+/* Una sola barra para los 4 filtros rápidos + el botón de calendario (rango
+   custom, ver FiltroFechaModal) + el de orden asc/desc - mismo look que
+   .segmented-bar (dashboardPanels.css) pero en flex, no grid, porque acá
+   cada botón tiene un ancho de contenido distinto (los filtros son cortos,
+   "Más viejo primero" no) en vez de repartirse el espacio en partes iguales. */
+.ventas-filtros-bar {
     display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
+    flex-wrap: wrap;
+    border: 1px solid #d8dce8;
+    border-radius: 8px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+.ventas-filtros-bar button {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    border: none;
+    border-right: 1px solid #d8dce8;
+    background-color: #ffffff;
+    color: #151a2e;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 0.65rem 0.9rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+.ventas-filtros-bar button:last-child {
+    border-right: none;
+}
+.ventas-filtros-bar button:hover:not(:disabled):not(.active) {
+    background-color: #f0f3fb;
+}
+.ventas-filtros-bar button.active {
+    background-color: #4f8cff;
+    color: #ffffff;
+}
+.ventas-filtros-bar button svg {
+    flex-shrink: 0;
+}
+
+.ventas-calendario-rango {
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+/* El scroll real de la pantalla: todo lo de arriba (heading + filtro) queda
+   fijo, y solo esto se desplaza cuando el historial no entra completo. */
+.ventas-scroll {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+.lista{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    align-items: start;
+    gap: 0.6rem;
     width: 100%;
     margin: 0;
     padding: 0;
     list-style: none;
+}
+.lista .panel-empty {
+    grid-column: 1 / -1;
 }
 
 .venta-item {
@@ -40,6 +121,14 @@
     width: 100%;
     background-color: #fbfcfe;
     border-radius: 10px;
+    cursor: pointer;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.venta-item:hover,
+.venta-item:focus-visible {
+    border-color: #4f8cff;
+    box-shadow: 0 4px 14px rgba(79, 140, 255, 0.12);
+    outline: none;
 }
 .venta{
     display: flex;
@@ -52,17 +141,39 @@
 }
 .venta-total {
     text-align: right;
+    flex-shrink: 0;
+}
+
+.venta-fecha-hora {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 0;
+}
+.venta-fecha-hora-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.6rem;
 }
 
 .p1{
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
     font-family: var(--font-display);
-    font-size: 1rem;
+    font-size: 0.9rem;
     font-weight: 700;
     color: #151a2e;
+}
+.p1 svg {
+    flex-shrink: 0;
+    color: #9aa2bf;
 }
 .p2{
     font-size: 0.8rem;
     color: #9aa2bf;
+    margin-top: 0.1rem;
 }
 .p4{
     font-size: 0.72rem;
@@ -77,7 +188,9 @@
     color: #2a9d5c;
 }
 
-/* Detalle de productos de cada venta */
+/* Detalle de productos de cada venta (acá solo se ven los primeros - ver
+   PRODUCTOS_VISIBLES_EN_TARJETA en ventas.jsx; el detalle completo está en
+   VentaDetalleModal, al hacer click en la tarjeta) */
 .lista-productos{
     display: flex;
     flex-direction: column;
@@ -87,11 +200,13 @@
     padding: 0.6rem 0 0;
     border-top: 1px solid #eef0f7;
     list-style: none;
+    width: 100%;
 }
 .producto{
     display: flex;
     flex-direction: row;
     gap: 0.7rem;
+    width: 100%;
     font-size: 0.82rem;
     color: #4c5675;
 }
@@ -101,4 +216,23 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+.venta-mas-productos {
+    margin: 0;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #4f8cff;
+}
+
+@media (max-width: 900px) {
+    .lista {
+        grid-template-columns: 1fr;
+    }
+    .ventas-list-head {
+        flex-wrap: wrap;
+    }
+    .ventas-filtros-bar {
+        width: 100%;
+    }
 }

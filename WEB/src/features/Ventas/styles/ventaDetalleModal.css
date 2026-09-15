@@ -1,0 +1,78 @@
+.venta-modal-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #eef0f7;
+}
+.venta-modal-dato {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #4c5675;
+}
+.venta-modal-dato svg {
+    color: #9aa2bf;
+    flex-shrink: 0;
+}
+
+.venta-modal-productos {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin: 0 0 1rem;
+    padding: 0;
+    list-style: none;
+}
+.venta-modal-producto {
+    display: grid;
+    grid-template-columns: 1fr auto auto auto;
+    align-items: center;
+    gap: 0.6rem;
+    border: 1px solid #eef0f7;
+    border-radius: 8px;
+    padding: 0.6rem 0.8rem;
+    background-color: #fbfcfe;
+    font-size: 0.82rem;
+}
+.venta-modal-producto-nombre {
+    min-width: 0;
+    font-weight: 700;
+    color: #151a2e;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.venta-modal-producto-cantidad,
+.venta-modal-producto-unitario {
+    flex-shrink: 0;
+    color: #9aa2bf;
+    white-space: nowrap;
+}
+.venta-modal-producto-total {
+    flex-shrink: 0;
+    font-weight: 700;
+    color: #2a9d5c;
+    white-space: nowrap;
+}
+
+.venta-modal-total {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 1rem;
+    border-top: 1px solid #eef0f7;
+    font-family: var(--font-display);
+    font-weight: 700;
+}
+.venta-modal-total span:first-child {
+    color: #7c86a8;
+    font-size: 0.9rem;
+}
+.venta-modal-total span:last-child {
+    color: #151a2e;
+    font-size: 1.3rem;
+}
