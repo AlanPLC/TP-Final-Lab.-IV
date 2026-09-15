@@ -3,7 +3,7 @@ import '../../styles/dashboardPanels.css'
 import './styles/almacen.css'
 import useAlmacen from '../../hooks/Almacen/useAlmacen.jsx';
 import { PRODUCT_ICONS, getProductIcon, LOGO_CATEGORY_KEY, LOGO_CATEGORY_LABELS } from '../../constants/productIcons.js';
-import { Pencil, Trash2, Layers, Search, Plus, X } from 'lucide-react';
+import { Pencil, Trash2, Layers, Search, Plus, X, Loader2 } from 'lucide-react';
 import SmoothHeight from '../../components/ui/SmoothHeight.jsx';
 import SelectField from '../../components/ui/SelectField.jsx';
 import Calendar from '../../components/ui/Calendar.jsx';
@@ -54,6 +54,8 @@ function Almacen() {
 
   const [productoId, setProductoId] = useState(0)
   const [listaProductos, setListaProductos] = useState([])
+  // Arranca en true: al montar, todavía no se hizo ningún fetch.
+  const [cargandoProductos, setCargandoProductos] = useState(true)
   const [onEdit, setOnEdit] = useState(false)
   const [reload, setReload] = useState(false)
   const [listaCategorias, setListaCategorias] = useState([])
@@ -70,6 +72,13 @@ function Almacen() {
 
   // Producto cuyo modal de lotes está abierto (null = ninguno).
   const [modalLotesProducto, setModalLotesProducto] = useState(null)
+
+  // Estado de carga de cada petición "pesada" (crea/edita producto, carga
+  // lote): deshabilita el formulario entero (fieldset) y muestra un loader
+  // en el botón mientras se espera la respuesta, para que dos clicks
+  // seguidos no disparen la petición dos veces.
+  const [enviandoProducto, setEnviandoProducto] = useState(false)
+  const [enviandoLote, setEnviandoLote] = useState(false)
 
   // Costo unitario del lote más reciente del producto en edición, para
   // guiar qué precio de venta poner (ver handleEditProducto). null = no hay
@@ -123,6 +132,7 @@ function Almacen() {
     };
 
     const mostrarProductos = async ()=>{
+      setCargandoProductos(true)
       try {
         const response = await getAlmacen();
         console.log('Data recibida:', response);
@@ -130,6 +140,8 @@ function Almacen() {
         setTodosLosProductos(response.data.productosConDetalles);
       } catch (error) {
         console.error(error);
+      } finally {
+        setCargandoProductos(false)
       }
     }
 
@@ -214,7 +226,9 @@ function Almacen() {
         precio: formData.precio === "" ? null : formData.precio,
         imagen_url: formData.imagen
       }
+      setEnviandoProducto(true)
       const result = await postAlmacen(nuevoProducto)
+      setEnviandoProducto(false)
       if(result.success){
           setReload(!reload)
           console.log("Producto creado con éxito.", result.data)
@@ -258,7 +272,9 @@ function Almacen() {
         imagen_url: formData.imagen
       }
 
+      setEnviandoProducto(true)
       const result = await putAlmacen(nuevoProducto)
+      setEnviandoProducto(false)
         if(result.success){
           setReload(!reload)
           console.log("Productos Modificado con éxito.", result.data)
@@ -300,7 +316,9 @@ function Almacen() {
         cantidad: loteData.cantidad,
         fecha_vencimiento: loteData.fecha_vencimiento || null,
       }
+      setEnviandoLote(true)
       const result = await postLote(nuevoLote)
+      setEnviandoLote(false)
       if (result.success) {
         setReload(!reload)
         setLoteData(datosInicialesLote)
@@ -358,7 +376,12 @@ function Almacen() {
               </div>
             </div>
         <ul className="almacen-list">
-        {listaProductos && listaProductos.length > 0 ? (
+        {cargandoProductos ? (
+            <p className="panel-loading">
+              <Loader2 size={16} className="panel-spinner" />
+              Cargando productos...
+            </p>
+          ) : listaProductos && listaProductos.length > 0 ? (
             listaProductos.map((producto, index)  => {
             const ProductoIcon = getProductIcon(producto.imagen_url)
             return (
@@ -379,7 +402,7 @@ function Almacen() {
                         className="panel-icon-button"
                         title="Modificar"
                         onClick={() =>handleEditProducto(producto)}
-                        disabled={onEdit}>
+                        disabled={onEdit || enviandoProducto || enviandoLote}>
                         <Pencil size={15} />
                       </button>
                       <button
@@ -387,7 +410,7 @@ function Almacen() {
                         className="panel-icon-button danger"
                         title="Eliminar"
                         onClick={() => eliminarProducto(producto.producto_id)}
-                        disabled={onEdit}>
+                        disabled={onEdit || enviandoProducto || enviandoLote}>
                         <Trash2 size={15} />
                       </button>
                     </div>
@@ -407,7 +430,7 @@ function Almacen() {
                       type="button"
                       className="lotes-button"
                       onClick={() => setModalLotesProducto(producto)}
-                      disabled={onEdit}
+                      disabled={onEdit || enviandoProducto || enviandoLote}
                     >
                       <Layers size={14} />
                       Lotes
@@ -429,6 +452,7 @@ function Almacen() {
                 type="button"
                 className={tab === 'producto' ? 'active' : ''}
                 onClick={() => setTab('producto')}
+                disabled={enviandoProducto || enviandoLote}
               >
                 Producto
               </button>
@@ -436,7 +460,7 @@ function Almacen() {
                 type="button"
                 className={tab === 'lote' ? 'active' : ''}
                 onClick={() => setTab('lote')}
-                disabled={onEdit}
+                disabled={onEdit || enviandoProducto || enviandoLote}
               >
                 Cargar Stock
               </button>
@@ -447,6 +471,7 @@ function Almacen() {
             <>
             {onEdit ? (<h3 className="panel-heading">Editando Producto #{productoId}</h3>) : (<h3 className="panel-heading">Agregar Producto</h3>)}
             <form onSubmit={onEdit ? modificarProducto : agregarProducto}>
+            <fieldset className="panel-fieldset" disabled={enviandoProducto}>
               <label className="panel-label">Nombre</label>
               <input
                 id="nombre"
@@ -585,7 +610,8 @@ function Almacen() {
                     type="button"
                     disabled={!validarFormProducto}
                     onClick={modificarProducto}
-                  > Modificar
+                  >
+                    {enviandoProducto ? <Loader2 size={15} className="panel-spinner" /> : 'Modificar'}
                   </button>
                   <button
                     type="button"
@@ -600,15 +626,17 @@ function Almacen() {
                 </div>
               ) : (
                 <button type="submit" className="panel-button panel-button-primary almacen-submit" disabled={!validarFormProducto || limiteAlcanzado}>
-                  Agregar Producto
+                  {enviandoProducto ? <Loader2 size={16} className="panel-spinner" /> : 'Agregar Producto'}
                 </button>
               )}
+            </fieldset>
             </form>
             </>
             ) : (
             <>
             <h3 className="panel-heading">Cargar Stock</h3>
             <form onSubmit={cargarLote}>
+            <fieldset className="panel-fieldset" disabled={enviandoLote}>
               <label className="panel-label">Producto</label>
               <SelectField
                 id="lote-producto"
@@ -693,8 +721,9 @@ function Almacen() {
               </SmoothHeight>
 
               <button type="submit" className="panel-button panel-button-primary almacen-submit" disabled={!validarFormLote}>
-                Cargar Lote
+                {enviandoLote ? <Loader2 size={16} className="panel-spinner" /> : 'Cargar Lote'}
               </button>
+            </fieldset>
             </form>
             </>
             )}

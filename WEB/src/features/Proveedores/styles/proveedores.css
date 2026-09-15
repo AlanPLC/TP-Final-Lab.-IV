@@ -30,8 +30,9 @@
 }
 
 .prov-lista{
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    align-items: start;
     gap: 0.7rem;
     margin: 0;
     padding: 0;
@@ -64,7 +65,7 @@
     font-family: var(--font-display);
     font-size: 1rem;
     font-weight: 700;
-    color: #151a2e;
+    color: #4f8cff;
     margin: 0;
 }
 .proveedor .buttons{
@@ -81,39 +82,35 @@
     margin: 0;
 }
 
-.prov-lista h4{
-    margin: 0.6rem 0 0.3rem;
-    font-size: 0.72rem;
+/* Abre ProveedorProductosModal (ver ProveedorProductosModal.jsx) con la
+   lista detallada de productos que provee - antes iba inline en la propia
+   tarjeta y, con muchos productos, desarmaba el layout de la grilla. */
+.prov-productos-button{
+    align-self: flex-start;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin-top: 0.2rem;
+    border: 1px solid #d8dce8;
+    border-radius: 6px;
+    background-color: #f7f8fc;
+    color: #4f8cff;
+    font-family: var(--font-body);
+    font-size: 0.78rem;
     font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: #7c86a8;
+    padding: 0.3rem 0.55rem;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
 }
-.non-products{
-    margin: 0;
-    font-style: italic;
-    font-size: 0.82rem;
-    color: #9aa2bf;
+.prov-productos-button:hover:not(:disabled){
+    border-color: #4f8cff;
+    background-color: #eef2fc;
+}
+.prov-productos-button:disabled{
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
-/* Lista de productos de cada proveedor */
-.prov-lista-productos{
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-    align-items: flex-start;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-.prov-producto{
-    display: flex;
-    flex-direction: row;
-    gap: 0.4rem;
-    align-items: baseline;
-    font-size: 0.82rem;
-    color: #4c5675;
-}
 /* Sección de alta/edición */
 .prov-edit-section{
     width: 19rem;
@@ -161,4 +158,20 @@
 
 .prov-errors{
     margin-top: 1rem;
+}
+
+@media (max-width: 900px) {
+    .proveedores-panel {
+        flex-direction: column;
+    }
+    .prov-lista-section {
+        border-right: none;
+        border-bottom: 1px solid #eef0f7;
+    }
+    .prov-edit-section {
+        width: 100%;
+    }
+    .prov-lista {
+        grid-template-columns: 1fr;
+    }
 }

@@ -2,8 +2,9 @@ import '../../styles/dashboardPanels.css';
 import './styles/proveedores.css';
 import useProveedores from '../../hooks/Proveedores/useProveedores.jsx';
 import {useState, useEffect} from 'react';
-import { Pencil, Trash2 } from 'lucide-react';
+import { Pencil, Trash2, Package, Loader2 } from 'lucide-react';
 import SmoothHeight from '../../components/ui/SmoothHeight.jsx';
+import ProveedorProductosModal from './ProveedorProductosModal.jsx';
 
 // Mismo tope que valida el backend (ver API/src/controllers/proveedoresController.js).
 const MAX_PROVEEDORES = 5;
@@ -16,6 +17,11 @@ const Proveedores = () => {
     const [onEdit, setOnEdit] = useState(false)
     const [proveedorID, setProveedorID] = useState(null)
     const [reload, setReload] = useState(false)
+    // Proveedor cuyo modal de productos está abierto (null = ninguno).
+    const [modalProductosProveedor, setModalProductosProveedor] = useState(null)
+    // Loader en el botón + formulario deshabilitado mientras se espera la
+    // respuesta de agregar/editar un proveedor.
+    const [enviandoProveedor, setEnviandoProveedor] = useState(false)
 
     const mostrarProveedores = async() =>{
         try {
@@ -30,6 +36,9 @@ const Proveedores = () => {
                     existingProv.productos.push({
                         producto_id: prov.producto_id,
                         producto_nombre: prov.producto_nombre,
+                        producto_costo_unitario: prov.producto_costo_unitario,
+                        producto_imagen_url: prov.producto_imagen_url,
+                        producto_categoria_nombre: prov.producto_categoria_nombre,
                     });
                 } else {
                     // Si no existe, crear una nueva entrada
@@ -40,6 +49,9 @@ const Proveedores = () => {
                         productos: [{
                             producto_id: prov.producto_id,
                             producto_nombre: prov.producto_nombre,
+                            producto_costo_unitario: prov.producto_costo_unitario,
+                            producto_imagen_url: prov.producto_imagen_url,
+                            producto_categoria_nombre: prov.producto_categoria_nombre,
                         }],
                     });
                 }
@@ -78,7 +90,9 @@ const Proveedores = () => {
             nombre: nombre,
             descripcion: descripcion,
         }
+        setEnviandoProveedor(true)
         const result = await postProveedor(nuevoProveedor)
+        setEnviandoProveedor(false)
         if(result.success){
             setReload(!reload)
             console.log("Errores:", error)
@@ -96,7 +110,9 @@ const Proveedores = () => {
             nombre: nombre,
             descripcion: descripcion,
         }
+        setEnviandoProveedor(true)
         const result = await updateProveedor(nuevoProveedor)
+        setEnviandoProveedor(false)
         if(result.success){
             setReload(!reload)
             console.log("Proveedor actualizado con éxito.", result.data)
@@ -142,7 +158,7 @@ const Proveedores = () => {
                                         className="panel-icon-button"
                                         title="Editar"
                                         onClick={()=>handleEdit(prov)}
-                                        disabled={onEdit}>
+                                        disabled={onEdit || enviandoProveedor}>
                                         <Pencil size={15} />
                                     </button>
                                     <button
@@ -150,26 +166,21 @@ const Proveedores = () => {
                                         className="panel-icon-button danger"
                                         title="Eliminar"
                                         onClick={()=>eliminarProveedor(prov.proveedor_id)}
-                                        disabled={onEdit}>
+                                        disabled={onEdit || enviandoProveedor}>
                                         <Trash2 size={15} />
                                     </button>
                                 </div>
                             </div>
                             <p className="prov-descripcion">{prov.descripcion}</p>
-                            <div>
-                            <h4>Productos</h4>
-                                {prov.productos[0].producto_nombre !== null ? (
-                                    <ul className='prov-lista-productos'>
-                                    {prov.productos.map((producto, index) => (
-                                        <li key={index} className='prov-producto'>
-                                            <span>{producto.producto_nombre}</span>
-                                        </li>
-                                    ))}
-                                    </ul>
-                                ) : (
-                                    <p className='non-products'>No tiene productos cargados.</p>
-                                )}
-                            </div>
+                            <button
+                                type="button"
+                                className="prov-productos-button"
+                                onClick={() => setModalProductosProveedor(prov)}
+                                disabled={enviandoProveedor}
+                            >
+                                <Package size={14} />
+                                Productos
+                            </button>
                         </li>
                     ))}
                 </ul>
@@ -178,6 +189,7 @@ const Proveedores = () => {
                 {!onEdit ? (<h3 className="panel-heading">Agregar Proveedor</h3>) :
                     (<h3 className="panel-heading">Editar Proveedor</h3>)}
                 <form className='entryes' onSubmit={agregarProv}>
+                    <fieldset className="panel-fieldset" disabled={enviandoProveedor}>
                     <label className="panel-label" htmlFor="nombre">Nombre del Proveedor</label>
                     <input
                         id="nombre"
@@ -204,7 +216,9 @@ const Proveedores = () => {
                     </SmoothHeight>
                     {onEdit ?
                     (<div className="segmented-bar edit-buttons">
-                        <button type="button" onClick={()=> actualizarProv()} disabled={!nombre?.trim() || !descripcion?.trim()}>Editar</button>
+                        <button type="button" onClick={()=> actualizarProv()} disabled={!nombre?.trim() || !descripcion?.trim()}>
+                            {enviandoProveedor ? <Loader2 size={15} className="panel-spinner" /> : 'Editar'}
+                        </button>
                         <button type="button"
                         onClick={()=> {
                             setNombre('')
@@ -213,7 +227,10 @@ const Proveedores = () => {
                             setProveedorID(null)
                         }}>Cancelar</button>
                     </div>) :
-                    (<button type='submit' className="panel-button panel-button-primary prov-submit" disabled={!nombre.trim() || !descripcion.trim() || limiteAlcanzado}>Agregar Proveedor</button>)}
+                    (<button type='submit' className="panel-button panel-button-primary prov-submit" disabled={!nombre.trim() || !descripcion.trim() || limiteAlcanzado}>
+                        {enviandoProveedor ? <Loader2 size={16} className="panel-spinner" /> : 'Agregar Proveedor'}
+                    </button>)}
+                    </fieldset>
                 </form>
 
                 <SmoothHeight>
@@ -227,6 +244,12 @@ const Proveedores = () => {
                 </SmoothHeight>
             </div>
             </div>
+            {modalProductosProveedor && (
+                <ProveedorProductosModal
+                    proveedor={modalProductosProveedor}
+                    onClose={() => setModalProductosProveedor(null)}
+                />
+            )}
         </div>
     )
 };

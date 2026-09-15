@@ -138,6 +138,30 @@
     border-color: #9aa2bf;
 }
 
+/* Loader dentro de un botón (ver panel-spinner en los ícono Loader2 de las
+   pantallas de gestión) mientras espera la respuesta de una petición. */
+.panel-spinner {
+    animation: panel-spin 0.7s linear infinite;
+}
+@keyframes panel-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Reset de <fieldset> para poder deshabilitar TODOS los campos/botones de un
+   formulario de una sola vez (disabled en un fieldset cascada de forma
+   nativa a cualquier input/button/select descendiente, sin tener que
+   repetirlo campo por campo) sin que el fieldset meta su borde/padding por
+   defecto ni rompa el layout en flex-column del form. */
+.panel-fieldset {
+    display: flex;
+    flex-direction: column;
+    gap: inherit;
+    min-width: 0;
+    border: none;
+    margin: 0;
+    padding: 0;
+}
+
 .panel-icon-button {
     display: inline-flex;
     align-items: center;
@@ -233,6 +257,20 @@
     color: #9aa2bf;
     font-size: 0.9rem;
     text-align: center;
+    padding: 2rem 0;
+}
+
+/* Estado de carga de un listado (ver Almacen/Productos) - mismo lugar que
+   ocuparía .panel-empty mientras todavía no se sabe si va a haber datos o
+   no, para que la lista no aparezca vacía "de golpe" antes de llegar la
+   respuesta. */
+.panel-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    color: #9aa2bf;
+    font-size: 0.9rem;
     padding: 2rem 0;
 }
 

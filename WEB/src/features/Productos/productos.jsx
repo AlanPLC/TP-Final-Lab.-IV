@@ -6,17 +6,23 @@ import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 import { jwtDecode } from "jwt-decode";
 import { getProductIcon } from '../../constants/productIcons.js';
-import { Search, X, Plus, Minus } from 'lucide-react';
+import { Search, X, Plus, Minus, Loader2 } from 'lucide-react';
 import SmoothHeight from '../../components/ui/SmoothHeight.jsx';
 import Modal from '../../components/ui/Modal.jsx';
 
 const Productos = () => {
   const { getProductosConDetalles, postVentas, error } = useProductos()
   const [listaProductos, setListaProductos] = useState([])
+  // Arranca en true: al montar, todavía no se hizo ningún fetch.
+  const [cargandoProductos, setCargandoProductos] = useState(true)
   const [productosVenta, setProductosVenta] = useState([])
   const [reload, setReload] = useState(false)
   const [todosLosProductos, setTodosLosProductos] = useState([])
   const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false)
+  // Mientras se espera la respuesta de la venta: loader en el botón y el
+  // resto de la pantalla (agregar productos, editar cantidades, cancelar)
+  // deshabilitado, para no permitir tocar nada hasta que termine.
+  const [enviandoVenta, setEnviandoVenta] = useState(false)
 
   // Funcionalidad generar un PDF (ticket) con los datos de la venta realizada.
   // ventaId viene del id que devuelve el backend al crear la venta (mismo
@@ -79,6 +85,7 @@ const Productos = () => {
 
   // Traer la lista de productos
   const mostrarProductos = async()=>{
+    setCargandoProductos(true)
     try {
       const response = await getProductosConDetalles()
       console.log("Data recibida: ", response)
@@ -90,6 +97,8 @@ const Productos = () => {
       setTodosLosProductos(conPrecio)
     } catch (error) {
       console.error(error);
+    } finally {
+      setCargandoProductos(false)
     }
   }
   // Llevar el producto a la lista de ventas
@@ -126,10 +135,13 @@ const Productos = () => {
   }
 
   // El botón "Realizar Venta" solo abre la confirmación (evita ventas por
-  // missclick); confirmarVenta() recién se dispara al aceptar el modal.
+  // missclick); confirmarVenta() recién se dispara al aceptar el modal. El
+  // modal se mantiene abierto (con loader) hasta que la petición termina.
   const handleConfirmarVenta = async () => {
-    setMostrarConfirmacion(false)
+    setEnviandoVenta(true)
     await confirmarVenta()
+    setEnviandoVenta(false)
+    setMostrarConfirmacion(false)
   }
 
 
@@ -184,11 +196,17 @@ const Productos = () => {
               <h1 className="panel-heading">Productos</h1>
               <div className="productos-search">
                 <Search size={16} />
-                <input type="text" className="panel-search" placeholder="Buscar producto..." onChange={(e)=>buscador(e.target.value)}/>
+                <input type="text" className="panel-search" placeholder="Buscar producto..." onChange={(e)=>buscador(e.target.value)} disabled={enviandoVenta}/>
               </div>
             </div>
             <ul className="productos-grid">
-              {listaProductos.map((prod)=>{
+              {cargandoProductos ? (
+                <p className="panel-loading">
+                  <Loader2 size={16} className="panel-spinner" />
+                  Cargando productos...
+                </p>
+              ) : listaProductos.length > 0 ? (
+                listaProductos.map((prod)=>{
                 const ProductoIcon = getProductIcon(prod.imagen_url)
                 return (
                 <li key={prod.producto_id}>
@@ -202,10 +220,13 @@ const Productos = () => {
                     <p className='P4'>${prod.precio}</p>
                   </div>
                   {prod.cantidad_disponible <= 0 ?
-                    (<button className='boton-deshabilitado'>SIN STOCK</button>) :
-                    (<button onClick={()=> agregarProducto(prod)}>AGREGAR</button>)}
+                    (<button className='boton-deshabilitado' disabled>SIN STOCK</button>) :
+                    (<button onClick={()=> agregarProducto(prod)} disabled={enviandoVenta}>AGREGAR</button>)}
                 </li>
-              )})}
+              )})
+              ) : (
+                <p className="panel-empty">No hay productos disponibles.</p>
+              )}
             </ul>
         </div>
         <div className='productos-venta-section'>
@@ -222,7 +243,7 @@ const Productos = () => {
                       {/* Primera fila producto */}
                       <div className='d1'>
                         <p>{prod.producto_nombre}</p>
-                        <button type="button" className="quitar-item" onClick={()=>handleEliminar(prod.producto_id)}>
+                        <button type="button" className="quitar-item" onClick={()=>handleEliminar(prod.producto_id)} disabled={enviandoVenta}>
                           <X size={16} />
                         </button>
                       </div>
@@ -233,7 +254,7 @@ const Productos = () => {
                           type="button"
                           className="b1"
                           onClick={()=>decrementarCantidad(prod.producto_id)}
-                          disabled={prod.cantidad <= 1}>
+                          disabled={prod.cantidad <= 1 || enviandoVenta}>
                           <Minus size={15} />
                         </button>
                         <input type="number" name="cantidad" id="cantidad" placeholder='Cant.' value={prod.cantidad} readOnly/>
@@ -241,7 +262,7 @@ const Productos = () => {
                           type="button"
                           className="b2"
                           onClick={()=>incrementarCantidad(prod.producto_id)}
-                          disabled={prod.cantidad >= prod.cantidad_disponible}>
+                          disabled={prod.cantidad >= prod.cantidad_disponible || enviandoVenta}>
                           <Plus size={15} />
                         </button>
                       </div>
@@ -272,16 +293,16 @@ const Productos = () => {
         </div>
       </div>
       {mostrarConfirmacion && (
-        <Modal title="Confirmar venta" onClose={() => setMostrarConfirmacion(false)}>
+        <Modal title="Confirmar venta" onClose={() => !enviandoVenta && setMostrarConfirmacion(false)}>
           <p className="confirmar-venta-texto">
             Vas a registrar la venta de {productosVenta.length} producto{productosVenta.length === 1 ? '' : 's'} por un total de <strong>${totalVenta}</strong>.
           </p>
           <div className="confirmar-venta-acciones">
-            <button type="button" className="panel-button panel-button-secondary" onClick={() => setMostrarConfirmacion(false)}>
+            <button type="button" className="panel-button panel-button-secondary" onClick={() => setMostrarConfirmacion(false)} disabled={enviandoVenta}>
               Cancelar
             </button>
-            <button type="button" className="panel-button panel-button-primary" onClick={handleConfirmarVenta}>
-              Confirmar venta
+            <button type="button" className="panel-button panel-button-primary" onClick={handleConfirmarVenta} disabled={enviandoVenta}>
+              {enviandoVenta ? <Loader2 size={16} className="panel-spinner" /> : 'Confirmar venta'}
             </button>
           </div>
         </Modal>

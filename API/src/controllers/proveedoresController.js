@@ -18,17 +18,28 @@ export const getProveedoresConProductos = async(req,res)=>{
         // Un proveedor ya no está vinculado a un producto directamente, sino
         // a través de los lotes que le cargaron (ver schema.sql) - "sus
         // productos" son los que tienen al menos un lote de ese proveedor.
+        // El precio que importa acá es lo que ESE proveedor cobró por unidad
+        // (precio_costo del lote más reciente que le cargaron), no el precio
+        // de venta del producto - dos proveedores del mismo producto pueden
+        // tener costos distintos.
         const { rows: proveedor } = await db.query(
         `SELECT
                 proveedores.id AS proveedor_id,
                 proveedores.nombre AS proveedor_nombre,
                 proveedores.descripcion AS proveedor_descripcion,
                 productos.id AS producto_id,
-                productos.nombre AS producto_nombre
+                productos.nombre AS producto_nombre,
+                ultimo_lote.precio_costo AS producto_costo_unitario,
+                productos.imagen_url AS producto_imagen_url,
+                productos_categorias.nombre AS producto_categoria_nombre
             FROM proveedores
-            LEFT JOIN (SELECT DISTINCT producto_id, proveedor_id FROM lotes) lotes_proveedor
-                ON lotes_proveedor.proveedor_id = proveedores.id
-            LEFT JOIN productos ON productos.id = lotes_proveedor.producto_id
+            LEFT JOIN (
+                SELECT DISTINCT ON (producto_id, proveedor_id) producto_id, proveedor_id, precio_costo
+                FROM lotes
+                ORDER BY producto_id, proveedor_id, fecha_ingreso DESC
+            ) ultimo_lote ON ultimo_lote.proveedor_id = proveedores.id
+            LEFT JOIN productos ON productos.id = ultimo_lote.producto_id
+            LEFT JOIN productos_categorias ON productos.categoria_id = productos_categorias.id
             ORDER BY proveedores.id DESC, productos.id`);
 
         res.status(200).json({ proveedor });
