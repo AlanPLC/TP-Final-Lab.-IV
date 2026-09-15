@@ -1,0 +1,240 @@
+/* Resumen de estadísticas de Inicio: tarjetas blancas (mismo look que
+   .panel-card del resto del Dashboard) sobre el fondo transparente de
+   .dashboard-home, en vez de plantarle un panel-card entero encima (esto
+   es un resumen de lectura, no una sección de gestión con listado+form). */
+
+/* Filas explícitas en vez de un único grid con auto-placement: así se
+   controla a mano qué tarjetas van juntas (Ventas + Productos más vendidos
+   en una fila; Stock bajo + Vencimientos + Ganancias en la otra) en vez de
+   depender de que el algoritmo de acomodo automático las agrupe bien. */
+.stats-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1.75rem;
+}
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+    align-items: start;
+    gap: 1rem;
+}
+/* Sin esto, una tarjeta con contenido ancho (p.ej. nombres de producto
+   largos en Productos más vendidos) empuja su columna de grid más allá de
+   su fracción (1fr), robándole ancho a las demás columnas de la fila -
+   mismo problema que min-width:auto en flex, pero para grid items. El
+   overflow horizontal de tablas ya lo maneja .stat-table-scroll. */
+.stats-row > .stat-card {
+    min-width: 0;
+}
+/* Fila superior (Ventas | Productos más vendidos): Ventas necesita más
+   fracción para que su tabla y sus 4 barras entren lado a lado sin scroll
+   (ver .stat-table-toggle table-layout:fixed más abajo); Productos más
+   vendidos se apoya en el scroll propio de su tabla (.stat-table-scroll)
+   para el resto. */
+.stats-row-top {
+    grid-template-columns: 1.3fr 1fr;
+}
+@media (max-width: 60rem) {
+    .stats-row-top {
+        grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+    }
+}
+
+/* Fila final: Ganancias + Stock bajo + Vencimientos unificadas en UNA sola
+   tarjeta con tres secciones en fila, separadas por una línea vertical
+   (.stat-section + .stat-section), en vez de tres tarjetas con su propio
+   borde/sombra repetidos. */
+.stat-card-sections {
+    display: flex;
+    flex-wrap: wrap;
+}
+.stat-section {
+    flex: 1 1 14rem;
+    min-width: 0;
+    padding: 0 1.5rem;
+}
+.stat-section:first-child {
+    padding-left: 0;
+}
+.stat-section:last-child {
+    padding-right: 0;
+}
+.stat-section + .stat-section {
+    border-left: 1px solid #eef0f7;
+}
+@media (max-width: 48rem) {
+    .stat-section {
+        flex-basis: 100%;
+        padding: 1rem 0 0;
+    }
+    .stat-section:first-child {
+        padding-top: 0;
+    }
+    .stat-section + .stat-section {
+        border-left: none;
+        border-top: 1px solid #eef0f7;
+    }
+}
+
+.stat-card {
+    background-color: #ffffff;
+    border: 1px solid #e3e6f0;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(21, 26, 46, 0.08);
+    padding: 1.25rem 1.4rem;
+}
+
+.stat-card-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #151a2e;
+    margin: 0 0 0.9rem;
+}
+.stat-card-title svg {
+    color: #4f8cff;
+    flex-shrink: 0;
+}
+
+/* Tabla clave/valor (Ventas totales, Ganancias, últimos 7 días) */
+.stat-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.stat-table td {
+    padding: 0.45rem 0;
+    font-size: 0.88rem;
+    border-bottom: 1px solid #f0f3fb;
+}
+.stat-table tr:last-child td {
+    border-bottom: none;
+}
+.stat-table td:first-child {
+    color: #7c86a8;
+    font-weight: 600;
+}
+.stat-table td:last-child {
+    text-align: right;
+    font-weight: 700;
+    color: #151a2e;
+}
+
+/* Tabla con encabezado (top productos, stock bajo, vencimientos) - el
+   scroll horizontal (para no forzar el ancho de la tarjeta) va en un DIV
+   que envuelve a la tabla (ver .stat-table-scroll), no en la tabla misma:
+   ponerle display:block a la tabla y display:table por separado a thead y
+   tbody los separaba en dos layouts de tabla independientes, cada uno
+   calculando sus propios anchos de columna sin compartirlos - por eso el
+   encabezado y los datos quedaban desfasados entre sí. Con la tabla como
+   tabla de verdad (sin overrides de display), el navegador arma UN solo
+   layout de columnas compartido entre thead y tbody, como corresponde. */
+.stat-table-scroll {
+    overflow-x: auto;
+}
+.stat-table-cols th {
+    text-align: left;
+    padding: 0 0 0.5rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #9aa2bf;
+    border-bottom: 1px solid #eef0f7;
+    white-space: nowrap;
+}
+.stat-table-cols td {
+    padding: 0.55rem 0;
+    font-size: 0.85rem;
+    color: #151a2e;
+    border-bottom: 1px solid #f0f3fb;
+    white-space: nowrap;
+}
+.stat-table-cols tbody tr:last-child td {
+    border-bottom: none;
+}
+.stat-table-cols th:not(:first-child),
+.stat-table-cols td:not(:first-child) {
+    padding-left: 1.2rem;
+}
+
+/* Gráfico + tabla desmarcable lado a lado (Ventas, Productos más vendidos) -
+   apilados en columna cuando no entran los dos lado a lado. */
+.stat-chart-layout {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: flex-start;
+}
+.stat-chart-layout .bar-chart {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+.stat-chart-layout .stat-table {
+    flex: 0 0 11rem;
+}
+
+/* Productos más vendidos: tabla arriba y gráfico de barras horizontales
+   abajo, cada uno al 100% del ancho de la tarjeta, en vez de lado a lado -
+   con barras horizontales el layout lado a lado las dejaría angostas sin
+   aprovechar el espacio que sobra. */
+.stat-chart-layout-stacked {
+    flex-direction: column;
+    align-items: stretch;
+}
+.stat-chart-layout-stacked > .stat-table-scroll,
+.stat-chart-layout-stacked > .bar-chart {
+    width: 100%;
+}
+
+/* table-layout:fixed para que la tabla de Ventas pueda achicarse hasta el
+   ancho que le da el flex (ver .stat-chart-layout .stat-table arriba) y
+   quede al lado del gráfico - sin esto, una tabla en table-layout:auto se
+   niega a bajar de su ancho mínimo de contenido (el de "Ticket promedio" o
+   "$137000.00" sin cortar), forzando el wrap a pesar del min-width chico
+   puesto por CSS. Con columnas fijas, el texto que no entra simplemente
+   pasa a una segunda línea en vez de ensanchar la tabla. */
+.stat-table-toggle {
+    table-layout: fixed;
+}
+
+/* La primera columna (checkbox) no lleva el padding-left ni el color/peso
+   que .stat-table/.stat-table-cols le dan por defecto a su primera celda -
+   esos estilos pasan a la SEGUNDA columna (la etiqueta real). */
+.stat-table-toggle td:first-child {
+    width: 1.6rem;
+    padding-right: 0;
+    color: inherit;
+    font-weight: normal;
+}
+.stat-table.stat-table-toggle td:nth-child(2) {
+    color: #7c86a8;
+    font-weight: 600;
+}
+
+.stat-valor-alerta {
+    color: #c98a1a;
+    font-weight: 700;
+}
+.stat-valor-critico {
+    color: #c22b2b;
+    font-weight: 700;
+}
+
+.stat-badge {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.2rem 0.55rem;
+    border-radius: 6px;
+    background-color: #fdf3e0;
+    color: #c98a1a;
+    white-space: nowrap;
+}
+.stat-badge-critico {
+    background-color: #fdecec;
+    color: #c22b2b;
+}

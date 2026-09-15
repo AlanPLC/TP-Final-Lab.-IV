@@ -336,3 +336,127 @@
 .calendar-header button:disabled:hover {
     background-color: transparent;
 }
+
+/* BarChart: gráfico de barras propio para Inicio (ver BarChart.jsx) - cada
+   columna es flex con align-items:flex-end, así que basta con darle a la
+   barra un height en % del máximo para que "crezca desde abajo" sin cálculo
+   de posición.
+   Ancho de columna FIJO (no flex:1): al desmarcar ítems, las barras que
+   quedan no se agrandan para "rellenar" - el contenedor mantiene su ancho
+   (lo fija .stat-chart-layout) y el espacio libre queda como padding
+   alrededor, centrado, en vez de un grosor de barra que cambia según
+   cuántos ítems estén tildados. overflow-x:auto es la red de seguridad si
+   algún día hay más columnas de las que entran. */
+.bar-chart {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 0.3rem;
+    height: 11rem;
+    padding: 0.5rem 0 0;
+    overflow-x: auto;
+}
+.bar-chart-col {
+    flex: 0 0 4rem;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+    height: 100%;
+}
+.bar-chart-value {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #4c5675;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+.bar-chart-track {
+    width: 100%;
+    flex: 1;
+    display: flex;
+    align-items: flex-end;
+}
+.bar-chart-bar {
+    width: 100%;
+    min-height: 2px;
+    background-color: #4f8cff;
+    border-radius: 4px 4px 0 0;
+    transition: height 0.25s ease;
+}
+.bar-chart-label {
+    font-size: 0.68rem;
+    color: #9aa2bf;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+/* Estado "Sin Datos" (ver BarChart.jsx): mismo alto que el gráfico con
+   barras (lo hereda de .bar-chart), pero centrado vertical en vez de
+   apoyado abajo - así el contenedor no cambia de tamaño al desmarcar todo. */
+.bar-chart-vacio {
+    align-items: center;
+}
+.bar-chart-empty {
+    margin: 0;
+    text-align: center;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #9aa2bf;
+}
+
+/* Variante horizontal (ver orientation="horizontal" en BarChart.jsx): filas
+   en vez de columnas, cada una con su propio ancho relativo al máximo -
+   pensada para listados donde sobra ancho pero no alto (Productos más
+   vendidos). Reemplaza el alto fijo/scroll horizontal de la variante
+   vertical por alto automático y ancho 100%, ya que acá el eje que "crece"
+   es el horizontal, no el vertical. */
+.bar-chart-horizontal {
+    flex-direction: column;
+    align-items: stretch;
+    height: auto;
+    padding: 0;
+    overflow-x: visible;
+}
+.bar-chart-hrow {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+}
+.bar-chart-hlabel {
+    flex: 0 0 8rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #4c5675;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.bar-chart-htrack {
+    flex: 1;
+    min-width: 0;
+    background-color: #f0f3fb;
+    border-radius: 4px;
+    overflow: hidden;
+}
+.bar-chart-hbar {
+    height: 0.9rem;
+    min-width: 2px;
+    border-radius: 4px;
+    background-color: #4f8cff;
+    transition: width 0.25s ease;
+}
+.bar-chart-hvalue {
+    flex: 0 0 auto;
+    min-width: 3.5rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #151a2e;
+    text-align: right;
+    white-space: nowrap;
+}
