@@ -375,13 +375,16 @@ function Almacen() {
                 </div>
               </div>
             </div>
-        <ul className="almacen-list">
         {cargandoProductos ? (
+          <div className="panel-loading-container">
             <p className="panel-loading">
               <Loader2 size={16} className="panel-spinner" />
               Cargando productos...
             </p>
-          ) : listaProductos && listaProductos.length > 0 ? (
+          </div>
+        ) : (
+        <ul className="almacen-list">
+        {listaProductos && listaProductos.length > 0 ? (
             listaProductos.map((producto, index)  => {
             const ProductoIcon = getProductIcon(producto.imagen_url)
             return (
@@ -444,6 +447,7 @@ function Almacen() {
             <p className="panel-empty">No hay productos disponibles.</p>
           )}
         </ul>
+        )}
       </div>
         {/* Sección derecha: alta de producto / carga de stock */}
         <div className='almacen-form-section'>

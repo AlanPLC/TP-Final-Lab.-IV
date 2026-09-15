@@ -12,6 +12,8 @@ const MAX_PROVEEDORES = 5;
 const Proveedores = () => {
     const { getProveedor, postProveedor, deleteProveedor, updateProveedor, setError, error } = useProveedores();
     const [listaProveedores, setListaProveedores] = useState([])
+    // Arranca en true: al montar, todavía no se hizo ningún fetch.
+    const [cargandoProveedores, setCargandoProveedores] = useState(true)
     const [nombre, setNombre] = useState('')
     const [descripcion, setDescripcion] = useState('')
     const [onEdit, setOnEdit] = useState(false)
@@ -24,6 +26,7 @@ const Proveedores = () => {
     const [enviandoProveedor, setEnviandoProveedor] = useState(false)
 
     const mostrarProveedores = async() =>{
+        setCargandoProveedores(true)
         try {
             const response = await getProveedor()
             console.log('Data recibida:', response);
@@ -60,6 +63,8 @@ const Proveedores = () => {
             setListaProveedores(agrupados)
         } catch (error) {
             console.error(error);
+        } finally {
+            setCargandoProveedores(false)
         }
     }
 
@@ -145,6 +150,14 @@ const Proveedores = () => {
             <div className="panel-card proveedores-panel">
             <div className='prov-lista-section'>
                 <h1 className="panel-heading">Proveedores</h1>
+                {cargandoProveedores ? (
+                <div className="panel-loading-container">
+                    <p className="panel-loading">
+                        <Loader2 size={16} className="panel-spinner" />
+                        Cargando proveedores...
+                    </p>
+                </div>
+                ) : (
                 <ul className='prov-lista'>
                     {listaProveedores.map((prov) => (
                         <li className='prov-li-main' key={prov.proveedor_id} >
@@ -184,6 +197,7 @@ const Proveedores = () => {
                         </li>
                     ))}
                 </ul>
+                )}
             </div>
             <div className='prov-edit-section'>
                 {!onEdit ? (<h3 className="panel-heading">Agregar Proveedor</h3>) :

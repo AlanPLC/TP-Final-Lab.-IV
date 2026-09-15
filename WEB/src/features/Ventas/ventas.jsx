@@ -2,13 +2,17 @@ import '../../styles/dashboardPanels.css';
 import './styles/ventas.css';
 import { useState, useEffect } from "react";
 import useVentas from "../../hooks/Ventas/useVentas.jsx";
+import { Loader2 } from 'lucide-react';
 
 const Ventas = () => {
     const {ventas} = useVentas()
     const [ventasList, setVentasList] = useState([])
+    // Arranca en true: al montar, todavía no se hizo ningún fetch.
+    const [cargandoVentas, setCargandoVentas] = useState(true)
 
     // Recibe el fetch del hook
     const fetchVentas = async()=>{
+        setCargandoVentas(true)
         try {
             const response = await ventas()
             console.log('Data recibida:', response);
@@ -56,6 +60,8 @@ const Ventas = () => {
             setVentasList(agrupadas);
         } catch (error) {
             console.error("Error al obtener ventas.", error)
+        } finally {
+            setCargandoVentas(false)
         }
     }
 
@@ -68,7 +74,14 @@ const Ventas = () => {
         <div className="panel-card ventas-panel">
         <div className='ventas-list-section'>
         <h1 className="panel-heading">Historial de Ventas</h1>
-            {ventasList.length > 0 ? (
+            {cargandoVentas ? (
+            <div className="panel-loading-container">
+                <p className="panel-loading">
+                    <Loader2 size={16} className="panel-spinner" />
+                    Cargando ventas...
+                </p>
+            </div>
+            ) : ventasList.length > 0 ? (
             <ul className='lista'>
                 {ventasList.map((venta) => (
                     <li className='venta-item' key={venta.venta_id} >

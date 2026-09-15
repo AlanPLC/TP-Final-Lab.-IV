@@ -199,13 +199,16 @@ const Productos = () => {
                 <input type="text" className="panel-search" placeholder="Buscar producto..." onChange={(e)=>buscador(e.target.value)} disabled={enviandoVenta}/>
               </div>
             </div>
-            <ul className="productos-grid">
-              {cargandoProductos ? (
+            {cargandoProductos ? (
+              <div className="panel-loading-container">
                 <p className="panel-loading">
                   <Loader2 size={16} className="panel-spinner" />
                   Cargando productos...
                 </p>
-              ) : listaProductos.length > 0 ? (
+              </div>
+            ) : (
+            <ul className="productos-grid">
+              {listaProductos.length > 0 ? (
                 listaProductos.map((prod)=>{
                 const ProductoIcon = getProductIcon(prod.imagen_url)
                 return (
@@ -228,6 +231,7 @@ const Productos = () => {
                 <p className="panel-empty">No hay productos disponibles.</p>
               )}
             </ul>
+            )}
         </div>
         <div className='productos-venta-section'>
           <h2 className="panel-heading">Boleta de Precio</h2>

@@ -260,10 +260,21 @@
     padding: 2rem 0;
 }
 
-/* Estado de carga de un listado (ver Almacen/Productos) - mismo lugar que
-   ocuparía .panel-empty mientras todavía no se sabe si va a haber datos o
-   no, para que la lista no aparezca vacía "de golpe" antes de llegar la
-   respuesta. */
+/* Estado de carga de un listado (Almacen/Productos/Proveedores/Ventas) -
+   reemplaza a la lista/grilla entera mientras se espera la respuesta (no va
+   anidado adentro, ver cada feature) para poder centrarlo en las dos
+   direcciones dentro del espacio que ocuparía el contenido: flex:1 lo hace
+   ocupar el resto del alto disponible en las secciones que ya son
+   flex-column (Almacen, Productos, Proveedores); min-height es el piso para
+   cuando el contenedor padre no fuerza una altura mayor (Ventas, que es una
+   sola sección sin split). */
+.panel-loading-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 12rem;
+}
 .panel-loading {
     display: flex;
     align-items: center;
@@ -271,7 +282,6 @@
     gap: 0.5rem;
     color: #9aa2bf;
     font-size: 0.9rem;
-    padding: 2rem 0;
 }
 
 /* Scroll fino y discreto, mismo criterio que el resto de Destino
