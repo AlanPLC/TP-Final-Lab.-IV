@@ -1,0 +1,12 @@
+.filtro-fecha-ayuda {
+    margin: 0 0 1rem;
+    font-size: 0.85rem;
+    color: #7c86a8;
+}
+
+.filtro-fecha-acciones {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.6rem;
+    margin-top: 1.2rem;
+}
