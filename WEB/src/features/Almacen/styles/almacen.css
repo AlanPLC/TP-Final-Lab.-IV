@@ -205,56 +205,29 @@
     margin: 0 0 0.4rem;
 }
 
-.ver-lotes {
-    align-self: flex-start;
+.lotes-button {
     display: flex;
     align-items: center;
-    gap: 0.25rem;
-    width: auto;
-    background: none;
-    border: none;
+    gap: 0.3rem;
+    margin-left: auto;
+    border: 1px solid #d8dce8;
+    border-radius: 6px;
+    background-color: #f7f8fc;
     color: #4f8cff;
     font-family: var(--font-body);
-    font-size: 0.84rem;
+    font-size: 0.78rem;
     font-weight: 700;
-    padding: 0;
-    margin-top: 0.15rem;
+    padding: 0.3rem 0.55rem;
     cursor: pointer;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
 }
-.ver-lotes:hover {
-    text-decoration: underline;
+.lotes-button:hover {
+    border-color: #4f8cff;
+    background-color: #eef2fc;
 }
-
-.lotes-detalle {
-    display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
-    background-color: #f7f8fc;
-    border-radius: 8px;
-    padding: 0.6rem 0.7rem;
-    margin-top: 0.2rem;
-}
-.lote-item {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.6rem;
-    font-size: 0.84rem;
-    color: #4c5675;
-    border-bottom: 1px solid #e3e6f0;
-    padding-bottom: 0.3rem;
-}
-.lote-item:last-child {
-    border-bottom: none;
-    padding-bottom: 0;
-}
-.lote-proveedor {
-    font-weight: 700;
-    color: #151a2e;
-}
-.lotes-vacio {
-    font-size: 0.84rem;
-    color: #9aa2bf;
-    margin: 0;
+.lotes-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 /* Sección de formulario (Producto / Cargar Stock) */
