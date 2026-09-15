@@ -317,6 +317,14 @@
     color: #ffffff;
     font-weight: 700;
 }
+/* Modo rango (ver Calendar.jsx): franja plana entre el inicio y el fin, más
+   clara que los extremos (.selected) para que se lea como un único tramo
+   continuo en vez de días sueltos resaltados. */
+.calendar-day.in-range {
+    background-color: #eef2fc;
+    color: #4f8cff;
+    border-radius: 0;
+}
 .calendar-day:disabled:not(.empty) {
     color: #c7cfe6;
     cursor: not-allowed;
