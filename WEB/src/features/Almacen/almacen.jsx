@@ -3,10 +3,11 @@ import '../../styles/dashboardPanels.css'
 import './styles/almacen.css'
 import useAlmacen from '../../hooks/Almacen/useAlmacen.jsx';
 import { PRODUCT_ICONS, getProductIcon, LOGO_CATEGORY_KEY, LOGO_CATEGORY_LABELS } from '../../constants/productIcons.js';
-import { Pencil, Trash2, ChevronDown, ChevronUp, Search, Plus, X } from 'lucide-react';
+import { Pencil, Trash2, Layers, Search, Plus, X } from 'lucide-react';
 import SmoothHeight from '../../components/ui/SmoothHeight.jsx';
 import SelectField from '../../components/ui/SelectField.jsx';
 import Calendar from '../../components/ui/Calendar.jsx';
+import LotesModal from './LotesModal.jsx';
 
 // Mismo tope que valida el backend (ver API/src/controllers/productosConDetallesController.js)
 // - acá solo es para dar feedback temprano, la verdad la tiene el servidor.
@@ -67,10 +68,8 @@ function Almacen() {
   const [loteData, setLoteData] = useState(datosInicialesLote);
   const [tieneVencimiento, setTieneVencimiento] = useState(false);
 
-  // Detalle de lotes de un producto (expandible en el listado).
-  const [productoExpandidoId, setProductoExpandidoId] = useState(null)
-  const [lotesPorProducto, setLotesPorProducto] = useState({})
-  const [cargandoLotes, setCargandoLotes] = useState(false)
+  // Producto cuyo modal de lotes está abierto (null = ninguno).
+  const [modalLotesProducto, setModalLotesProducto] = useState(null)
 
   // Costo unitario del lote más reciente del producto en edición, para
   // guiar qué precio de venta poner (ver handleEditProducto). null = no hay
@@ -304,34 +303,11 @@ function Almacen() {
       const result = await postLote(nuevoLote)
       if (result.success) {
         setReload(!reload)
-        setLotesPorProducto((prev) => {
-          const next = { ...prev }
-          delete next[String(nuevoLote.producto_id)]
-          return next
-        })
         setLoteData(datosInicialesLote)
         setTieneVencimiento(false)
         setError(null)
       } else {
         console.error("Error al cargar el lote.", result.message)
-      }
-    }
-
-    // Muestra/oculta el detalle de lotes de un producto (orden FEFO: el que
-    // vence antes primero, ver API/src/controllers/lotesController.js).
-    const toggleLotesProducto = async (productoId) => {
-      if (productoExpandidoId === productoId) {
-        setProductoExpandidoId(null)
-        return
-      }
-      setProductoExpandidoId(productoId)
-      if (!lotesPorProducto[productoId]) {
-        setCargandoLotes(true)
-        const result = await getLotes(productoId)
-        if (result.success) {
-          setLotesPorProducto((prev) => ({ ...prev, [productoId]: result.data }))
-        }
-        setCargandoLotes(false)
       }
     }
 
@@ -385,7 +361,6 @@ function Almacen() {
         {listaProductos && listaProductos.length > 0 ? (
             listaProductos.map((producto, index)  => {
             const ProductoIcon = getProductIcon(producto.imagen_url)
-            const expandido = productoExpandidoId === producto.producto_id
             return (
             <li key={index} className="almacen-item">
               <div className='pre-general'>
@@ -428,35 +403,16 @@ function Almacen() {
                     )}
                     <p className='p1'>Cant.:</p>
                     <p className='p2'>{producto.cantidad_disponible}</p>
+                    <button
+                      type="button"
+                      className="lotes-button"
+                      onClick={() => setModalLotesProducto(producto)}
+                      disabled={onEdit}
+                    >
+                      <Layers size={14} />
+                      Lotes
+                    </button>
                   </div>
-                  <button
-                    type="button"
-                    className="ver-lotes"
-                    onClick={() => toggleLotesProducto(producto.producto_id)}
-                  >
-                    {expandido ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-                    {expandido ? 'Ocultar lotes' : 'Ver lotes'}
-                  </button>
-                  <SmoothHeight>
-                    {expandido && (
-                      <div className="lotes-detalle">
-                        {cargandoLotes && !lotesPorProducto[producto.producto_id] ? (
-                          <p className="lotes-vacio">Cargando...</p>
-                        ) : lotesPorProducto[producto.producto_id]?.length > 0 ? (
-                          lotesPorProducto[producto.producto_id].map((lote) => (
-                            <div key={lote.id} className="lote-item">
-                              <span className="lote-proveedor">{lote.proveedor_nombre}</span>
-                              <span>{lote.cantidad_restante}/{lote.cantidad_inicial} u.</span>
-                              <span>${lote.precio_costo} c/u</span>
-                              <span>{lote.fecha_vencimiento ? `Vence: ${new Date(lote.fecha_vencimiento).toLocaleDateString()}` : 'Sin vencimiento'}</span>
-                            </div>
-                          ))
-                        ) : (
-                          <p className="lotes-vacio">Este producto no tiene lotes cargados.</p>
-                        )}
-                      </div>
-                    )}
-                  </SmoothHeight>
                 </div>
               </div>
             </li>
@@ -755,6 +711,12 @@ function Almacen() {
             </SmoothHeight>
         </div>
       </div>
+      {modalLotesProducto && (
+        <LotesModal
+          producto={modalLotesProducto}
+          onClose={() => setModalLotesProducto(null)}
+        />
+      )}
     </div>
   )
 };
