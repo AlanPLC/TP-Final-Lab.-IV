@@ -21,14 +21,13 @@ function FiltroFechaModal({ desde, hasta, onAplicar, onClose }) {
 
   return (
     <Modal title="Elegir rango de fechas" onClose={onClose}>
-      <p className="filtro-fecha-ayuda">
-        Elegí el día desde el que querés buscar y después el día hasta el que llega el rango.
-      </p>
-      <Calendar
-        rangeStart={rango.desde || null}
-        rangeEnd={rango.hasta || null}
-        onRangeSelect={(nuevoDesde, nuevoHasta) => setRango({ desde: nuevoDesde || '', hasta: nuevoHasta || '' })}
-      />
+      <div className="filtro-fecha-calendario">
+        <Calendar
+          rangeStart={rango.desde || null}
+          rangeEnd={rango.hasta || null}
+          onRangeSelect={(nuevoDesde, nuevoHasta) => setRango({ desde: nuevoDesde || '', hasta: nuevoHasta || '' })}
+        />
+      </div>
       <div className="filtro-fecha-acciones">
         <button type="button" className="panel-button panel-button-secondary" onClick={limpiar}>
           Limpiar

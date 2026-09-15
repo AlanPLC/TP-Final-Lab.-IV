@@ -582,7 +582,7 @@ function Almacen() {
                   el precio de venta solo se carga al editar. */}
               {onEdit && (
                 <>
-                  <label className="panel-label">Precio <span className="panel-label-optional">(opcional)</span></label>
+                  <label className="panel-label">Precio</label>
                   <SmoothHeight>
                     {costoUltimaCompra != null && (
                       <p className="precio-hint">Última compra: ${costoUltimaCompra} c/u</p>

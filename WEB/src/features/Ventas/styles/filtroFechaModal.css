@@ -1,12 +1,16 @@
-.filtro-fecha-ayuda {
-    margin: 0 0 1rem;
-    font-size: 0.85rem;
-    color: #7c86a8;
+/* Mes/año del calendario más grandes acá que en el resto de la app (ver
+   Almacen, que usa el mismo Calendar para el vencimiento de un lote) - sin
+   el texto de ayuda arriba, el calendario es lo único que hay en el modal y
+   tiene más protagonismo. */
+.filtro-fecha-calendario .calendar-header span {
+    font-size: 1.05rem;
 }
 
 .filtro-fecha-acciones {
     display: flex;
-    justify-content: flex-end;
     gap: 0.6rem;
     margin-top: 1.2rem;
+}
+.filtro-fecha-acciones button {
+    flex: 1;
 }
