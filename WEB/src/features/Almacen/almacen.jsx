@@ -7,6 +7,7 @@ import { Pencil, Trash2, Layers, Search, Plus, X, Loader2 } from 'lucide-react';
 import SmoothHeight from '../../components/ui/SmoothHeight.jsx';
 import SelectField from '../../components/ui/SelectField.jsx';
 import Calendar from '../../components/ui/Calendar.jsx';
+import Tooltip from '../../components/ui/Tooltip.jsx';
 import LotesModal from './LotesModal.jsx';
 
 // Mismo tope que valida el backend (ver API/src/controllers/productosConDetallesController.js)
@@ -504,17 +505,18 @@ function Almacen() {
               <label className="panel-label">Categoría</label>
               <div className="icon-picker" role="radiogroup" aria-label="Categoría del producto">
                 {PRODUCT_ICONS.map((icon) => (
-                  <button
-                    key={icon.key}
-                    type="button"
-                    role="radio"
-                    aria-checked={formData.imagen === icon.key}
-                    title={icon.label}
-                    className={`icon-picker-option${formData.imagen === icon.key ? ' selected' : ''}`}
-                    onClick={() => elegirCategoriaDeLogo(icon)}
-                  >
-                    <icon.Icon size={20} strokeWidth={1.8} />
-                  </button>
+                  <Tooltip key={icon.key} text={icon.label}>
+                    <button
+                      type="button"
+                      role="radio"
+                      aria-checked={formData.imagen === icon.key}
+                      aria-label={icon.label}
+                      className={`icon-picker-option${formData.imagen === icon.key ? ' selected' : ''}`}
+                      onClick={() => elegirCategoriaDeLogo(icon)}
+                    >
+                      <icon.Icon size={20} strokeWidth={1.8} />
+                    </button>
+                  </Tooltip>
                 ))}
               </div>
 
