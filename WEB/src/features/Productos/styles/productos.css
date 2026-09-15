@@ -263,7 +263,7 @@
 .item-container .d1 p{
     text-align: left;
     font-weight: 600;
-    font-size: 0.85rem;
+    font-size: 0.95rem;
     color: #151a2e;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -274,8 +274,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 1.4rem;
-    height: 1.4rem;
+    padding: 0.3rem;
     flex-shrink: 0;
     border: none;
     border-radius: 5px;
@@ -298,22 +297,22 @@
 }
 
 .item-container .d2 input{
-    width: 2.4rem;
+    width: 2.7rem;
     border: 1px solid #d8dce8;
     border-radius: 5px;
     text-align: center;
     font-weight: 700;
+    font-size: 0.95rem;
     background-color: #ffffff;
     color: #151a2e;
-    padding: 0.2rem 0;
+    padding: 0.3rem 0;
 }
 
 .item-container .d2 button{
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 1.3rem;
-    height: 1.3rem;
+    padding: 0.3rem;
     flex-shrink: 0;
     border: 1px solid #d8dce8;
     border-radius: 5px;
@@ -333,5 +332,19 @@
 .item-container .d2 p{
     margin-right: auto;
     font-weight: 700;
+    font-size: 0.95rem;
     color: #2a9d5c;
+}
+
+/* Modal de confirmación al "Realizar Venta" */
+.confirmar-venta-texto{
+    margin: 0 0 1.2rem;
+    font-size: 0.95rem;
+    color: #4c5675;
+    line-height: 1.5;
+}
+.confirmar-venta-acciones{
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.6rem;
 }

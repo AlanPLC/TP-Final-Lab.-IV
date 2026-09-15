@@ -107,7 +107,10 @@ export const createVentas = async(req, res) => {
         }
 
         await client.query('COMMIT');
-        res.status(201).json({ message: "Venta creada exitosamente." });
+        // Se devuelve el id de la venta para que el frontend arme un
+        // número de ticket único y estable (igual que un POS real, donde el
+        // número de comprobante es el id de la venta en la base).
+        res.status(201).json({ message: "Venta creada exitosamente.", id: ventaId });
     } catch (error) {
         if (client) await client.query('ROLLBACK');
         if (error instanceof VentaInvalida) {

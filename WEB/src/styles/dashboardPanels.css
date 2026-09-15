@@ -128,6 +128,15 @@
     color: #94a0c2;
     cursor: not-allowed;
 }
+.panel-button-secondary {
+    background-color: #f0f3fb;
+    color: #4c5675;
+    border: 1px solid #d8dce8;
+}
+.panel-button-secondary:hover:not(:disabled) {
+    background-color: #eef0f7;
+    border-color: #9aa2bf;
+}
 
 .panel-icon-button {
     display: inline-flex;

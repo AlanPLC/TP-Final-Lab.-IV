@@ -8,6 +8,7 @@ import { jwtDecode } from "jwt-decode";
 import { getProductIcon } from '../../constants/productIcons.js';
 import { Search, X, Plus, Minus } from 'lucide-react';
 import SmoothHeight from '../../components/ui/SmoothHeight.jsx';
+import Modal from '../../components/ui/Modal.jsx';
 
 const Productos = () => {
   const { getProductosConDetalles, postVentas, error } = useProductos()
@@ -15,12 +16,17 @@ const Productos = () => {
   const [productosVenta, setProductosVenta] = useState([])
   const [reload, setReload] = useState(false)
   const [todosLosProductos, setTodosLosProductos] = useState([])
+  const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false)
 
   // Funcionalidad generar un PDF (ticket) con los datos de la venta realizada.
-  const generarPDF = (productosVenta) => {
+  // ventaId viene del id que devuelve el backend al crear la venta (mismo
+  // criterio que un ticket real: el número de comprobante es el id de la
+  // venta en la base, no algo armado del lado del cliente).
+  const generarPDF = (productosVenta, ventaId) => {
     const doc = new jsPDF();
     const token = localStorage.getItem('token')
     const decoded = jwtDecode(token)
+    const numeroTicket = String(ventaId).padStart(6, '0')
 
     // Título
     doc.setFontSize(18);
@@ -32,6 +38,7 @@ const Productos = () => {
     // Información de la venta
     doc.setFontSize(12);
     doc.setFont("helvetica", "normal");
+    doc.text(`Ticket Nº: ${numeroTicket}`, 10, 30);
     doc.text(`Fecha: ${new Date().toLocaleString()}`, 10, 40);
     doc.text(`Vendedor: ${decoded.user}`, 10, 50);
 
@@ -64,8 +71,10 @@ const Productos = () => {
     );
     doc.text(`Total: $${total.toFixed(2)}`, 10, doc.previousAutoTable.finalY + 10);
 
-    // Guardar el PDF
-    doc.save("ticket_venta.pdf");
+    // Nombre de archivo único por ticket (número de venta + fecha), en vez
+    // de un nombre estático que se pisaría entre tickets distintos.
+    const fechaArchivo = new Date().toISOString().slice(0, 10);
+    doc.save(`ticket_${numeroTicket}_${fechaArchivo}.pdf`);
   };
 
   // Traer la lista de productos
@@ -108,12 +117,19 @@ const Productos = () => {
     const response = await postVentas(productosBody)
     if(response.success){
       console.log("Venta creada con éxito.", response.data)
-      generarPDF(productosVenta)
+      generarPDF(productosVenta, response.data.id)
       setProductosVenta([])
       setReload(!reload)
     } else {
       console.error("Error al confirmar la venta.", response.message || response.errors)
     }
+  }
+
+  // El botón "Realizar Venta" solo abre la confirmación (evita ventas por
+  // missclick); confirmarVenta() recién se dispara al aceptar el modal.
+  const handleConfirmarVenta = async () => {
+    setMostrarConfirmacion(false)
+    await confirmarVenta()
   }
 
 
@@ -157,6 +173,8 @@ const Productos = () => {
   useEffect(() => {
     mostrarProductos()
   }, [reload]);
+
+  const totalVenta = productosVenta.reduce((acc, curr) => acc + curr.precio*curr.cantidad, 0)
 
   return(
     <div className='productos-main-container'>
@@ -205,7 +223,7 @@ const Productos = () => {
                       <div className='d1'>
                         <p>{prod.producto_nombre}</p>
                         <button type="button" className="quitar-item" onClick={()=>handleEliminar(prod.producto_id)}>
-                          <X size={14} />
+                          <X size={16} />
                         </button>
                       </div>
                       {/* Segunda fila producto */}
@@ -216,7 +234,7 @@ const Productos = () => {
                           className="b1"
                           onClick={()=>decrementarCantidad(prod.producto_id)}
                           disabled={prod.cantidad <= 1}>
-                          <Minus size={12} />
+                          <Minus size={15} />
                         </button>
                         <input type="number" name="cantidad" id="cantidad" placeholder='Cant.' value={prod.cantidad} readOnly/>
                         <button
@@ -224,7 +242,7 @@ const Productos = () => {
                           className="b2"
                           onClick={()=>incrementarCantidad(prod.producto_id)}
                           disabled={prod.cantidad >= prod.cantidad_disponible}>
-                          <Plus size={12} />
+                          <Plus size={15} />
                         </button>
                       </div>
                     </div>
@@ -236,10 +254,10 @@ const Productos = () => {
               </SmoothHeight>
               <hr />
               <p className='tp1'>Total</p>
-              <p className='tp2'>${productosVenta.reduce((acc, curr) => acc + curr.precio*curr.cantidad, 0)}</p>
+              <p className='tp2'>${totalVenta}</p>
               <button
                 className='panel-button panel-button-primary venta-button'
-                onClick={()=> confirmarVenta()}
+                onClick={()=> setMostrarConfirmacion(true)}
                 disabled={productosVenta.length == 0}>Realizar Venta</button>
               <SmoothHeight>
               {Array.isArray(error) && error.length > 0 && (
@@ -253,6 +271,21 @@ const Productos = () => {
           </div>
         </div>
       </div>
+      {mostrarConfirmacion && (
+        <Modal title="Confirmar venta" onClose={() => setMostrarConfirmacion(false)}>
+          <p className="confirmar-venta-texto">
+            Vas a registrar la venta de {productosVenta.length} producto{productosVenta.length === 1 ? '' : 's'} por un total de <strong>${totalVenta}</strong>.
+          </p>
+          <div className="confirmar-venta-acciones">
+            <button type="button" className="panel-button panel-button-secondary" onClick={() => setMostrarConfirmacion(false)}>
+              Cancelar
+            </button>
+            <button type="button" className="panel-button panel-button-primary" onClick={handleConfirmarVenta}>
+              Confirmar venta
+            </button>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 };
