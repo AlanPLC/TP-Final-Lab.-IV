@@ -9,6 +9,7 @@ import ventasRouter from "./src/routes/ventasRoutes.js"
 import proveedoresRouter from "./src/routes/proveedoresRoutes.js";
 import productosConDetalles from "./src/routes/productosConDetallesRoutes.js";
 import lotesRouter from "./src/routes/lotesRoutes.js";
+import estadisticasRouter from "./src/routes/estadisticasRoutes.js";
 
 // Conectar a DB
 conectarDB();
@@ -20,8 +21,10 @@ const port = 3000;
 // interpretar JSON en body
 app.use(express.json());
 
-// Habilito cors
-app.use(cors());
+// Habilito cors - expuesto X-Renewed-Token para que el front (ver
+// requireAuth.js) pueda leer el token renovado de cada respuesta; sin
+// exponerlo explícitamente el navegador se lo esconde a la página.
+app.use(cors({ exposedHeaders: ["X-Renewed-Token"] }));
 
 // Configuración de Passport y middleware para autenticación
 authConfig();
@@ -34,6 +37,7 @@ app.use(ventasRouter);
 app.use(proveedoresRouter);
 app.use(productosConDetalles)
 app.use(lotesRouter)
+app.use(estadisticasRouter)
 app.listen(port, () => {
   console.log(`La aplicacion esta funcionando en: ${port}`);
 });

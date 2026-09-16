@@ -2,17 +2,17 @@ import express from 'express';
 import { getLotesPorProducto, createLote } from '../controllers/lotesController.js';
 import { validateBody } from '../validations/lotesValidations.js';
 import { validateID } from '../middlewares/idValidator.js';
-import passport from "passport"
+import { requireAuth } from '../middlewares/requireAuth.js'
 
 const lotesRouter = express.Router();
 
 lotesRouter.get('/lotes/producto/:id',
-    passport.authenticate("jwt", { session: false }),
+    ...requireAuth,
     validateID,
     getLotesPorProducto)
 
 lotesRouter.post('/lotes',
-    passport.authenticate("jwt", { session: false }),
+    ...requireAuth,
     validateBody,
     createLote)
 

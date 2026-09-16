@@ -13,11 +13,16 @@ import Almacen from './features/Almacen/almacen.jsx'
 import './styles/App.css'
 // Componente para proteger rutas sin estar logueado.
 import ProtectedRoute from './components/protecRoute.jsx';
+import Toast from './components/ui/Toast.jsx';
 
 function App() {
 
   return (
     <>
+      {/* Fuera del Router: sobrevive a cualquier navegación/redirect y
+          muestra el aviso de "sesión expirada" que deja expirarSesion()
+          (ver utils/sesion.js) apenas se monta, sin importar en qué ruta. */}
+      <Toast />
       <Router>
         <Routes>
           {/* RootTransition anima con un slide de pantalla completa el

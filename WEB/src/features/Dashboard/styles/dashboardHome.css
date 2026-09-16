@@ -27,13 +27,31 @@
 .stats-row > .stat-card {
     min-width: 0;
 }
-/* Fila superior (Ventas | Productos más vendidos): Ventas necesita más
-   fracción para que su tabla y sus 4 barras entren lado a lado sin scroll
-   (ver .stat-table-toggle table-layout:fixed más abajo); Productos más
-   vendidos se apoya en el scroll propio de su tabla (.stat-table-scroll)
-   para el resto. */
+/* Fila superior (Ventas | Productos más vendidos): mitad y mitad para las
+   dos tarjetas, sin sesgo hacia ninguna. En pantallas angostas eso le deja
+   menos ancho a Ventas, así que su tabla y su gráfico van a caer más seguido
+   en el apilado (ver useLadoALado en dashboardHome.jsx, que decide de
+   verdad si entran lado a lado o no) - es lo esperado, no un bug: más vale
+   apilados y legibles que lado a lado y apretados. */
 .stats-row-top {
-    grid-template-columns: 1.3fr 1fr;
+    grid-template-columns: 1fr 1fr;
+    /* Ventas y Productos más vendidos parejas en alto (por defecto cada
+       tarjeta de la fila queda con su alto de contenido - ver align-items:
+       start en .stats-row) - la más baja (Ventas) estira su tarjeta al
+       alto de la más alta y centra su contenido en el espacio de sobra. */
+    align-items: stretch;
+}
+.stats-row-top > .stat-card {
+    display: flex;
+    flex-direction: column;
+}
+/* La tarjeta más corta de la fila (Ventas o Productos más vendidos, según
+   cuánto contenido tenga cada una) estira su .stat-chart-layout al alto de
+   la más alta (align-items:stretch arriba) y centra su contenido ahí en vez
+   de quedar pegado arriba con un hueco abajo. */
+.stats-row-top > .stat-card > .stat-chart-layout {
+    flex: 1;
+    align-items: center;
 }
 @media (max-width: 60rem) {
     .stats-row-top {
@@ -147,7 +165,7 @@
     white-space: nowrap;
 }
 .stat-table-cols td {
-    padding: 0.55rem 0;
+    padding: 0.45rem 0;
     font-size: 0.85rem;
     color: #151a2e;
     border-bottom: 1px solid #f0f3fb;
@@ -158,47 +176,75 @@
 }
 .stat-table-cols th:not(:first-child),
 .stat-table-cols td:not(:first-child) {
-    padding-left: 1.2rem;
+    padding-left: 0.6rem;
+}
+/* .stat-table (tabla clave/valor) alinea su primera/última celda distinto
+   (etiqueta gris a la izquierda, valor en negrita a la derecha) - estas
+   tablas llevan esa clase A LA VEZ que .stat-table-cols (para el ancho
+   100%/border-collapse compartidos), así que sin este reset esos estilos
+   se filtran acá y desalinean la primera/última columna respecto al resto
+   (que sí queda a la izquierda vía .stat-table-cols td arriba). */
+.stat-table-cols td:first-child,
+.stat-table-cols td:last-child {
+    text-align: left;
 }
 
-/* Gráfico + tabla desmarcable lado a lado (Ventas, Productos más vendidos) -
-   apilados en columna cuando no entran los dos lado a lado. */
+/* Gráfico + tabla lado a lado, mitad y mitad (Ventas, Productos más
+   vendidos). La decisión de si entran juntos o hay que apilarlos NO es CSS
+   puro: se probó con flex-wrap + min-width:max-content, pero la única forma
+   de no desbordar la tarjeta cuando ni apilado entra - min-width:
+   min(max-content, 100%) - no la resuelve bien este navegador (la propiedad
+   queda en "auto", como si no existiera). En vez de eso, useLadoALado en
+   dashboardHome.jsx mide con ResizeObserver el ancho real que pide cada uno
+   y agrega/saca .stat-chart-layout-apilado - acá solo se estilan los dos
+   modos resultantes. */
 .stat-chart-layout {
     display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
+    flex-wrap: nowrap;
+    gap: 1.5rem;
     align-items: flex-start;
 }
-.stat-chart-layout .bar-chart {
-    flex: 1 1 auto;
+.stat-chart-layout > .stat-table,
+.stat-chart-layout > .stat-table-scroll,
+.stat-chart-layout > .bar-chart {
+    /* 50% del ancho DESCONTANDO el gap, no 50% a secas - dos ítems al 50%
+       más el gap entre ellos suman 100% + gap, pasándose siempre del 100%
+       disponible por el ancho del gap. */
+    flex: 1 1 calc(50% - 0.75rem);
     min-width: 0;
 }
-.stat-chart-layout .stat-table {
-    flex: 0 0 11rem;
-}
-
-/* Productos más vendidos: tabla arriba y gráfico de barras horizontales
-   abajo, cada uno al 100% del ancho de la tarjeta, en vez de lado a lado -
-   con barras horizontales el layout lado a lado las dejaría angostas sin
-   aprovechar el espacio que sobra. */
-.stat-chart-layout-stacked {
+/* Apilados (ver useLadoALado): columna en vez de fila, cada uno al 100% del
+   ancho de la tarjeta - así el gráfico siempre termina con el mismo ancho
+   que la tabla, ya sea a la mitad (lado a lado) o completo (apilados). */
+.stat-chart-layout-apilado {
     flex-direction: column;
-    align-items: stretch;
 }
-.stat-chart-layout-stacked > .stat-table-scroll,
-.stat-chart-layout-stacked > .bar-chart {
+.stat-chart-layout-apilado > .stat-table,
+.stat-chart-layout-apilado > .stat-table-scroll,
+.stat-chart-layout-apilado > .bar-chart {
     width: 100%;
 }
+/* La tabla/su wrapper no crecen si sobra alto (p.ej. la tarjeta estirada
+   para igualar a Ventas) - no hay nada útil que hacer con ese espacio de
+   más ahí. Ese sobrante se lo queda el gráfico entero (ver .bar-chart-hrow
+   en ui.css, que es quien realmente lo aprovecha creciendo hasta un 50%). */
+.stat-chart-layout-apilado > .stat-table,
+.stat-chart-layout-apilado > .stat-table-scroll {
+    flex: 0 0 auto;
+}
+.stat-chart-layout-apilado > .bar-chart {
+    flex: 1 1 auto;
+}
 
-/* table-layout:fixed para que la tabla de Ventas pueda achicarse hasta el
-   ancho que le da el flex (ver .stat-chart-layout .stat-table arriba) y
-   quede al lado del gráfico - sin esto, una tabla en table-layout:auto se
-   niega a bajar de su ancho mínimo de contenido (el de "Ticket promedio" o
-   "$137000.00" sin cortar), forzando el wrap a pesar del min-width chico
-   puesto por CSS. Con columnas fijas, el texto que no entra simplemente
-   pasa a una segunda línea en vez de ensanchar la tabla. */
-.stat-table-toggle {
-    table-layout: fixed;
+/* La tabla de Ventas no se achica de su ancho de contenido (min-width:
+   max-content arriba) - el texto de cada celda no tiene que saltar de
+   línea, solo pedir el ancho que necesite. Más separación entre columnas
+   (etiqueta y valor quedaban pegados sin padding-left propio). */
+.stat-table-toggle td {
+    white-space: nowrap;
+}
+.stat-table-toggle td:not(:first-child) {
+    padding-left: 1.5rem;
 }
 
 /* La primera columna (checkbox) no lleva el padding-left ni el color/peso
@@ -207,6 +253,7 @@
 .stat-table-toggle td:first-child {
     width: 1.6rem;
     padding-right: 0;
+    padding-left: 0;
     color: inherit;
     font-weight: normal;
 }

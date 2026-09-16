@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { jwtDecode } from 'jwt-decode'
 import { Loader2, TrendingUp, Wallet, Trophy, PackageX, CalendarClock } from 'lucide-react'
 import useEstadisticas from '../../hooks/Dashboard/useEstadisticas.jsx'
@@ -33,12 +33,105 @@ function alternar(set, key) {
   return next
 }
 
+// Ancho real de contenido de un elemento, sin importar cómo esté
+// constreñido AHORA MISMO por el flex que lo achica o lo estira: medirlo
+// in-place (scrollWidth) no sirve porque el resultado depende del estado
+// actual - ya apilado y estirado a 100% (ver .stat-chart-layout-apilado),
+// una <table> de layout automático deja de reportar su mínimo real (usa el
+// espacio de sobra) y queda "atascado" confirmando el apilado en vez de
+// permitir volver a lado a lado. Clonarlo fuera del flujo, con ancho libre,
+// da su ancho natural de verdad en cualquier estado.
+function medirAnchoReal(el) {
+  const clone = el.cloneNode(true)
+  clone.style.position = 'absolute'
+  clone.style.visibility = 'hidden'
+  clone.style.width = 'max-content'
+  clone.style.flex = 'none'
+  clone.style.minWidth = '0'
+  document.body.appendChild(clone)
+  const ancho = clone.getBoundingClientRect().width
+  document.body.removeChild(clone)
+  return ancho
+}
+
+// Decide si la tabla y el gráfico de una tarjeta entran uno al lado del otro
+// o hay que apilarlos en columna: mide cuánto ancho pide cada uno "suelto"
+// (ver medirAnchoReal - en una <table> de layout automático o en las
+// columnas de ancho fijo del gráfico, ese es su mínimo real, no el 50%/50%
+// que le imponemos) y lo compara contra la MITAD del ancho disponible, no
+// contra el total. No alcanza con que la SUMA de los dos entre: en pantallas
+// chicas la tabla puede pedir, sola, más de la mitad y aun así "entrar" al
+// achicar al gráfico bien angosto en vez de respetar su 50% - lo que se ve
+// es la tabla pasándose de su mitad y el gráfico exprimido, en vez de los
+// dos apilados. Si CUALQUIERA de los dos no entra en su propia mitad, se
+// apilan los dos (columna, 100% cada uno) - hasta que vuelva a haber lugar
+// (agrandar la ventana, destildar ítems en Ventas, etc.). Se probó resolver
+// esto solo con CSS (flex-wrap + min-width:max-content), pero
+// min(max-content, 100%) - la única forma de no romper la tarjeta si ni
+// apilado entra - no lo resuelve bien este navegador (la propiedad queda en
+// "auto", como si no existiera).
+function useLadoALado() {
+  const contenedorRef = useRef(null)
+  const primeroRef = useRef(null)
+  const segundoRef = useRef(null)
+  const observerRef = useRef(null)
+  const [apilado, setApilado] = useState(false)
+
+  const medir = useCallback(() => {
+    const contenedor = contenedorRef.current
+    const primero = primeroRef.current
+    const segundo = segundoRef.current
+    if (!contenedor || !primero || !segundo) return
+    const gap = parseFloat(getComputedStyle(contenedor).columnGap) || 0
+    const mitadDisponible = (contenedor.clientWidth - gap) / 2
+    const necesitaApilar = medirAnchoReal(primero) > mitadDisponible || medirAnchoReal(segundo) > mitadDisponible
+    setApilado(necesitaApilar)
+  }, [])
+
+  // reobservar/medir/las tres ref callbacks quedan con identidad ESTABLE
+  // (useCallback) entre renders - si fueran funciones nuevas en cada render,
+  // React desengancharía y reengancharía los refs (y por lo tanto el
+  // ResizeObserver) en CADA render, incluido el que dispara el propio
+  // setApilado, dejándolo en un estado inconsistente que ya no vuelve a
+  // reaccionar a resFrom real (quedaba "pegado" en apilado aunque volviera
+  // a haber lugar de sobra).
+  const reobservar = useCallback(() => {
+    if (observerRef.current) {
+      observerRef.current.disconnect()
+      observerRef.current = null
+    }
+    const contenedor = contenedorRef.current
+    const primero = primeroRef.current
+    const segundo = segundoRef.current
+    if (!contenedor || !primero || !segundo) return
+    const observer = new ResizeObserver(medir)
+    observer.observe(contenedor)
+    observer.observe(primero)
+    observer.observe(segundo)
+    observerRef.current = observer
+    medir()
+  }, [medir])
+
+  const contenedorCb = useCallback((nodo) => { contenedorRef.current = nodo; reobservar() }, [reobservar])
+  const primerHijoCb = useCallback((nodo) => { primeroRef.current = nodo; reobservar() }, [reobservar])
+  const segundoHijoCb = useCallback((nodo) => { segundoRef.current = nodo; reobservar() }, [reobservar])
+
+  return {
+    apilado,
+    contenedorRef: contenedorCb,
+    primerHijoRef: primerHijoCb,
+    segundoHijoRef: segundoHijoCb,
+  }
+}
+
 function DashboardHome() {
   const [usuario, setUsuario] = useState(null)
   const { getEstadisticas } = useEstadisticas()
   const [stats, setStats] = useState(null)
   const [cargando, setCargando] = useState(true)
   const [ventasOcultas, setVentasOcultas] = useState(new Set())
+  const ventasLayout = useLadoALado()
+  const productosLayout = useLadoALado()
 
   useEffect(() => {
     const token = localStorage.getItem('token')
@@ -69,7 +162,6 @@ function DashboardHome() {
     { key: 'mes', label: 'Este mes', value: Number(stats.ventas.mes) },
     { key: 'ticket', label: 'Ticket promedio', value: Number(stats.ticketPromedio) },
   ] : []
-  const ventasVisibles = ventasItems.filter((item) => !ventasOcultas.has(item.key))
 
   const productosItems = stats ? stats.topProductos.map((prod, index) => ({
     key: `prod-${index}`,
@@ -82,8 +174,10 @@ function DashboardHome() {
 
   return (
     <div className="dashboard-home">
-      <h1>¡Bienvenido{usuario?.user ? `, ${usuario.user}` : ''}!</h1>
-      <p>Un resumen rápido de cómo viene el negocio.</p>
+      <div className="stat-card stat-welcome">
+        <h1>¡Bienvenido{usuario?.user ? `, ${usuario.user}` : ''}!</h1>
+        <p>Un resumen rápido de cómo viene el negocio.</p>
+      </div>
 
       {cargando ? (
         <div className="panel-loading-container">
@@ -99,8 +193,11 @@ function DashboardHome() {
           <div className="stats-row stats-row-top">
             <div className="stat-card">
               <h3 className="stat-card-title"><TrendingUp size={18} /> Ventas</h3>
-              <div className="stat-chart-layout">
-                <table className="stat-table stat-table-toggle">
+              <div
+                ref={ventasLayout.contenedorRef}
+                className={`stat-chart-layout${ventasLayout.apilado ? ' stat-chart-layout-apilado' : ''}`}
+              >
+                <table ref={ventasLayout.primerHijoRef} className="stat-table stat-table-toggle">
                   <tbody>
                     {ventasItems.map((item) => (
                       <tr key={item.key}>
@@ -118,15 +215,24 @@ function DashboardHome() {
                     ))}
                   </tbody>
                 </table>
-                <BarChart items={ventasVisibles} formatValue={formatearMoneda} gradient />
+                <BarChart
+                  ref={ventasLayout.segundoHijoRef}
+                  items={ventasItems}
+                  ocultos={ventasOcultas}
+                  formatValue={formatearMoneda}
+                  gradient
+                />
               </div>
             </div>
 
             <div className="stat-card">
               <h3 className="stat-card-title"><Trophy size={18} /> Productos más vendidos</h3>
               {productosItems.length > 0 ? (
-                <div className="stat-chart-layout stat-chart-layout-stacked">
-                  <div className="stat-table-scroll">
+                <div
+                  ref={productosLayout.contenedorRef}
+                  className={`stat-chart-layout${productosLayout.apilado ? ' stat-chart-layout-apilado' : ''}`}
+                >
+                  <div ref={productosLayout.primerHijoRef} className="stat-table-scroll">
                     <table className="stat-table stat-table-cols">
                       <thead>
                         <tr>
@@ -148,7 +254,7 @@ function DashboardHome() {
                       </tbody>
                     </table>
                   </div>
-                  <BarChart items={productosItems} formatValue={formatearUnidades} gradient orientation="horizontal" />
+                  <BarChart ref={productosLayout.segundoHijoRef} items={productosItems} formatValue={formatearUnidades} gradient orientation="horizontal" />
                 </div>
               ) : (
                 <p className="panel-empty">Todavía no hay ventas registradas.</p>

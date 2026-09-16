@@ -1,8 +1,9 @@
 import './styles/dashboard.css'
-import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { jwtDecode } from 'jwt-decode'
 import { Store, LayoutDashboard, Truck, ShoppingCart, History, Warehouse, User, LogOut, Home } from 'lucide-react'
+import FadeOutlet from '../../components/FadeOutlet.jsx'
 
 // Shell persistente de toda la app logueada: sidebar (secciones + usuario +
 // cerrar sesión) a la izquierda, y el contenido de la sección actual a la
@@ -88,7 +89,7 @@ function DashboardLayout() {
       </aside>
 
       <main className="dashboard-content">
-        <Outlet />
+        <FadeOutlet />
       </main>
     </div>
   )

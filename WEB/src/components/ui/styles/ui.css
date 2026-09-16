@@ -364,15 +364,25 @@
     align-items: center;
     gap: 0.35rem;
     height: 100%;
+    opacity: 1;
+    /* opacity: para el fade de useFasesAnimadas. transform: para el
+       corrimiento suave de useReorganizarSuave (FLIP) cuando el resto de las
+       barras se reacomoda al aparecer/desaparecer una - sin esto, entran o
+       salen con fade pero las demás saltan de golpe a su nuevo lugar. */
+    transition: opacity 0.25s ease, transform 0.25s ease;
 }
-.bar-chart-value {
-    font-size: 0.65rem;
-    font-weight: 700;
-    color: #4c5675;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100%;
+/* Ver useFasesAnimadas en BarChart.jsx: al ocultar una barra (Ventas) sigue
+   montada mientras hace fade-out (-saliendo, con transición) y recién se
+   saca del layout cuando termina; al mostrarla se monta ya invisible y SIN
+   transición (-entrando, para no animar desde un estado previo) y un frame
+   después se le saca esta clase para que el fade-in dispare por la
+   transición de .bar-chart-col de arriba. */
+.bar-chart-col-entrando {
+    opacity: 0;
+    transition: none;
+}
+.bar-chart-col-saliendo {
+    opacity: 0;
 }
 .bar-chart-track {
     width: 100%;
@@ -427,6 +437,13 @@
     display: flex;
     align-items: center;
     gap: 0.7rem;
+    /* Alto mínimo = el actual (1.15rem), pero puede crecer hasta un 50% más
+       si el contenedor tiene de sobra (p.ej. la tarjeta estirada para
+       igualar el alto de Ventas - ver .stat-chart-layout-apilado en
+       dashboardHome.css) - si no sobra nada, se queda en el mínimo, no
+       estira porque sí. */
+    flex: 1 1 1.15rem;
+    max-height: 1.725rem;
 }
 .bar-chart-hlabel {
     flex: 0 0 8rem;
@@ -440,12 +457,15 @@
 .bar-chart-htrack {
     flex: 1;
     min-width: 0;
+    /* Ocupa todo el alto (ya crecido o no) de su fila - la barra en sí
+       (100% del track) es la que efectivamente crece/achica con la fila. */
+    align-self: stretch;
     background-color: #f0f3fb;
     border-radius: 4px;
     overflow: hidden;
 }
 .bar-chart-hbar {
-    height: 0.9rem;
+    height: 100%;
     min-width: 2px;
     border-radius: 4px;
     background-color: #4f8cff;
@@ -459,4 +479,32 @@
     color: #151a2e;
     text-align: right;
     white-space: nowrap;
+}
+
+/* Toast: aviso no bloqueante (ver Toast.jsx) - reemplaza al alert() nativo
+   que usaba ProtectedRoute para la sesión expirada. Arranca oculto/corrido
+   y pasa a "visible" un frame después (mismo truco que Modal.jsx) para que
+   el navegador tenga de dónde partir la transición de entrada. */
+.toast-aviso {
+    position: fixed;
+    left: 50%;
+    bottom: 1.5rem;
+    transform: translate(-50%, 0.5rem);
+    z-index: 2000;
+    max-width: calc(100vw - 2rem);
+    padding: 0.75rem 1.25rem;
+    border-radius: 8px;
+    background-color: #151a2e;
+    color: #ffffff;
+    font-family: var(--font-body);
+    font-size: 0.88rem;
+    font-weight: 600;
+    text-align: center;
+    box-shadow: 0 8px 24px rgba(21, 26, 46, 0.28);
+    opacity: 0;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+}
+.toast-aviso.visible {
+    opacity: 1;
+    transform: translate(-50%, 0);
 }

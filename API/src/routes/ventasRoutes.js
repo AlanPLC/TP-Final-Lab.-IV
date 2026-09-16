@@ -1,12 +1,12 @@
 import express from 'express';
 import { getVentas, createVentas } from '../controllers/ventasController.js';
 import { validateBody } from '../validations/ventasValidations.js';
-import passport from "passport"
+import { requireAuth } from '../middlewares/requireAuth.js'
 
 const ventasRouter = express.Router();
 
 ventasRouter.get("/ventas",
-    passport.authenticate("jwt", { session: false }),
+    ...requireAuth,
     getVentas);
 
 // El descuento de stock ya no lo maneja el frontend (antes hacía un PUT
@@ -14,7 +14,7 @@ ventasRouter.get("/ventas",
 // createVentas consume los lotes por FIFO/FEFO dentro de la misma
 // transacción que crea la venta (ver ventasController.js).
 ventasRouter.post("/ventas",
-    passport.authenticate("jwt", { session: false }),
+    ...requireAuth,
     validateBody,
     createVentas);
 

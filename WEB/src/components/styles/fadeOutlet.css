@@ -1,0 +1,19 @@
+/* Fade de entrada al navegar entre secciones del sidebar (ver
+   FadeOutlet.jsx). height:100% para no romper a las pantallas que dependen
+   de la altura completa de .dashboard-content (ver Historial de Ventas,
+   que scrollea adentro suyo en vez de la página entera) - este wrapper se
+   mete en el medio de esa cadena de alturas en porcentaje. */
+.fade-outlet {
+    height: 100%;
+    animation: fade-outlet-in 0.18s ease;
+}
+@keyframes fade-outlet-in {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
