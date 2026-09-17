@@ -6,6 +6,13 @@
 .fade-outlet {
     height: 100%;
     animation: fade-outlet-in 0.18s ease;
+    /* flow-root: sin padding/borde propio, el margin-top de la pantalla que
+       entra (almacen-container, productos-main-container, etc, todas con
+       0.5rem) colapsaba hacia afuera y se sumaba al alto de
+       .dashboard-content en vez de quedar contenido acá adentro - de ahí
+       salían 8px de scroll vertical de más aunque el contenido entrara
+       perfecto en pantalla. */
+    display: flow-root;
 }
 @keyframes fade-outlet-in {
     from {

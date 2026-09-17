@@ -162,6 +162,20 @@
     letter-spacing: 0.05em;
     cursor: not-allowed;
 }
+/* Rojo suave, distinto del gris de "AGREGADO" - sin stock es un estado
+   bloqueante (no se puede vender), agregado es solo informativo. */
+.productos-grid .boton-sin-stock{
+    width: 100%;
+    border: none;
+    background-color: #fdecec;
+    height: 2.1rem;
+    color: #c22b2b;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+    cursor: not-allowed;
+}
 
 /* Sección boleta */
 
@@ -181,6 +195,15 @@
 .productos-venta{
     display: flex;
     flex-direction: column;
+    /* Ocupa todo el alto restante de la sección (que ya se estira a la
+       altura del catálogo vía align-items:stretch en .productos-panel) -
+       así .productos-venta-resumen puede quedar siempre pegado abajo con
+       margin-top:auto, sin importar cuántos productos haya en la boleta. */
+    flex: 1;
+    min-height: 0;
+}
+.productos-venta-resumen{
+    margin-top: auto;
 }
 .productos-venta h3{
     color: #151a2e;

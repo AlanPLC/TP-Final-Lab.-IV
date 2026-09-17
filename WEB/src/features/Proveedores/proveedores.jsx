@@ -106,6 +106,8 @@ const Proveedores = () => {
             setReload(!reload)
             console.log("Errores:", error)
             console.log("Proveedor creado con éxito.", result.data)
+            setNombre('')
+            setDescripcion('')
             setError(null)
         } else{
             console.error("Error al crear el proveedor.", result.message)

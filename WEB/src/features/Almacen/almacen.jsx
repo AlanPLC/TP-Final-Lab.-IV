@@ -89,19 +89,34 @@ function Almacen() {
   const validarFormProducto =
     formData.nombre.trim() &&
     formData.descripcion.trim() &&
-    formData.categoria > 0 &&
+    // !== 0 (no > 0): una categoría creada en modo demo tiene id negativo
+    // (ver utils/demoDb.js) - 0 sigue siendo "ninguna elegida todavía".
+    formData.categoria !== 0 &&
     // El precio es opcional: se puede cargar el producto primero y ponerle
     // precio después de ver cuánto costó el primer lote.
     (formData.precio === "" || formData.precio > 0) &&
     formData.imagen.trim();
 
+  // !== 0 (no > 0): en modo demo los productos/proveedores creados en esta
+  // sesión tienen id negativo (ver utils/demoDb.js) - 0 sigue siendo "nada
+  // elegido todavía" (valor inicial de loteData).
   const validarFormLote =
-    loteData.producto_id > 0 &&
-    loteData.proveedor_id > 0 &&
+    loteData.producto_id !== 0 &&
+    loteData.proveedor_id !== 0 &&
     loteData.costoLote > 0 &&
     loteData.cantidad > 0;
 
   const limiteAlcanzado = !onEdit && todosLosProductos.length >= MAX_PRODUCTOS;
+
+  // Solo las categorías que de verdad tienen algún producto cargado - antes
+  // el filtro mostraba TODAS las categorías del sistema (incluidas las que
+  // no usa ningún producto todavía), lo que dejaba opciones que no filtraban
+  // nada.
+  const categoriasEnUso = Array.from(
+    new Map(todosLosProductos.map((p) => [p.categoria_id, p.categoria_nombre])).entries()
+  )
+    .map(([id, nombre]) => ({ id, nombre }))
+    .sort((a, b) => a.nombre.localeCompare(b.nombre));
 
   // Logo y categoría van de la mano: elegir un logo (salvo "Otro") define la
   // categoría también, buscando la categoría "de logo" con ese mismo nombre
@@ -367,7 +382,7 @@ function Almacen() {
                     onChange={(e) => setFiltroCategoria(e.target.value)}
                   >
                     <option value="">Todas las categorías</option>
-                    {listaCategorias.map((cate) => (
+                    {categoriasEnUso.map((cate) => (
                       <option key={cate.id} value={cate.id}>
                         {cate.nombre}
                       </option>
@@ -376,6 +391,7 @@ function Almacen() {
                 </div>
               </div>
             </div>
+        <SmoothHeight>
         {cargandoProductos ? (
           <div className="panel-loading-container">
             <p className="panel-loading">
@@ -384,7 +400,7 @@ function Almacen() {
             </p>
           </div>
         ) : (
-        <ul className="almacen-list">
+        <ul className="almacen-list" key={filtroCategoria}>
         {listaProductos && listaProductos.length > 0 ? (
             listaProductos.map((producto, index)  => {
             const ProductoIcon = getProductIcon(producto.imagen_url)
@@ -449,6 +465,7 @@ function Almacen() {
           )}
         </ul>
         )}
+        </SmoothHeight>
       </div>
         {/* Sección derecha: alta de producto / carga de stock */}
         <div className='almacen-form-section'>

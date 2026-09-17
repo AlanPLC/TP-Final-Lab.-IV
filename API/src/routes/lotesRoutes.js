@@ -3,6 +3,7 @@ import { getLotesPorProducto, createLote } from '../controllers/lotesController.
 import { validateBody } from '../validations/lotesValidations.js';
 import { validateID } from '../middlewares/idValidator.js';
 import { requireAuth } from '../middlewares/requireAuth.js'
+import { requireAdmin } from '../middlewares/requireAdmin.js'
 
 const lotesRouter = express.Router();
 
@@ -13,6 +14,7 @@ lotesRouter.get('/lotes/producto/:id',
 
 lotesRouter.post('/lotes',
     ...requireAuth,
+    requireAdmin,
     validateBody,
     createLote)
 

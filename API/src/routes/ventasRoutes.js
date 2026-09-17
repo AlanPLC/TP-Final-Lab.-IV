@@ -2,6 +2,7 @@ import express from 'express';
 import { getVentas, createVentas } from '../controllers/ventasController.js';
 import { validateBody } from '../validations/ventasValidations.js';
 import { requireAuth } from '../middlewares/requireAuth.js'
+import { requireAdmin } from '../middlewares/requireAdmin.js'
 
 const ventasRouter = express.Router();
 
@@ -15,6 +16,7 @@ ventasRouter.get("/ventas",
 // transacción que crea la venta (ver ventasController.js).
 ventasRouter.post("/ventas",
     ...requireAuth,
+    requireAdmin,
     validateBody,
     createVentas);
 

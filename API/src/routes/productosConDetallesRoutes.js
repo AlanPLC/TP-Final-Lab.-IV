@@ -3,6 +3,7 @@ import {getProductosConDetalles, getCategoria, createCategoria, getProductosConD
 import { validateBody, validateCategoriaBody } from '../validations/productosConDetallesValidations.js';
 import { validateID } from '../middlewares/idValidator.js';
 import { requireAuth } from '../middlewares/requireAuth.js'
+import { requireAdmin } from '../middlewares/requireAdmin.js'
 
 const productosConDetalles = express.Router();
 
@@ -16,6 +17,7 @@ productosConDetalles.get('/categorias',
 
 productosConDetalles.post('/categorias',
     ...requireAuth,
+    requireAdmin,
     validateCategoriaBody,
     createCategoria)
 
@@ -27,11 +29,13 @@ productosConDetalles.get('/administrador/:id',
 
 productosConDetalles.post('/administrador',
     ...requireAuth,
+    requireAdmin,
     validateBody,
     createProductoConDetalles)
 
 productosConDetalles.put('/administrador/:id',
     ...requireAuth,
+    requireAdmin,
     validateID,
     validateBody,
     updateProductoConDetalles,
@@ -39,6 +43,7 @@ productosConDetalles.put('/administrador/:id',
 
 productosConDetalles.delete('/administrador/:id',
     ...requireAuth,
+    requireAdmin,
     validateID,
     deleteProductoConDetalles)
 

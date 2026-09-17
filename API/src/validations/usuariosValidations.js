@@ -25,11 +25,12 @@ export const validateBody = [
         .matches(/[A-Z]/).withMessage('Debe contener al menos una mayúscula')
         .matches(/\d/).withMessage('Debe contener al menos un número'),
 
-    // Ya no existe el rol "administrador": cualquier cuenta tiene acceso
-    // completo al sistema, así que el único valor válido es "vendedor".
+    // El rol "admin" distingue qué cuentas escriben de verdad en la DB de
+    // las que solo simulan sus cambios en localStorage (ver requireAdmin.js
+    // y el apiInterceptor.js del front) - no otorga permisos de UI extra.
     body('rol')
         .optional()
-        .isIn(['vendedor']).withMessage('El rol debe ser "vendedor".'),
+        .isIn(['vendedor', 'admin']).withMessage('El rol debe ser "vendedor" o "admin".'),
 
     (req,res,next)=>{
         const errors = validationResult(req);

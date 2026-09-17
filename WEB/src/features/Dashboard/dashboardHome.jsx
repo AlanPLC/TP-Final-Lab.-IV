@@ -200,7 +200,20 @@ function DashboardHome() {
                 <table ref={ventasLayout.primerHijoRef} className="stat-table stat-table-toggle">
                   <tbody>
                     {ventasItems.map((item) => (
-                      <tr key={item.key}>
+                      <tr
+                        key={item.key}
+                        className="stat-row-toggle"
+                        // El checkbox ya dispara su propio onChange al
+                        // clickearlo directo - togglear de nuevo acá
+                        // duplicaría el cambio (activar y desactivar en el
+                        // mismo click), así que la fila solo actúa cuando el
+                        // click vino de otro lado (texto, números, celda).
+                        onClick={(e) => {
+                          if (e.target.type !== 'checkbox') {
+                            setVentasOcultas((prev) => alternar(prev, item.key))
+                          }
+                        }}
+                      >
                         <td>
                           <input
                             type="checkbox"

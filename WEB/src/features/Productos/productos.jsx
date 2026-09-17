@@ -101,13 +101,10 @@ const Productos = () => {
       setCargandoProductos(false)
     }
   }
-  // Llevar el producto a la lista de ventas
+  // Llevar el producto a la lista de ventas. El botón ya queda deshabilitado
+  // ("Agregado") mientras el producto esté en la boleta, ver el render de la
+  // grilla más abajo - no hace falta volver a chequearlo acá.
   const agregarProducto = (prod) => {
-    const prodExiste = productosVenta.some(p => p.producto_id === prod.producto_id)
-    if(prodExiste) {
-      alert("Este producto ya está en la lista de ventas.")
-      return
-    }
     setProductosVenta([...productosVenta, { ...prod, cantidad: 1 }])
   }
   // Disparador de la venta y sus funciones.
@@ -211,6 +208,7 @@ const Productos = () => {
               {listaProductos.length > 0 ? (
                 listaProductos.map((prod)=>{
                 const ProductoIcon = getProductIcon(prod.imagen_url)
+                const yaEnCarrito = productosVenta.some(p => p.producto_id === prod.producto_id)
                 return (
                 <li key={prod.producto_id}>
                   <div className='img-container'>
@@ -222,9 +220,13 @@ const Productos = () => {
                     <p className='P3' title={prod.descripcion}>{prod.descripcion}</p>
                     <p className='P4'>${prod.precio}</p>
                   </div>
-                  {prod.cantidad_disponible <= 0 ?
-                    (<button className='boton-deshabilitado' disabled>SIN STOCK</button>) :
-                    (<button onClick={()=> agregarProducto(prod)} disabled={enviandoVenta}>AGREGAR</button>)}
+                  {prod.cantidad_disponible <= 0 ? (
+                    <button className='boton-sin-stock' disabled>SIN STOCK</button>
+                  ) : yaEnCarrito ? (
+                    <button className='boton-deshabilitado' disabled>AGREGADO</button>
+                  ) : (
+                    <button onClick={()=> agregarProducto(prod)} disabled={enviandoVenta}>AGREGAR</button>
+                  )}
                 </li>
               )})
               ) : (
@@ -236,6 +238,7 @@ const Productos = () => {
         <div className='productos-venta-section'>
           <h2 className="panel-heading">Boleta de Precio</h2>
           <div className='productos-venta'>
+              <div className='productos-venta-lista'>
               <SmoothHeight>
               {productosVenta.length > 0 && (
               <>
@@ -277,6 +280,8 @@ const Productos = () => {
               </>
               )}
               </SmoothHeight>
+              </div>
+              <div className='productos-venta-resumen'>
               <hr />
               <p className='tp1'>Total</p>
               <p className='tp2'>${totalVenta}</p>
@@ -293,6 +298,7 @@ const Productos = () => {
                 </div>
               )}
               </SmoothHeight>
+              </div>
           </div>
         </div>
       </div>

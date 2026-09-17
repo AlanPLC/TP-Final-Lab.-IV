@@ -3,6 +3,7 @@ import {getAllUsers, getUserByID, createUser, deleteUser, updateUser} from '../c
 import { validateBody } from '../validations/usuariosValidations.js';
 import { validateID } from '../middlewares/idValidator.js'
 import { requireAuth } from '../middlewares/requireAuth.js'
+import { requireAdmin } from '../middlewares/requireAdmin.js'
 
 const usuariosRouter = express.Router();
 
@@ -22,11 +23,13 @@ usuariosRouter.post('/usuarios',
 
 usuariosRouter.delete('/usuarios/:id',
     ...requireAuth,
+    requireAdmin,
     validateID,
     deleteUser);
 
 usuariosRouter.put('/usuarios/:id',
     ...requireAuth,
+    requireAdmin,
     validateID,
     validateBody,
     updateUser);

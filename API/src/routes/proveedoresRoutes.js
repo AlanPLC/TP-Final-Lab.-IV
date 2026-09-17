@@ -3,6 +3,7 @@ import { getOnlyProveedores, getProveedoresConProductos, getProveedorByID, creat
 import { validateID } from '../middlewares/idValidator.js'
 import { validateBody } from '../validations/proveedoresValidations.js';
 import { requireAuth } from '../middlewares/requireAuth.js'
+import { requireAdmin } from '../middlewares/requireAdmin.js'
 
 const proveedoresRouter = express.Router();
 proveedoresRouter.get("/onlyproveedores",
@@ -20,16 +21,19 @@ proveedoresRouter.get("/proveedores/:id",
 
 proveedoresRouter.post("/proveedores",
     ...requireAuth,
+    requireAdmin,
     validateBody,
     createProveedores);
 
 proveedoresRouter.delete("/proveedores/:id",
     ...requireAuth,
+    requireAdmin,
     validateID,
     deleteProveedor);
 
 proveedoresRouter.put("/proveedores/:id",
     ...requireAuth,
+    requireAdmin,
     validateBody,
     validateID,
     updateProveedor); //

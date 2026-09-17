@@ -76,6 +76,15 @@
     grid-template-columns: repeat(2, 1fr);
     align-items: start;
     gap: 0.6rem;
+    /* Se remonta (key=filtroCategoria, ver almacen.jsx) cada vez que cambia
+       el filtro de categoría, para que la lista nueva entre con este fade
+       en vez de reemplazar la anterior de golpe - el cambio de alto del
+       contenedor ya lo anima SmoothHeight por afuera. */
+    animation: almacen-list-fade-in 0.18s ease;
+}
+@keyframes almacen-list-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 .almacen-list .panel-empty {
     grid-column: 1 / -1;

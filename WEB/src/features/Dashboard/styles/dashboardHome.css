@@ -262,6 +262,15 @@
     font-weight: 600;
 }
 
+/* Toda la fila activa/desactiva el checkbox (texto y números incluidos),
+   no solo el tilde en sí - más área para tocar. */
+.stat-row-toggle {
+    cursor: pointer;
+}
+.stat-row-toggle:hover td {
+    background-color: #f7f9fd;
+}
+
 .stat-valor-alerta {
     color: #c98a1a;
     font-weight: 700;
