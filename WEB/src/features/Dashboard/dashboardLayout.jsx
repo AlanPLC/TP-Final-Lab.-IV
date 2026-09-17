@@ -111,6 +111,7 @@ function DashboardLayout() {
               Cerrar Sesión
             </button>
           </div>
+          <p className="dashboard-version">Versión 1.1.0</p>
         </div>
       </aside>
 

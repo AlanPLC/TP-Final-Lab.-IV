@@ -26,9 +26,22 @@ function WelcomePanel() {
         <h2 className="lobby-subtitle">Introducción</h2>
         <p className="desc">
           Proyecto universitario sobre aplicación de enfoque vendedor de un
-          minimarket, con el objetivo de administrar productos para su venta
+          Minimarket, con el principal objetivo de administrar productos para su venta
           con generación de ticket de la misma mostrando todos sus detalles.
         </p>
+      </div>
+
+      <div className="lobby-panel-top">
+        <h2 className="lobby-subtitle">Remodelación 1.1.0</h2>
+        <p className="desc">
+          Empezó como un rediseño visual completo (interfaz, navegación y
+          animaciones más prolijas) y terminó llevando a repensar también el
+          funcionamiento interno del sistema: se reforzó la seguridad y se
+          sumó un modo demo, así que podés probar cualquier función
+          libremente, sin afectar los datos reales ni lo que prueben otros
+          visitantes.
+        </p>
+        <p className="lobby-nota">Alan Carrizo, 10/09/2026</p>
       </div>
 
       <div className="lobby-panel-mid">
@@ -57,6 +70,7 @@ function WelcomePanel() {
             </>
           )}
         </Link>
+        <p className="lobby-version">Versión 1.1.0</p>
       </div>
     </>
   )

@@ -16,7 +16,10 @@
     background-color: #ffffff;
     border: 1px solid #e3e6f0;
     border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(21, 26, 46, 0.08);
+    /* Más pronunciada que antes (0.08 -> 0.18, más blur/spread) para que el
+       panel blanco contraste mejor contra el fondo con textura del
+       Dashboard, en vez de casi fundirse con él. */
+    box-shadow: 0 10px 32px rgba(21, 26, 46, 0.18);
     display: flex;
     overflow: hidden;
 }

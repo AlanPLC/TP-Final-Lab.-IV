@@ -94,13 +94,21 @@
     inset: 0;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    gap: 2rem;
+    /* Antes space-between: repartía el sobrante de alto entre las
+       secciones, separándolas cada vez más en pantallas altas. Ahora van
+       apiladas y pegadas entre sí (gap chico) - el botón es la única
+       excepción, empujado al final con margin-top:auto (ver
+       .lobby-panel-bottom). */
+    gap: 0.6rem;
     padding: 3rem 2.5rem;
     overflow-y: auto;
     transform: translateX(0);
     opacity: 1;
     transition: transform 0.35s ease-in-out, opacity 0.25s ease-in-out;
+}
+
+.lobby-panel-bottom {
+    margin-top: auto;
 }
 
 /* Saliendo: la transition de la clase base sigue activa, así que esto anima. */
@@ -129,22 +137,40 @@
 .desc {
     color: #f2f2f2;
     font-weight: normal;
-    font-size: 1.05rem;
-    line-height: 1.7;
+    /* clamp atado al alto de pantalla (no al ancho): por debajo de ~730px de
+       alto se va achicando hasta el piso en vez de forzar scroll vertical;
+       por encima de eso llega al techo (un poco más chico que el 1.05rem de
+       antes) y no sigue creciendo aunque sobre espacio de sobra. */
+    font-size: clamp(0.75rem, 1.9vh, 1rem);
+    line-height: 1.6;
     font-style: normal;
     text-align: left;
     /* Sangría: solo afecta el primer renglón del párrafo, no todo el bloque. */
     text-indent: 2rem;
 }
 
+.lobby-nota {
+    color: #a9b4d4;
+    font-size: clamp(0.6rem, 1.6vh, 0.8rem);
+    font-style: italic;
+    /* Pegada al párrafo que la precede (a lo que hace referencia) - el
+       margin-bottom es lo que separa a esta sección de la siguiente
+       (Colaboradores), ya que su línea es más chica y ajustada que la de
+       .desc y si no quedaba visualmente más cerca de la próxima sección que
+       las demás. */
+    margin: 0.2rem 0 0.5rem;
+}
+
 .lobby-subtitle {
     color: #4f8cff;
     font-family: var(--font-display);
-    font-size: 0.9rem;
+    /* Mismo tamaño de siempre (0.9rem) en pantallas normales - el clamp solo
+       entra a jugar en una ventana baja, para no forzar scroll vertical. */
+    font-size: clamp(0.75rem, 1.7vh, 0.9rem);
     font-weight: 600;
     letter-spacing: 0.15rem;
     text-transform: uppercase;
-    margin: 0 0 0.9rem;
+    margin: 0 0 0.5rem;
 }
 
 .lobby-sidebar ul {
@@ -219,6 +245,47 @@
 .lobby-cta:hover {
     background-color: #ffffff;
     color: #15161f;
+}
+
+.lobby-version {
+    margin: 0.6rem 0 0;
+    color: #7c86a8;
+    font-size: clamp(0.6rem, 1.4vh, 0.75rem);
+    text-align: center;
+    letter-spacing: 0.05rem;
+}
+
+/* Ventana baja (notebook chica, zoom del navegador, etc.): el clamp de
+   .desc/.lobby-subtitle ya achica la letra, pero en una ventana MUY baja
+   hace falta ceder también el padding/los gaps para que todo siga entrando
+   sin scroll. */
+@media (max-height: 700px) {
+    .lobby-panel {
+        gap: 0.35rem;
+        padding: 1.5rem 2.5rem;
+    }
+    .lobby-sidebar ul {
+        gap: 0.4rem;
+    }
+    .lobby-nota {
+        margin: 0.15rem 0 0.3rem;
+    }
+}
+
+/* Un escalón más para ventanas muy bajas (por debajo de esto, los pisos de
+   los clamp de fuente ya no dan más margen y hace falta ceder del todo el
+   espaciado). */
+@media (max-height: 600px) {
+    .lobby-panel {
+        gap: 0.2rem;
+        padding: 1rem 2.5rem;
+    }
+    .lobby-sidebar ul {
+        gap: 0.25rem;
+    }
+    .lobby-nota {
+        margin: 0.1rem 0 0.2rem;
+    }
 }
 
 @media (max-width: 640px) {
