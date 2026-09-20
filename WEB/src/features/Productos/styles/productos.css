@@ -7,12 +7,20 @@
     display: flex;
     justify-content: center;
     margin-top: 0.5rem;
+    /* -1rem (no -0.5rem): con margin-top:0.5rem, deja otros 0.5rem libres
+       abajo (mismo margen arriba y abajo dentro de .dashboard-content) -
+       sin este límite el panel crecía con su contenido sin techo, y el
+       scroll de un catálogo largo terminaba pasando por la página entera
+       (.dashboard-content) en vez de por la grilla misma (ver
+       productos-list-scroll más abajo). */
+    height: calc(100% - 1rem);
 }
 
 .productos-panel {
     width: 100%;
     max-width: 74rem;
     align-items: stretch;
+    height: 100%;
 }
 
 /* Sección catálogo */
@@ -21,6 +29,11 @@
     display: flex;
     flex-direction: column;
     min-width: 0;
+    /* Permite que esta sección MIDA menos que su contenido en vez de
+       estirar el panel entero - sin esto, el límite de alto de acá arriba
+       no tendría ningún efecto real y productos-list-scroll nunca llegaría
+       a activar su propio scroll interno. */
+    min-height: 0;
     padding: 1.5rem;
     border-right: 1px solid #eef0f7;
     /* Container query (ver más abajo): el título+buscador pasan a columna
@@ -80,6 +93,18 @@
     .productos-grid {
         justify-content: center;
     }
+}
+
+/* El encabezado (título + buscador) NO scrollea - solo la grilla de
+   productos, en su propio contenedor (ver markup en productos.jsx). Antes
+   esto vivía solo dentro del breakpoint mobile: en escritorio el panel no
+   tenía ningún límite de alto real, así que un catálogo largo terminaba
+   scrolleando la página entera (.dashboard-content) en vez de quedarse
+   contenido acá adentro. */
+.productos-list-scroll {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
 }
 
 .productos-grid{
@@ -217,6 +242,11 @@
     display: flex;
     flex-direction: column;
     padding: 1.5rem;
+    /* Sin esto, .productos-venta (flex:1 más abajo) no podía medir menos
+       que su contenido dentro de esta sección - necesario para que el
+       límite de alto del panel (ver productos-panel) tenga efecto real y
+       productos-venta-lista llegue a activar su scroll interno. */
+    min-height: 0;
 }
 
 .productos-venta-section .panel-heading{
@@ -236,6 +266,26 @@
 }
 .productos-venta-resumen{
     margin-top: auto;
+}
+/* El total + botón "Realizar Venta" quedan siempre visibles abajo (los
+   pega ahí margin-top:auto de acá arriba) y lo que scrollea, si hay
+   muchos productos agregados, es solo la lista de la boleta - antes esto
+   vivía solo dentro del breakpoint mobile, así que en escritorio una
+   boleta larga scrolleaba la página entera en vez de quedarse contenida
+   acá adentro. */
+.productos-venta-lista {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+}
+/* SmoothHeight (ver SmoothHeight.jsx) fija un alto inline igual al del
+   contenido entero, siempre - acá adentro eso anularía el scroll de
+   arriba (el contenedor jamás mediría menos que su contenido). Se lo
+   neutraliza acá: la lista larga scrollea sin más, sin el salto/animación
+   de alto. */
+.productos-venta-lista .smooth-height {
+    height: auto !important;
+    min-height: 0 !important;
 }
 .productos-venta h3{
     color: #151a2e;
@@ -408,12 +458,6 @@
         height: 100%;
     }
     .productos-panel {
-        /* height (no min-height): el panel nunca crece más allá de la
-           pantalla - así el que se desborda con contenido largo es cada
-           sección por su cuenta (ver productos-list-scroll/
-           productos-venta-lista más abajo), con su propio scroll interno,
-           en vez de la página entera. */
-        height: 100%;
         flex-direction: column;
         max-width: none;
     }
@@ -456,55 +500,26 @@
         display: none;
     }
 
-    /* La sección visible llena el alto entero del panel (entre su propio
-       encabezado y la barra de tabs de abajo) - min-height:0 es lo que
-       permite que, siendo un ítem flex en columna, pueda MEDIR menos que su
-       contenido en vez de crecer siempre a la altura del contenido (lo que
-       dejaría sin efecto el scroll interno de acá abajo). */
-    .productos-lista-section,
-    .productos-venta-section {
-        flex: 1;
-        min-height: 0;
+    /* Solo la sección visible ocupa el panel (lista-section ya tiene
+       flex:1 de forma incondicional) - acá solo falta que la boleta
+       TAMBIÉN crezca a ocupar toda la pantalla cuando le toca a ella (en
+       escritorio se queda en su ancho fijo de 19rem, ver la regla
+       general). */
+    .productos-lista-section {
         border-right: none;
     }
     .productos-venta-section {
+        flex: 1;
         width: 100%;
     }
 
     /* El encabezado (título + buscador) NO scrollea - solo la grilla de
-       productos, en su propio contenedor (productos-list-scroll, ver
-       markup en productos.jsx). El paso a columna cuando no entra en fila
-       ya lo resuelve el container query de más arriba (ver
+       productos, en su propio contenedor (productos-list-scroll,
+       incondicional más arriba). El paso a columna cuando no entra en
+       fila ya lo resuelve el container query de más arriba (ver
        productos-lista). */
     .productos-lista-head {
         flex-shrink: 0;
-    }
-    .productos-list-scroll {
-        flex: 1;
-        min-height: 0;
-        overflow-y: auto;
-    }
-
-    /* Misma idea del lado de la boleta: el total + botón "Realizar Venta"
-       quedan siempre visibles abajo (ya los pega ahí margin-top:auto en
-       .productos-venta-resumen) y lo que scrollea, si hay muchos productos
-       agregados, es solo la lista de arriba. */
-    .productos-venta {
-        min-height: 0;
-    }
-    .productos-venta-lista {
-        flex: 1;
-        min-height: 0;
-        overflow-y: auto;
-    }
-    /* SmoothHeight (ver SmoothHeight.jsx) fija un alto inline igual al del
-       contenido entero, siempre - acá adentro eso anularía el scroll de
-       arriba (el contenedor jamás mediría menos que su contenido). Se lo
-       neutraliza solo acá dentro: la lista larga scrollea sin más, sin el
-       salto/animación de alto. */
-    .productos-venta-lista .smooth-height {
-        height: auto !important;
-        min-height: 0 !important;
     }
 
     /* Las tarjetas tenían un ancho fijo (11.5rem) pensado para escritorio -

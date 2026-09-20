@@ -8,12 +8,20 @@
     display: flex;
     justify-content: center;
     margin-top: 0.5rem;
+    /* -1rem (no -0.5rem): con margin-top:0.5rem, deja otros 0.5rem libres
+       abajo (mismo margen arriba y abajo dentro de .dashboard-content) -
+       sin este límite el panel crecía con su contenido sin techo, y el
+       scroll de una lista larga terminaba pasando por la página entera
+       (.dashboard-content) en vez de por la lista misma (ver
+       almacen-list-scroll más abajo). */
+    height: calc(100% - 1rem);
 }
 
 .almacen-panel {
     width: 100%;
     max-width: 74rem;
     align-items: stretch;
+    height: 100%;
 }
 
 /* Sección de listado */
@@ -22,6 +30,12 @@
     display: flex;
     flex-direction: column;
     min-width: 0;
+    /* Permite que esta sección MIDA menos que su contenido en vez de
+       estirar el panel entero - sin esto, el límite de alto de acá arriba
+       no tendría ningún efecto real (el contenido la seguiría empujando a
+       crecer) y almacen-list-scroll nunca llegaría a activar su propio
+       scroll interno. */
+    min-height: 0;
     padding: 1.5rem;
     border-right: 1px solid #eef0f7;
     /* Container query (ver más abajo): el título+buscador+filtro pasan a
@@ -93,6 +107,30 @@
     .almacen-search, .almacen-filtro-categoria {
         width: 100%;
     }
+}
+
+/* El encabezado (título + buscador/filtro) NO scrollea - solo la lista de
+   productos, en su propio contenedor angosto (ver markup en almacen.jsx).
+   Antes esto vivía solo dentro del breakpoint mobile: en escritorio el
+   panel no tenía ningún límite de alto real, así que una lista larga
+   terminaba scrolleando la página entera (.dashboard-content) en vez de
+   quedarse contenida acá adentro. */
+.almacen-list-scroll {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+}
+/* SmoothHeight (ver SmoothHeight.jsx) fija un alto inline igual al del
+   contenido entero, siempre - pensado para animar transiciones de alto en
+   un layout de página que fluye libremente, pero acá adentro anula el
+   scroll interno de arriba (el contenedor jamás mediría menos que su
+   contenido, así que nunca se activaría su overflow-y). Se lo neutraliza
+   acá: la lista larga scrollea sin más, sin el salto/animación de alto
+   (aceptable - ya se está scrolleando, un reacomodo de alto ahí adentro no
+   llama la atención como si pasara en el flujo normal de la página). */
+.almacen-list-scroll .smooth-height {
+    height: auto !important;
+    min-height: 0 !important;
 }
 
 .almacen-list {
@@ -290,6 +328,13 @@
     flex-direction: column;
     gap: 0;
     padding: 1.5rem;
+    /* Con el panel ahora limitado a la altura de la pantalla (ver
+       almacen-panel), un formulario más largo que eso (ej. con el
+       selector de categoría nueva desplegado) necesita su propio scroll -
+       si no, quedaría directamente recortado (.panel-card tiene
+       overflow:hidden) sin forma de llegar al resto de los campos. */
+    min-height: 0;
+    overflow-y: auto;
 }
 
 .almacen-tabs {
@@ -457,18 +502,14 @@
 @media (max-width: 1024px) {
     .almacen-container {
         /* Antes centraba el panel con un margen arriba - en mobile/tablet
-           el panel ES la pantalla (ver height acá abajo), así que ni el
-           centrado ni el margen tienen nada que hacer. */
+           el panel ES la pantalla, así que ni el centrado ni el margen
+           tienen nada que hacer (height:100% ya sale de la regla general
+           de acá arriba, sin el -1rem: acá no hace falta el margen libre
+           abajo). */
         margin-top: 0;
         height: 100%;
     }
     .almacen-panel {
-        /* height (no min-height): el panel nunca crece más allá de la
-           pantalla - así el que se desborda con contenido largo es cada
-           sección por su cuenta (ver almacen-list-scroll/almacen-form-section
-           más abajo), con su propio scroll interno, en vez de la página
-           entera. */
-        height: 100%;
         flex-direction: column;
         max-width: none;
     }
@@ -512,53 +553,22 @@
         display: none;
     }
 
-    /* La sección visible llena el alto entero del panel (entre el
-       encabezado propio y la barra de tabs de abajo) - min-height:0 es lo
-       que permite que, siendo un ítem flex en columna, pueda MEDIR menos
-       que su contenido en vez de crecer siempre a la altura del contenido
-       (lo que dejaría sin efecto el scroll interno de acá abajo). */
-    .almacen-list-section,
-    .almacen-form-section {
-        flex: 1;
-        min-height: 0;
+    /* Solo la sección visible ocupa el panel (list-section ya tiene flex:1
+       de forma incondicional) - acá solo falta que el formulario TAMBIÉN
+       crezca a ocupar toda la pantalla cuando le toca a él (en escritorio
+       se queda en su ancho fijo de 19rem, ver la regla general). */
+    .almacen-list-section {
         border-right: none;
     }
     .almacen-form-section {
-        width: 100%;
-        /* Único bloque (no tiene encabezado fijo + lista separados como el
-           listado) - el que scrollea, si el formulario no entra entero, es
-           la sección completa. */
-        overflow-y: auto;
-    }
-
-    /* El encabezado (título + buscador) NO scrollea - solo la lista de
-       abajo, en su propio contenedor angosto (almacen-list-scroll, ver
-       markup en almacen.jsx). Antes toda la sección hacía scroll junto
-       (encabezado incluido) porque no había ningún límite de alto real: el
-       panel podía crecer sin techo y el scroll terminaba pasando por
-       .dashboard-content (la pantalla entera), no por la lista. */
-    .almacen-list-scroll {
         flex: 1;
-        min-height: 0;
-        overflow-y: auto;
-    }
-    /* SmoothHeight (ver SmoothHeight.jsx) fija un alto inline igual al del
-       contenido entero, siempre - lo cual está pensado para animar
-       transiciones de alto en un layout de página que fluye libremente,
-       pero acá adentro anula el scroll interno de arriba (el contenedor
-       jamás mediría menos que su contenido, así que nunca se activaría su
-       overflow-y). Se lo neutraliza solo acá dentro: la lista larga scrollea
-       sin más, sin el salto/animación de alto (aceptable - ya se está
-       scrolleando, un reacomodo de alto ahí adentro no llama la atención
-       como si pasara en el flujo normal de la página). */
-    .almacen-list-scroll .smooth-height {
-        height: auto !important;
-        min-height: 0 !important;
+        width: 100%;
     }
 
-    /* Este encabezado no scrollea (ver almacen-list-scroll más arriba),
-       solo la lista de abajo - el paso a columna cuando no entra en fila
-       ya lo resuelve el container query de más arriba (ver almacen-list). */
+    /* Este encabezado no scrollea (ver almacen-list-scroll, incondicional
+       más arriba), solo la lista de abajo - el paso a columna cuando no
+       entra en fila ya lo resuelve el container query de más arriba (ver
+       almacen-list). */
     .almacen-list-head {
         flex-shrink: 0;
     }

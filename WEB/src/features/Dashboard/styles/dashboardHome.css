@@ -85,6 +85,26 @@
     border-left: 1px solid #eef0f7;
 }
 
+/* Stock bajo y Vencimientos pueden traer bastantes filas (todo lo que esté
+   por debajo del umbral / vence pronto, no hay paginado) - sin un techo,
+   la fila entera (Ganancias + Stock bajo + Vencimientos, ver
+   .stat-card-sections) crecía con la más larga de las dos, empujando
+   Inicio más allá de la pantalla y forzando el scroll de la página
+   entera. Con un alto máximo + scroll propio, cada lista se contiene sola
+   y el techo de la fila queda fijo sin importar cuántos registros haya. */
+.stat-card-sections .stat-table-scroll {
+    max-height: 10rem;
+    overflow-y: auto;
+}
+/* El encabezado (Producto/Categoría/Disponible, etc.) queda visible al
+   scrollear la lista - sin esto, apenas se baja un poco se pierden de
+   vista los títulos de columna y los números pasan a verse sueltos. */
+.stat-card-sections .stat-table-scroll thead th {
+    position: sticky;
+    top: 0;
+    background-color: #ffffff;
+}
+
 /* Ganancias es solo dos filas (Bruta/Neta) - con el mismo flex:1 que Stock
    bajo/Vencimientos (tablas con varias columnas, que sí aprovechan el
    ancho) quedaba con espacio de sobra sin usar. flex-grow:0 la deja en su
