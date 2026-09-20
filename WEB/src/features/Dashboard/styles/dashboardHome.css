@@ -11,7 +11,10 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    margin-top: 1.75rem;
+    /* Mismo valor que el gap de acá arriba - antes era 1.75rem, dejando más
+       aire entre la tarjeta de bienvenida y la primera fila que el que hay
+       entre el resto de las filas. */
+    margin-top: 1rem;
 }
 .stats-row {
     display: grid;
@@ -80,6 +83,26 @@
 }
 .stat-section + .stat-section {
     border-left: 1px solid #eef0f7;
+}
+
+/* Ganancias es solo dos filas (Bruta/Neta) - con el mismo flex:1 que Stock
+   bajo/Vencimientos (tablas con varias columnas, que sí aprovechan el
+   ancho) quedaba con espacio de sobra sin usar. flex-grow:0 la deja en su
+   ancho base en vez de estirarse pareja con las otras dos, que absorben
+   ese espacio de más. */
+.stat-section-ganancias {
+    flex: 0 1 13rem;
+}
+.stat-section-ganancias .stat-table td {
+    font-size: 1.05rem;
+}
+/* Separación explícita entre la etiqueta (Bruta/Neta) y el monto - sin
+   esto quedaba librado a que la columna del monto se estirara de más
+   (el "resto" del ancho de la tabla, ver table-layout auto), dando una
+   distancia chica e inconsistente entre una fila y otra según cuántos
+   dígitos tuviera cada monto. */
+.stat-section-ganancias .stat-table td:first-child {
+    padding-right: 1.5rem;
 }
 @media (max-width: 48rem) {
     .stat-section {
@@ -295,4 +318,19 @@
 .stat-badge-critico {
     background-color: #fdecec;
     color: #c22b2b;
+}
+
+/* Mobile/tablet: mismo criterio que .panel-card (ver dashboardPanels.css) -
+   sin padding lateral en .dashboard-content y sin radio, cada tarjeta ocupa
+   el 100% del ancho de punta a punta en vez de quedar como una ficha
+   flotando con aire a los costados. */
+@media (max-width: 1024px) {
+    .stat-card {
+        border-radius: 0;
+        /* Mismo efecto "glass" que .panel-card (ver dashboardPanels.css) -
+           ambas son la misma "ficha blanca" del Dashboard. */
+        background-color: rgba(255, 255, 255, 0.72);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+    }
 }

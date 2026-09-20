@@ -8,6 +8,7 @@ import SmoothHeight from '../../components/ui/SmoothHeight.jsx';
 import SelectField from '../../components/ui/SelectField.jsx';
 import Calendar from '../../components/ui/Calendar.jsx';
 import Tooltip from '../../components/ui/Tooltip.jsx';
+import Modal from '../../components/ui/Modal.jsx';
 import LotesModal from './LotesModal.jsx';
 
 // Mismo tope que valida el backend (ver API/src/controllers/productosConDetallesController.js)
@@ -53,6 +54,11 @@ function Almacen() {
   // "lote": cargar mercadería (stock) de un producto ya existente.
   const [tab, setTab] = useState('producto')
 
+  // Solo importa en mobile/tablet (ver almacen.css): ahí el listado y el
+  // formulario no se muestran juntos, uno u otro a pantalla completa -
+  // "lista" por default para aterrizar viendo el catálogo.
+  const [vistaMobile, setVistaMobile] = useState('lista')
+
   const [productoId, setProductoId] = useState(0)
   const [listaProductos, setListaProductos] = useState([])
   // Arranca en true: al montar, todavía no se hizo ningún fetch.
@@ -73,6 +79,12 @@ function Almacen() {
 
   // Producto cuyo modal de lotes está abierto (null = ninguno).
   const [modalLotesProducto, setModalLotesProducto] = useState(null)
+  // Producto cuyo modal de confirmación de borrado está abierto (null =
+  // ninguno).
+  const [productoAEliminar, setProductoAEliminar] = useState(null)
+  // Loader en el botón + modal no cerrable mientras se espera la respuesta
+  // de eliminar el producto.
+  const [eliminandoProducto, setEliminandoProducto] = useState(false)
 
   // Estado de carga de cada petición "pesada" (crea/edita producto, carga
   // lote): deshabilita el formulario entero (fieldset) y muestra un loader
@@ -250,6 +262,7 @@ function Almacen() {
           console.log("Producto creado con éxito.", result.data)
           setFormData(datosInicialesProducto)
           setError(null)
+          setVistaMobile('lista')
       } else{
           console.error("Error al crear el producto.", result.message)
       }
@@ -259,6 +272,7 @@ function Almacen() {
       setProductoId(producto.producto_id)
       setOnEdit(true)
       setTab('producto')
+      setVistaMobile('form')
       setFormData({
         nombre: producto.producto_nombre,
         descripcion: producto.descripcion,
@@ -298,6 +312,7 @@ function Almacen() {
           setOnEdit(false)
           setCostoUltimaCompra(null)
           setError(null)
+          setVistaMobile('lista')
         } else{
           console.error("Error al Modificar los Productos.", result.message)
           setFormData(datosInicialesProducto)
@@ -307,15 +322,16 @@ function Almacen() {
     }
 
     const eliminarProducto = async (id) => {
-      if(confirm(`¿Quieres eliminar el producto Nº${id}?`)){
-        const result = await deleteAlmacen(id)
-        if(result.success){
-            setReload(!reload)
-            console.log("Producto eliminado con éxito.", result.data)
-        } else{
-            console.error("Error al eliminar el producto.", result.message)
-        }
+      setEliminandoProducto(true)
+      const result = await deleteAlmacen(id)
+      setEliminandoProducto(false)
+      if(result.success){
+          setReload(!reload)
+          console.log("Producto eliminado con éxito.", result.data)
+      } else{
+          console.error("Error al eliminar el producto.", result.message)
       }
+      setProductoAEliminar(null)
     }
 
     // Carga de mercadería: crea un lote para un producto ya existente.
@@ -340,6 +356,7 @@ function Almacen() {
         setLoteData(datosInicialesLote)
         setTieneVencimiento(false)
         setError(null)
+        setVistaMobile('lista')
       } else {
         console.error("Error al cargar el lote.", result.message)
       }
@@ -360,7 +377,7 @@ function Almacen() {
     }, [todosLosProductos, terminoBusqueda, filtroCategoria]);
   return(
     <div className='almacen-container'>
-      <div className="panel-card almacen-panel">
+      <div className={`panel-card almacen-panel almacen-mostrar-${vistaMobile}`}>
         {/* Sección izquierda: listado */}
         <div className='almacen-list-section'>
             <div className='almacen-list-head'>
@@ -391,6 +408,10 @@ function Almacen() {
                 </div>
               </div>
             </div>
+        {/* Mobile/tablet: este es el que scrollea (ver almacen.css) - el
+            encabezado de arriba (título + buscador) queda fijo, solo la
+            lista se desplaza dentro de su propio espacio. */}
+        <div className="almacen-list-scroll">
         <SmoothHeight>
         {cargandoProductos ? (
           <div className="panel-loading-container">
@@ -429,7 +450,7 @@ function Almacen() {
                         type="button"
                         className="panel-icon-button danger"
                         title="Eliminar"
-                        onClick={() => eliminarProducto(producto.producto_id)}
+                        onClick={() => setProductoAEliminar(producto)}
                         disabled={onEdit || enviandoProducto || enviandoLote}>
                         <Trash2 size={15} />
                       </button>
@@ -466,6 +487,7 @@ function Almacen() {
         </ul>
         )}
         </SmoothHeight>
+        </div>
       </div>
         {/* Sección derecha: alta de producto / carga de stock */}
         <div className='almacen-form-section'>
@@ -762,12 +784,47 @@ function Almacen() {
               }
             </SmoothHeight>
         </div>
+        {/* Mobile/tablet: listado y formulario no se muestran juntos (ver
+            almacen.css) - este toggle decide cuál de los dos ocupa la
+            pantalla, pegado siempre abajo de todo. En desktop queda oculto,
+            ahí se ven los dos a la vez. */}
+        <div className="almacen-mobile-tabs">
+          <button
+            type="button"
+            className={vistaMobile === 'lista' ? 'active' : ''}
+            onClick={() => setVistaMobile('lista')}
+          >
+            Listado
+          </button>
+          <button
+            type="button"
+            className={vistaMobile === 'form' ? 'active' : ''}
+            onClick={() => setVistaMobile('form')}
+          >
+            Formulario
+          </button>
+        </div>
       </div>
       {modalLotesProducto && (
         <LotesModal
           producto={modalLotesProducto}
           onClose={() => setModalLotesProducto(null)}
         />
+      )}
+      {productoAEliminar && (
+        <Modal title="Eliminar producto" onClose={() => !eliminandoProducto && setProductoAEliminar(null)}>
+          <p className="confirmar-eliminar-texto">
+            ¿Querés eliminar el producto <strong>{productoAEliminar.producto_nombre}</strong> (Nº{productoAEliminar.producto_id})? Esta acción no se puede deshacer.
+          </p>
+          <div className="confirmar-eliminar-acciones">
+            <button type="button" className="panel-button panel-button-secondary" onClick={() => setProductoAEliminar(null)} disabled={eliminandoProducto}>
+              Cancelar
+            </button>
+            <button type="button" className="panel-button panel-button-primary" onClick={() => eliminarProducto(productoAEliminar.producto_id)} disabled={eliminandoProducto}>
+              {eliminandoProducto ? <Loader2 size={16} className="panel-spinner" /> : 'Eliminar'}
+            </button>
+          </div>
+        </Modal>
       )}
     </div>
   )

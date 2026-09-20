@@ -1,0 +1,33 @@
+/* Solo tiene sentido en mobile/tablet (ver dashboard.css, mismo umbral que
+   el toggle menú/contenido a pantalla completa) - en escritorio la sidebar
+   ya está siempre visible, este botón no pintaría nada. */
+.dashboard-mobile-menu-btn {
+    display: none;
+}
+
+@media (max-width: 1024px) {
+    .dashboard-mobile-menu-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        width: 3.5rem;
+        height: 3.5rem;
+        border-radius: 50%;
+        border: none;
+        background-color: #4f8cff;
+        color: #fff;
+        box-shadow: 0 8px 20px rgba(21, 26, 46, 0.35);
+        z-index: 20;
+        cursor: grab;
+        /* touch-action:none - sin esto, el navegador intenta scrollear la
+           página con el mismo gesto de arrastre en vez de dejarlo mover el
+           botón (los pointermove quedan compitiendo con el scroll táctil). */
+        touch-action: none;
+        transition: transform 0.15s ease;
+    }
+    .dashboard-mobile-menu-btn:active {
+        cursor: grabbing;
+        transform: scale(0.94);
+    }
+}

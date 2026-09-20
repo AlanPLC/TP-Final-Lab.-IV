@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { API_BASE_URL } from '../../config/api.js'
 
 export default function useLogin(){
     const [error, setError] = useState([])
@@ -11,7 +12,7 @@ export default function useLogin(){
         // Fetch tipo Post a login, exportando los estados loading
         // y error según resultado para manejo en el componente
         try {
-            const response = await fetch("http://localhost:3000/login/",{
+            const response = await fetch(`${API_BASE_URL}/login/`,{
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json'

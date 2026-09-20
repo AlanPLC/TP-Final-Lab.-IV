@@ -1,17 +1,23 @@
 import './styles/authPanel.css'
+import '../../styles/dashboardPanels.css'
 import '../Lobby/styles/lobby.css'
 import useLogin from '../../hooks/Login-Register/useLogin'
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { LogIn, Eye, EyeOff, CheckCircle2, ArrowLeft } from 'lucide-react';
+import { LogIn, Eye, EyeOff, CheckCircle2, ArrowLeft, Loader2 } from 'lucide-react';
 
 // Panel de Login: vive embebido en la sidebar del Lobby (ver lobby.jsx),
 // no es una página propia. Reemplaza al panel de bienvenida o al de
 // Register con una animación de slide cuando cambia la ruta.
 function Login() {
     const { login, loading, error } = useLogin()
-    const [user, setUser] = useState('')
-    const [password, setPassword] = useState('')
+    // El registro de cuentas nuevas está deshabilitado (ver register.jsx) -
+    // como única cuenta disponible es esta demo, el login arranca con sus
+    // credenciales ya cargadas y los campos bloqueados: el usuario solo
+    // tiene que tocar "Iniciar sesión" para entrar, sin tener que copiarlas
+    // a mano desde la nota de más abajo.
+    const [user, setUser] = useState('Test')
+    const [password, setPassword] = useState('Test1234')
     const [showPassword, setShowPassword] = useState(false)
 
     const navigate = useNavigate();
@@ -79,6 +85,7 @@ function Login() {
                   placeholder='Ingrese su nombre de usuario'
                   value={user}
                   onChange={(e) => setUser(e.target.value)}
+                  disabled
                   required/>
           </div>
           <div className='auth-field'>
@@ -92,6 +99,7 @@ function Login() {
                     placeholder='Ingrese su contraseña'
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    disabled
                     required/>
                 <button
                     type="button"
@@ -104,7 +112,12 @@ function Login() {
               </div>
           </div>
           <button type="submit" disabled={loading} className='auth-submit'>
-            {loading ? 'Iniciando sesión...' : 'Iniciar sesión'}
+            {loading ? (
+              <>
+                <Loader2 size={18} className="panel-spinner" />
+                Iniciando sesión...
+              </>
+            ) : 'Iniciar sesión'}
           </button>
           {Array.isArray(error) && error.length > 0 && (
               <div>
@@ -116,12 +129,6 @@ function Login() {
         </form>
 
         <p className="auth-switch">¿No tienes cuenta? <Link to="/register" className='auth-link'>Regístrate</Link></p>
-
-        <div className="auth-demo-note">
-          <p>Utilizá esta cuenta para probar la APP</p>
-          <p>Usuario: <strong>Test</strong></p>
-          <p>Contraseña: <strong>Test1234</strong></p>
-        </div>
       </div>
     </div>
   )

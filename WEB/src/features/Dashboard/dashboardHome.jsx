@@ -15,7 +15,15 @@ function formatearUnidades(valor) {
   return `${valor} u.`
 }
 function formatearFecha(iso) {
-  return new Date(`${iso}T00:00:00`).toLocaleDateString()
+  // El backend devuelve fecha_vencimiento (columna DATE) ya serializada como
+  // ISO completo ("2026-09-21T00:00:00.000Z"), no como fecha pelada - antes
+  // se le pegaba otro "T00:00:00" atrás, armando un string invalido
+  // ("...000ZT00:00:00") que Date() no podía parsear. Slice a los primeros
+  // 10 caracteres para quedarse solo con la fecha (funciona igual si en
+  // algún momento llegara una fecha pelada) y recién ahí arma el string en
+  // hora LOCAL - así la fecha no se corre un día para atrás en husos
+  // horarios detrás de UTC (Argentina incluido).
+  return new Date(`${String(iso).slice(0, 10)}T00:00:00`).toLocaleDateString()
 }
 
 // Un color base distinto por barra en "Productos más vendidos" (Ventas usa
@@ -277,7 +285,7 @@ function DashboardHome() {
 
           <div className="stats-row stats-row-final">
             <div className="stat-card stat-card-sections">
-              <div className="stat-section">
+              <div className="stat-section stat-section-ganancias">
                 <h3 className="stat-card-title"><Wallet size={18} /> Ganancias</h3>
                 <table className="stat-table">
                   <tbody>

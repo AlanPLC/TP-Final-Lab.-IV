@@ -28,6 +28,10 @@ const Proveedores = () => {
     // Loader en el botón + formulario deshabilitado mientras se espera la
     // respuesta de agregar/editar un proveedor.
     const [enviandoProveedor, setEnviandoProveedor] = useState(false)
+    // Solo importa en mobile/tablet (ver proveedores.css): ahí el listado y
+    // el formulario no se muestran juntos, uno u otro a pantalla completa -
+    // "lista" por default para aterrizar viendo el listado.
+    const [vistaMobile, setVistaMobile] = useState('lista')
 
     const mostrarProveedores = async() =>{
         setCargandoProveedores(true)
@@ -77,6 +81,7 @@ const Proveedores = () => {
         setDescripcion(prov.descripcion)
         setProveedorID(prov.proveedor_id)
         setOnEdit(true)
+        setVistaMobile('form')
     }
 
     const eliminarProveedor = async(id) =>{
@@ -109,6 +114,7 @@ const Proveedores = () => {
             setNombre('')
             setDescripcion('')
             setError(null)
+            setVistaMobile('lista')
         } else{
             console.error("Error al crear el proveedor.", result.message)
         }
@@ -132,6 +138,7 @@ const Proveedores = () => {
             setOnEdit(false)
             setProveedorID(null)
             setError(null)
+            setVistaMobile('lista')
         } else{
             console.error("Error al actualizar el proveedor.", result.message)
             setNombre('')
@@ -165,7 +172,7 @@ const Proveedores = () => {
 
     return (
         <div className='proveedor-main-container'>
-            <div className="panel-card proveedores-panel">
+            <div className={`panel-card proveedores-panel proveedores-mostrar-${vistaMobile}`}>
             <div className='prov-lista-section'>
                 <div className="prov-lista-head">
                     <h1 className="panel-heading">Proveedores</h1>
@@ -180,6 +187,11 @@ const Proveedores = () => {
                         />
                     </div>
                 </div>
+                {/* Mobile/tablet: este es el que scrollea (ver
+                    proveedores.css) - el encabezado de arriba (título +
+                    buscador) queda fijo, solo la lista se desplaza dentro
+                    de su propio espacio. */}
+                <div className="prov-lista-scroll">
                 {cargandoProveedores ? (
                 <div className="panel-loading-container">
                     <p className="panel-loading">
@@ -232,6 +244,7 @@ const Proveedores = () => {
                     ))}
                 </ul>
                 )}
+                </div>
             </div>
             <div className='prov-edit-section'>
                 {!onEdit ? (<h3 className="panel-heading">Agregar Proveedor</h3>) :
@@ -273,6 +286,7 @@ const Proveedores = () => {
                             setDescripcion('')
                             setOnEdit(false)
                             setProveedorID(null)
+                            setVistaMobile('lista')
                         }}>Cancelar</button>
                     </div>) :
                     (<button type='submit' className="panel-button panel-button-primary prov-submit" disabled={!nombre.trim() || !descripcion.trim() || limiteAlcanzado}>
@@ -290,6 +304,26 @@ const Proveedores = () => {
                 </div>
                 )}
                 </SmoothHeight>
+            </div>
+            {/* Mobile/tablet: listado y formulario no se muestran juntos (ver
+                proveedores.css) - este toggle decide cuál de los dos ocupa la
+                pantalla, pegado siempre abajo de todo. En desktop queda
+                oculto, ahí se ven los dos a la vez. */}
+            <div className="proveedores-mobile-tabs">
+                <button
+                    type="button"
+                    className={vistaMobile === 'lista' ? 'active' : ''}
+                    onClick={() => setVistaMobile('lista')}
+                >
+                    Listado
+                </button>
+                <button
+                    type="button"
+                    className={vistaMobile === 'form' ? 'active' : ''}
+                    onClick={() => setVistaMobile('form')}
+                >
+                    Formulario
+                </button>
             </div>
             </div>
             {modalProductosProveedor && (

@@ -1,7 +1,12 @@
 .dashboard-container {
+    position: relative;
     display: flex;
     width: 100vw;
     height: 100vh;
+    /* dvh sigue el alto real disponible cuando la barra de direcciones del
+       navegador se muestra/oculta - ver el mismo fallback en
+       rootTransition.css y lobby.css. */
+    height: 100dvh;
     overflow: hidden;
 }
 
@@ -229,21 +234,61 @@
 }
 .confirmar-reset-acciones {
     display: flex;
-    justify-content: flex-end;
     gap: 0.6rem;
 }
+/* Los dos botones ocupan el ancho completo en partes iguales, en vez de
+   quedar los dos pegados a la derecha con espacio vacío a la izquierda. */
+.confirmar-reset-acciones button {
+    flex: 1;
+}
 
-@media (max-width: 768px) {
-    .dashboard-container {
-        flex-direction: column;
-        height: auto;
-        min-height: 100vh;
-        overflow: visible;
-    }
-    .dashboard-sidebar {
+/* Mobile/tablet: la sidebar (menú) y el contenido nunca se muestran juntos -
+   antes se apilaban uno arriba del otro y había que scrollear para llegar al
+   contenido, dando la sensación de que la sidebar "era parte" del contenido
+   en vez de un menú aparte. Ahora cada uno ocupa la pantalla entera por
+   turnos, con un fade entre los dos (ver dashboard-mobile-menu/-content, que
+   pisa dashboardLayout.jsx en el div raíz), y para volver al menú desde el
+   contenido está el botón flotante de MobileMenuButton.jsx. */
+@media (max-width: 1024px) {
+    .dashboard-sidebar,
+    .dashboard-content {
+        position: absolute;
+        inset: 0;
         width: 100%;
-        height: auto;
+        height: 100%;
+        transition: opacity 0.25s ease;
+    }
+
+    .dashboard-mobile-menu .dashboard-sidebar {
+        opacity: 1;
+        pointer-events: auto;
+        z-index: 2;
+    }
+    .dashboard-mobile-menu .dashboard-content {
+        opacity: 0;
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    .dashboard-mobile-content .dashboard-sidebar {
+        opacity: 0;
+        pointer-events: none;
+        z-index: 1;
+    }
+    .dashboard-mobile-content .dashboard-content {
+        opacity: 1;
+        pointer-events: auto;
+        z-index: 2;
+    }
+
+    .dashboard-sidebar {
         border-right: none;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    /* Sin padding en ningún lado: el contenido queda pegado a los cuatro
+       bordes de la pantalla - cada sección ya trae su propio padding
+       interno para el texto, no hace falta duplicarlo afuera. */
+    .dashboard-content {
+        padding: 0;
     }
 }

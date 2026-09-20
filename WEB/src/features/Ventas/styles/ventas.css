@@ -31,6 +31,13 @@
     flex-direction: column;
     min-height: 0;
     padding: 1.5rem;
+    /* Container query (ver más abajo): el título+filtros pasan a columna
+       cuando ESTA sección se queda sin ancho real para mostrarlos en fila,
+       sin importar si es porque la ventana es angosta (mobile) o porque el
+       ancho de escritorio ya lo consume el sidebar (una laptop, no solo un
+       teléfono). */
+    container-type: inline-size;
+    container-name: ventas-list;
 }
 
 .ventas-list-head {
@@ -40,6 +47,18 @@
     gap: 1rem;
     flex-shrink: 0;
     margin-bottom: 1rem;
+}
+/* Título + barra de filtros no entran cómodos en una sola fila por debajo
+   de este ancho - pasan a columna en vez de que el título se parta en
+   varias líneas apretado contra la barra de filtros. align-items:stretch
+   ya alcanza para que el título Y la barra de filtros (hijos DIRECTOS de
+   este contenedor) ocupen el 100% del ancho en columna, sin necesidad de
+   un width:100% aparte en cada uno. */
+@container ventas-list (max-width: 49rem) {
+    .ventas-list-head {
+        flex-direction: column;
+        align-items: stretch;
+    }
 }
 
 /* Una sola barra para los 4 filtros rápidos + el botón de calendario (rango
@@ -225,14 +244,47 @@
     color: #4f8cff;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
+    .ventas-main-container {
+        /* Antes centraba el panel con un margen arriba/abajo - en
+           mobile/tablet el panel ES la pantalla, así que ni el centrado ni
+           el margen tienen nada que hacer. */
+        margin-top: 0;
+        height: 100%;
+    }
     .lista {
         grid-template-columns: 1fr;
     }
-    .ventas-list-head {
-        flex-wrap: wrap;
-    }
+    /* El paso del encabezado (título + filtros) a columna cuando no entra
+       en fila ya lo resuelve el container query de más arriba (ver
+       ventas-list) - acá solo queda el rediseño de la barra de filtros en
+       sí, pensado para mobile/tablet en particular (ver comentario
+       siguiente). */
+    /* En flex-wrap (ver base más arriba) cada botón mide solo lo que pide
+       su contenido - al envolver a una segunda fila, esa fila queda con
+       espacio vacío a la derecha en vez de ocupar el ancho completo (se ve
+       "desfasada" respecto a la fila de arriba). Con grid de 2 columnas
+       cada botón pasa a ocupar la mitad real del ancho disponible, así que
+       las dos filas resultantes (4 filtros + calendario + orden = 6
+       botones, ambas filas completas) quedan simétricas. */
     .ventas-filtros-bar {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
         width: 100%;
+    }
+    .ventas-filtros-bar button {
+        justify-content: center;
+        white-space: normal;
+        text-align: center;
+        border-right: 1px solid #d8dce8;
+        border-bottom: 1px solid #d8dce8;
+    }
+    /* Columna derecha (par): sin borde a la derecha, ya es el borde del
+       contenedor. Última fila: sin borde abajo, ídem. */
+    .ventas-filtros-bar button:nth-child(2n) {
+        border-right: none;
+    }
+    .ventas-filtros-bar button:nth-last-child(-n+2) {
+        border-bottom: none;
     }
 }

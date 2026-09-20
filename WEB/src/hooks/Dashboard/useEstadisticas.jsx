@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { API_BASE_URL } from '../../config/api.js'
 
 export default function useEstadisticas(){
     const [error, setError] = useState([])
@@ -6,7 +7,7 @@ export default function useEstadisticas(){
     const getEstadisticas = async() =>{
         const token = localStorage.getItem('token')
         try {
-            const response = await fetch("http://localhost:3000/estadisticas", {
+            const response = await fetch(`${API_BASE_URL}/estadisticas`, {
                 headers: {
                     Authorization: "Bearer " + token,
                 }

@@ -1,6 +1,7 @@
 import { expirarSesion } from './sesion.js'
 import { esAdmin, usuarioActual } from './rol.js'
 import * as demoDb from './demoDb.js'
+import { API_BASE_URL } from '../config/api.js'
 
 // No hay un wrapper propio de fetch en la app (cada hook hace fetch directo
 // con su propio Authorization header, ver hooks/*) - en vez de tocar los
@@ -8,7 +9,7 @@ import * as demoDb from './demoDb.js'
 // (importado en main.jsx antes de renderizar) y afecta a todos por igual.
 const fetchOriginal = window.fetch.bind(window)
 
-const BASE = 'http://localhost:3000'
+const BASE = API_BASE_URL
 
 window.fetch = async (...args) => {
   const { pathname, method } = partesRequest(args)

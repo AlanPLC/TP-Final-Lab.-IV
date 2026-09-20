@@ -63,6 +63,16 @@ function Lobby() {
     prevPathRef.current = path
     if (effectivePath) lastValidOutletRef.current = outlet
 
+    // En mobile, .root-transition-pane (ver rootTransition.css) scrollea
+    // internamente cuando el contenido no entra en un VH - pero ese scroll
+    // no se resetea solo al cambiar de panel acá adentro (Welcome/Login/
+    // Register no son navegaciones de página completa). Si el usuario había
+    // scrolleado en un panel más alto (ej. Introducción) y pasa a uno más
+    // bajo (Login), esa misma posición de scroll seguía aplicada al
+    // contenido nuevo - tapando el título y cortando lo que quedaba arriba.
+    const pane = document.querySelector('.root-transition-pane')
+    if (pane) pane.scrollTop = 0
+
     clearTimeout(timeoutRef.current)
     timeoutRef.current = setTimeout(() => setOutgoing(null), EXIT_MS)
   }, [path, effectivePath, outlet, currentOrder])
@@ -84,13 +94,23 @@ function Lobby() {
     <div className="lobby-container">
       <div className="lobby-bg" aria-hidden="true" />
 
-      {/* Marca a la izquierda, flotando sobre el gif (no dentro de la sidebar) */}
-      <div className="lobby-brand">
+      {/* Escritorio: flota a la izquierda, sobre el gif y afuera de la
+          sidebar. En mobile se oculta (ver lobby.css) - ahí el título vive
+          DENTRO del panel con blur (.lobby-brand-mobile más abajo), no
+          suelto sobre el fondo. */}
+      <div className="lobby-brand lobby-brand-desktop">
         <Store size={28} strokeWidth={2.2} />
         <h1>MINIMARKET BITWARD</h1>
       </div>
 
       <aside className="lobby-sidebar">
+        {/* Mobile: mismo título, pero integrado arriba del todo del panel
+            con blur (ver lobby-brand-mobile en lobby.css) - en escritorio
+            queda oculto, ese usa el de arriba. */}
+        <div className="lobby-brand lobby-brand-mobile">
+          <Store size={24} strokeWidth={2.2} />
+          <h1>MINIMARKET BITWARD</h1>
+        </div>
         <div className="lobby-sidebar-viewport" ref={viewportRef}>
           {outgoing && (
             <div className={`lobby-panel${armed ? ` ${outClass}` : ''}`}>

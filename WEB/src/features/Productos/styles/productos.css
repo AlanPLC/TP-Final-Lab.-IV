@@ -23,6 +23,13 @@
     min-width: 0;
     padding: 1.5rem;
     border-right: 1px solid #eef0f7;
+    /* Container query (ver más abajo): el título+buscador pasan a columna
+       cuando ESTA sección se queda sin ancho real para mostrarlos en fila,
+       sin importar si es porque la ventana es angosta (mobile) o porque el
+       ancho de escritorio ya lo consume el sidebar + la boleta (una
+       laptop, no solo un teléfono). */
+    container-type: inline-size;
+    container-name: productos-lista;
 }
 
 .productos-lista-head {
@@ -48,6 +55,31 @@
 }
 .productos-search .panel-search {
     padding-left: 2.1rem;
+}
+
+/* Título + buscador no entran cómodos en una sola fila por debajo de este
+   ancho - pasan a columna en vez de amontonarse. Va DESPUÉS del ancho fijo
+   de acá arriba a propósito: con la misma especificidad, gana la regla que
+   aparece último en el archivo - si quedara antes, el "width: 14rem" de la
+   regla base la pisaría siempre, sin importar si el container query
+   matchea o no. */
+@container productos-lista (max-width: 30rem) {
+    .productos-lista-head {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .productos-search {
+        width: 100%;
+    }
+    /* Las tarjetas tienen un ancho fijo (ver "li" más abajo) - con el
+       título y el buscador ya en columna (ancho angosto), centrarlas
+       cuando no llegan a llenar una fila entera en vez de dejarlas pegadas
+       a la izquierda. Con título y buscador en la misma fila (ancho
+       normal) se dejan alineadas a la izquierda, como el resto de la
+       grilla de gestión (Almacén, Proveedores). */
+    .productos-grid {
+        justify-content: center;
+    }
 }
 
 .productos-grid{
@@ -359,6 +391,148 @@
     color: #2a9d5c;
 }
 
+/* Toggle Catálogo/Boleta, solo se ve en mobile/tablet (ver más abajo) -
+   arriba de todo el panel, mismo look que .segmented-bar. En escritorio no
+   se renderiza nada distinto: las dos secciones siguen mostrándose juntas,
+   lado a lado, como siempre. */
+.productos-mobile-tabs {
+    display: none;
+}
+
+@media (max-width: 1024px) {
+    .productos-main-container {
+        /* Antes centraba el panel con un margen arriba - en mobile/tablet
+           el panel ES la pantalla (ver min-height acá abajo), así que ni el
+           centrado ni el margen tienen nada que hacer. */
+        margin-top: 0;
+        height: 100%;
+    }
+    .productos-panel {
+        /* height (no min-height): el panel nunca crece más allá de la
+           pantalla - así el que se desborda con contenido largo es cada
+           sección por su cuenta (ver productos-list-scroll/
+           productos-venta-lista más abajo), con su propio scroll interno,
+           en vez de la página entera. */
+        height: 100%;
+        flex-direction: column;
+        max-width: none;
+    }
+
+    /* Toggle Catálogo/Boleta pegado siempre abajo de la pantalla (ver
+       orden real en productos.jsx: va DESPUÉS de las dos secciones) - con
+       la sección visible en flex:1 arriba, esta barra de ancho fijo queda
+       empujada al fondo sola. */
+    .productos-mobile-tabs {
+        display: grid;
+        grid-auto-flow: column;
+        grid-auto-columns: 1fr;
+        flex-shrink: 0;
+        border-top: 1px solid #eef0f7;
+    }
+    .productos-mobile-tabs button {
+        border: none;
+        background-color: #ffffff;
+        color: #6b7597;
+        font-family: var(--font-body);
+        font-weight: 700;
+        font-size: 0.85rem;
+        padding: 0.85rem;
+        cursor: pointer;
+        transition: background-color 0.15s ease, color 0.15s ease;
+    }
+    .productos-mobile-tabs button.active {
+        background-color: #eef2fc;
+        color: #4f8cff;
+    }
+
+    /* Solo una de las dos secciones a la vez - cuál, lo decide el toggle de
+       abajo (ver vistaMobile en productos.jsx). Antes la boleta quedaba
+       superpuesta sobre el catálogo en pantallas angostas; ahora cada una
+       ocupa la pantalla completa cuando le toca. */
+    .productos-panel:not(.productos-mostrar-boleta) .productos-venta-section {
+        display: none;
+    }
+    .productos-panel:not(.productos-mostrar-catalogo) .productos-lista-section {
+        display: none;
+    }
+
+    /* La sección visible llena el alto entero del panel (entre su propio
+       encabezado y la barra de tabs de abajo) - min-height:0 es lo que
+       permite que, siendo un ítem flex en columna, pueda MEDIR menos que su
+       contenido en vez de crecer siempre a la altura del contenido (lo que
+       dejaría sin efecto el scroll interno de acá abajo). */
+    .productos-lista-section,
+    .productos-venta-section {
+        flex: 1;
+        min-height: 0;
+        border-right: none;
+    }
+    .productos-venta-section {
+        width: 100%;
+    }
+
+    /* El encabezado (título + buscador) NO scrollea - solo la grilla de
+       productos, en su propio contenedor (productos-list-scroll, ver
+       markup en productos.jsx). El paso a columna cuando no entra en fila
+       ya lo resuelve el container query de más arriba (ver
+       productos-lista). */
+    .productos-lista-head {
+        flex-shrink: 0;
+    }
+    .productos-list-scroll {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+    }
+
+    /* Misma idea del lado de la boleta: el total + botón "Realizar Venta"
+       quedan siempre visibles abajo (ya los pega ahí margin-top:auto en
+       .productos-venta-resumen) y lo que scrollea, si hay muchos productos
+       agregados, es solo la lista de arriba. */
+    .productos-venta {
+        min-height: 0;
+    }
+    .productos-venta-lista {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+    }
+    /* SmoothHeight (ver SmoothHeight.jsx) fija un alto inline igual al del
+       contenido entero, siempre - acá adentro eso anularía el scroll de
+       arriba (el contenedor jamás mediría menos que su contenido). Se lo
+       neutraliza solo acá dentro: la lista larga scrollea sin más, sin el
+       salto/animación de alto. */
+    .productos-venta-lista .smooth-height {
+        height: auto !important;
+        min-height: 0 !important;
+    }
+
+    /* Las tarjetas tenían un ancho fijo (11.5rem) pensado para escritorio -
+       en una pantalla angosta ninguna otra entra al lado, así que
+       flex-wrap las apilaba en una sola columna dejando todo el resto del
+       ancho vacío. Con grid de 2 columnas, cada tarjeta se estira a la
+       mitad del espacio real disponible en vez de quedarse en ese ancho
+       fijo. */
+    .productos-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .productos-grid li {
+        width: auto;
+        height: auto;
+        min-width: 0;
+    }
+}
+
+/* Pantallas realmente angostas donde ni a la mitad entran cómodas (ver
+   grid de 2 columnas más arriba) - recién acá, una sola columna a todo el
+   ancho. */
+@media (max-width: 340px) {
+    .productos-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 /* Modal de confirmación al "Realizar Venta" */
 .confirmar-venta-texto{
     margin: 0 0 1.2rem;
@@ -368,6 +542,10 @@
 }
 .confirmar-venta-acciones{
     display: flex;
-    justify-content: flex-end;
     gap: 0.6rem;
+}
+/* Los dos botones ocupan el ancho completo en partes iguales, en vez de
+   quedar los dos pegados a la derecha con espacio vacío a la izquierda. */
+.confirmar-venta-acciones button{
+    flex: 1;
 }

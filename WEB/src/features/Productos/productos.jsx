@@ -10,6 +10,20 @@ import { Search, X, Plus, Minus, Loader2 } from 'lucide-react';
 import SmoothHeight from '../../components/ui/SmoothHeight.jsx';
 import Modal from '../../components/ui/Modal.jsx';
 
+// Paleta calcada de la app (dashboard.css/dashboardPanels.css): azul
+// oscuro de sidebar/encabezados, celeste de acento, verde de montos y
+// grises de texto secundario - el ticket viejo era helvetica negro sobre
+// blanco liso, sin nada que lo conecte visualmente con el resto del
+// sistema (ver generarPDF más abajo).
+const COLOR_NAVY = [21, 26, 46]
+const COLOR_ACCENT = [79, 140, 255]
+const COLOR_ACCENT_SOFT = [238, 242, 252]
+const COLOR_GREEN = [42, 157, 92]
+const COLOR_MUTED = [151, 160, 194]
+const COLOR_LABEL = [124, 134, 168]
+const COLOR_BORDER = [216, 220, 232]
+const COLOR_STRIPE = [247, 248, 252]
+
 const Productos = () => {
   const { getProductosConDetalles, postVentas, error } = useProductos()
   const [listaProductos, setListaProductos] = useState([])
@@ -23,6 +37,10 @@ const Productos = () => {
   // resto de la pantalla (agregar productos, editar cantidades, cancelar)
   // deshabilitado, para no permitir tocar nada hasta que termine.
   const [enviandoVenta, setEnviandoVenta] = useState(false)
+  // Solo importa en mobile/tablet (ver productos.css): ahí el catálogo y la
+  // boleta no se muestran juntos, uno u otro a pantalla completa - "catalogo"
+  // por default para aterrizar viendo los productos disponibles.
+  const [vistaMobile, setVistaMobile] = useState('catalogo')
 
   // Funcionalidad generar un PDF (ticket) con los datos de la venta realizada.
   // ventaId viene del id que devuelve el backend al crear la venta (mismo
@@ -33,49 +51,119 @@ const Productos = () => {
     const token = localStorage.getItem('token')
     const decoded = jwtDecode(token)
     const numeroTicket = String(ventaId).padStart(6, '0')
+    const pageWidth = doc.internal.pageSize.getWidth()
+    const margin = 14
 
-    // Título
-    doc.setFontSize(18);
-    doc.setFont("helvetica", "bold");
-    doc.text("Minimarket Bitward", doc.internal.pageSize.getWidth() / 2, 20, {
-      align: "center",
-    });
+    // Encabezado: franja azul oscuro con el nombre de la tienda, mismo
+    // look que la sidebar del Dashboard - antes era un texto suelto sobre
+    // la hoja en blanco.
+    doc.setFillColor(...COLOR_NAVY)
+    doc.rect(0, 0, pageWidth, 32, "F")
+    doc.setFont("helvetica", "bold")
+    doc.setFontSize(18)
+    doc.setTextColor(255, 255, 255)
+    doc.text("MINIMARKET BITWARD", pageWidth / 2, 16, { align: "center" })
+    doc.setFont("helvetica", "normal")
+    doc.setFontSize(10)
+    doc.setTextColor(...COLOR_MUTED)
+    doc.text("Comprobante de venta", pageWidth / 2, 24, { align: "center" })
 
-    // Información de la venta
-    doc.setFontSize(12);
-    doc.setFont("helvetica", "normal");
-    doc.text(`Ticket Nº: ${numeroTicket}`, 10, 30);
-    doc.text(`Fecha: ${new Date().toLocaleString()}`, 10, 40);
-    doc.text(`Vendedor: ${decoded.user}`, 10, 50);
+    // Datos de la operación a la izquierda, ticket Nº destacado a la
+    // derecha - antes las tres líneas (ticket/fecha/vendedor) iban una
+    // debajo de la otra sin jerarquía entre etiqueta y valor.
+    const datosY = 44
+    doc.setFont("helvetica", "bold")
+    doc.setFontSize(9)
+    doc.setTextColor(...COLOR_LABEL)
+    doc.text("FECHA", margin, datosY)
+    doc.text("VENDEDOR", margin, datosY + 13)
+    doc.setFont("helvetica", "normal")
+    doc.setFontSize(11)
+    doc.setTextColor(...COLOR_NAVY)
+    doc.text(new Date().toLocaleString(), margin, datosY + 6)
+    doc.text(decoded.user, margin, datosY + 19)
 
-    // Tabla con productos
+    doc.setFont("helvetica", "bold")
+    doc.setFontSize(9)
+    doc.setTextColor(...COLOR_LABEL)
+    doc.text("TICKET Nº", pageWidth - margin, datosY, { align: "right" })
+    doc.setFontSize(15)
+    doc.setTextColor(...COLOR_ACCENT)
+    doc.text(numeroTicket, pageWidth - margin, datosY + 9, { align: "right" })
+
+    doc.setDrawColor(...COLOR_BORDER)
+    doc.line(margin, datosY + 26, pageWidth - margin, datosY + 26)
+
+    // Tabla de productos: header azul oscuro + filas intercaladas, mismo
+    // criterio que .almacen-list/.panel-card en vez del celeste genérico
+    // de autoTable por default.
     autoTable(doc, {
-      startY: 60,
-      head: [["Producto", "Cantidad", "Precio"]],
+      startY: datosY + 34,
+      margin: { left: margin, right: margin },
+      head: [["Producto", "Cant.", "Precio unit.", "Subtotal"]],
       body: productosVenta.map((prod) => [
         prod.producto_nombre,
         prod.cantidad,
-        prod.precio,
+        `$${Number(prod.precio).toFixed(2)}`,
+        `$${(Number(prod.precio) * prod.cantidad).toFixed(2)}`,
       ]),
       styles: {
-        head: { fillColor: [41, 128, 185], textColor: [255, 255, 255] },
+        font: "helvetica",
         fontSize: 10,
-        cellPadding: 4,
+        cellPadding: 5,
+        textColor: COLOR_NAVY,
+        lineColor: COLOR_BORDER,
+        lineWidth: 0.1,
+      },
+      headStyles: {
+        fillColor: COLOR_NAVY,
+        textColor: [255, 255, 255],
+        fontStyle: "bold",
+      },
+      alternateRowStyles: {
+        fillColor: COLOR_STRIPE,
       },
       columnStyles: {
-        0: { cellWidth: 70 },
-        1: { halign: "center", cellWidth: 30 },
-        2: { halign: "right", cellWidth: 40 },
+        1: { halign: "center", cellWidth: 20 },
+        2: { halign: "right", cellWidth: 32 },
+        3: { halign: "right", cellWidth: 32 },
       },
       theme: "grid",
     });
 
-    // Total de la venta
+    // Total en una placa celeste destacada, alineada a la derecha - antes
+    // era una línea de texto suelta que se perdía en la hoja.
     const total = productosVenta.reduce(
       (sum, prod) => sum + prod.cantidad * prod.precio,
       0
     );
-    doc.text(`Total: $${total.toFixed(2)}`, 10, doc.previousAutoTable.finalY + 10);
+    const totalY = doc.lastAutoTable.finalY + 10
+    const boxWidth = 70
+    const boxX = pageWidth - margin - boxWidth
+    doc.setFillColor(...COLOR_ACCENT_SOFT)
+    doc.roundedRect(boxX, totalY, boxWidth, 16, 2, 2, "F")
+    doc.setFont("helvetica", "bold")
+    doc.setFontSize(11)
+    doc.setTextColor(...COLOR_NAVY)
+    doc.text("TOTAL", boxX + 6, totalY + 10.5)
+    doc.setFontSize(14)
+    doc.setTextColor(...COLOR_GREEN)
+    doc.text(`$${total.toFixed(2)}`, pageWidth - margin - 6, totalY + 10.5, { align: "right" })
+
+    // Pie de página: agradecimiento + aclaración de que no es un
+    // comprobante fiscal - antes la hoja terminaba de golpe después del
+    // total, sin cierre.
+    const pageHeight = doc.internal.pageSize.getHeight()
+    doc.setDrawColor(...COLOR_BORDER)
+    doc.line(margin, pageHeight - 22, pageWidth - margin, pageHeight - 22)
+    doc.setFont("helvetica", "bold")
+    doc.setFontSize(10)
+    doc.setTextColor(...COLOR_NAVY)
+    doc.text("¡Gracias por tu compra!", pageWidth / 2, pageHeight - 15, { align: "center" })
+    doc.setFont("helvetica", "normal")
+    doc.setFontSize(8)
+    doc.setTextColor(...COLOR_MUTED)
+    doc.text("Este comprobante no tiene validez fiscal.", pageWidth / 2, pageHeight - 10, { align: "center" })
 
     // Nombre de archivo único por ticket (número de venta + fecha), en vez
     // de un nombre estático que se pisaría entre tickets distintos.
@@ -126,6 +214,7 @@ const Productos = () => {
       generarPDF(productosVenta, response.data.id)
       setProductosVenta([])
       setReload(!reload)
+      setVistaMobile('catalogo')
     } else {
       console.error("Error al confirmar la venta.", response.message || response.errors)
     }
@@ -187,7 +276,7 @@ const Productos = () => {
 
   return(
     <div className='productos-main-container'>
-      <div className="panel-card productos-panel">
+      <div className={`panel-card productos-panel productos-mostrar-${vistaMobile}`}>
         <div className='productos-lista-section'>
             <div className='productos-lista-head'>
               <h1 className="panel-heading">Productos</h1>
@@ -196,6 +285,10 @@ const Productos = () => {
                 <input type="text" className="panel-search" placeholder="Buscar producto..." onChange={(e)=>buscador(e.target.value)} disabled={enviandoVenta}/>
               </div>
             </div>
+        {/* Mobile/tablet: este es el que scrollea (ver productos.css) - el
+            encabezado de arriba (título + buscador) queda fijo, solo la
+            grilla se desplaza dentro de su propio espacio. */}
+        <div className="productos-list-scroll">
             {cargandoProductos ? (
               <div className="panel-loading-container">
                 <p className="panel-loading">
@@ -234,6 +327,7 @@ const Productos = () => {
               )}
             </ul>
             )}
+        </div>
         </div>
         <div className='productos-venta-section'>
           <h2 className="panel-heading">Boleta de Precio</h2>
@@ -300,6 +394,26 @@ const Productos = () => {
               </SmoothHeight>
               </div>
           </div>
+        </div>
+        {/* Mobile/tablet: catálogo y boleta no se muestran juntos (ver
+            productos.css) - este toggle decide cuál de los dos ocupa la
+            pantalla, pegado siempre abajo de todo. En desktop queda oculto,
+            ahí se ven los dos a la vez. */}
+        <div className="productos-mobile-tabs">
+          <button
+            type="button"
+            className={vistaMobile === 'catalogo' ? 'active' : ''}
+            onClick={() => setVistaMobile('catalogo')}
+          >
+            Catálogo
+          </button>
+          <button
+            type="button"
+            className={vistaMobile === 'boleta' ? 'active' : ''}
+            onClick={() => setVistaMobile('boleta')}
+          >
+            Boleta{productosVenta.length > 0 ? ` (${productosVenta.length})` : ''}
+          </button>
         </div>
       </div>
       {mostrarConfirmacion && (

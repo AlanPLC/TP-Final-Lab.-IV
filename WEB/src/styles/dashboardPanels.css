@@ -306,3 +306,21 @@
 .panel-scroll::-webkit-scrollbar-thumb:hover {
     background-color: #4f8cff;
 }
+
+/* Mobile/tablet: el contenido ya ocupa la pantalla entera por su cuenta
+   (ver el toggle menú/contenido en dashboard.css) - una ficha con esquinas
+   redondeadas y sin llegar a los bordes se siente fuera de lugar ahí, no
+   como una "página" de verdad. Sin padding lateral (ver .dashboard-content
+   en dashboard.css) y sin radio, el panel pasa a ocupar el 100% del ancho
+   de punta a punta. */
+@media (max-width: 1024px) {
+    .panel-card {
+        border-radius: 0;
+        /* Efecto "glass": menos opaco que el blanco sólido de escritorio,
+           con blur de lo que quede detrás (el fondo con textura de
+           .dashboard-content) en vez de tapiarlo del todo. */
+        background-color: rgba(255, 255, 255, 0.72);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+    }
+}

@@ -1,9 +1,10 @@
 import './styles/authPanel.css'
+import '../../styles/dashboardPanels.css'
 import '../Lobby/styles/lobby.css'
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from 'react-router-dom';
 import useRegister from '../../hooks/Login-Register/useRegister.jsx';
-import { UserPlus, Eye, EyeOff, ArrowLeft } from 'lucide-react';
+import { UserPlus, Eye, EyeOff, ArrowLeft, Loader2 } from 'lucide-react';
 
 // Panel de Register: vive embebido en la sidebar del Lobby (ver lobby.jsx),
 // misma paleta azul que Login (ya no se diferencian por color, viven en el
@@ -93,8 +94,13 @@ function Register() {
                 </button>
               </div>
           </div>
-          <button type="submit" disabled={loading} className='auth-submit'>
-            {loading ? 'Registrandote...' : 'Registrarme'}
+          <button type="submit" disabled={true} className='auth-submit' title="Registro deshabilitado">
+            {loading ? (
+              <>
+                <Loader2 size={18} className="panel-spinner" />
+                Registrándote...
+              </>
+            ) : 'Registrarme'}
           </button>
           {Array.isArray(error) && error.length > 0 && (
               <div>
@@ -106,6 +112,11 @@ function Register() {
         </form>
 
         <p className="auth-switch">¿Ya tienes una cuenta? <Link to="/login" className='auth-link'>Inicia sesión aquí...</Link></p>
+
+        <div className="auth-demo-note">
+          <p>El registro de cuentas nuevas está deshabilitado</p>
+          <p>Usá la cuenta de prueba desde <Link to="/login" className='auth-link'>Inicia Sesión</Link></p>
+        </div>
       </div>
     </div>
   )

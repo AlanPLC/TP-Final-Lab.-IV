@@ -24,6 +24,13 @@
     min-width: 0;
     padding: 1.5rem;
     border-right: 1px solid #eef0f7;
+    /* Container query (ver más abajo): el título+buscador+filtro pasan a
+       columna quiando ESTA sección se queda sin ancho real para
+       mostrarlos en fila, sin importar si es porque la ventana es angosta
+       (mobile) o porque el ancho de escritorio ya lo consume el sidebar +
+       la sección de formulario (una laptop, no solo un teléfono). */
+    container-type: inline-size;
+    container-name: almacen-list;
 }
 
 .almacen-list-head {
@@ -68,12 +75,38 @@
     margin-bottom: 0;
 }
 
+/* Título + buscador + filtro de categoría no entran cómodos en una sola
+   fila por debajo de este ancho - pasan a columna en vez de amontonarse o
+   forzar al título a partirse en varias líneas. Va DESPUÉS de los anchos
+   fijos de acá arriba a propósito: con la misma especificidad, gana la
+   regla que aparece último en el archivo - si quedara antes, el
+   "width: 13rem/14rem" de las reglas base la pisaría siempre, sin importar
+   si el container query matchea o no. */
+@container almacen-list (max-width: 54rem) {
+    .almacen-list-head {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .almacen-search-row {
+        flex-wrap: wrap;
+    }
+    .almacen-search, .almacen-filtro-categoria {
+        width: 100%;
+    }
+}
+
 .almacen-list {
     list-style: none;
     margin: 0;
     padding: 0;
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    /* auto-fit/minmax en vez de un número fijo de columnas: la grilla
+       decide sola cuántas entran (2, 1...) según el ancho real de esta
+       sección, sea porque la ventana es angosta o porque el sidebar + la
+       sección de formulario le dejan poco lugar en un desktop más chico -
+       antes con "repeat(2, 1fr)" fijo, en ese caso las tarjetas se
+       achicaban de más y su contenido quedaba tapado. */
+    grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
     align-items: start;
     gap: 0.6rem;
     /* Se remonta (key=filtroCategoria, ver almacen.jsx) cada vez que cambia
@@ -94,6 +127,11 @@
     border: 1px solid #eef0f7;
     border-radius: 10px;
     padding: 0.75rem;
+    /* Sin esto, el "tamaño mínimo automático" del ítem de grid lo define el
+       ancho mínimo de TODO su contenido interno (no el del track que le
+       toca) - con textos largos sin cortar en algún lado de la tarjeta, eso
+       la empuja (y a la grilla completa) más ancha que su columna real. */
+    min-width: 0;
 }
 
 .producto-icono {
@@ -179,6 +217,11 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    /* Sin esto, este párrafo (que no corta línea) nunca se achica por
+       debajo de su ancho de texto completo aunque tenga overflow/ellipsis
+       puestos - con min-width:0 sí puede angostarse hasta el espacio real
+       disponible y el "…" pasa a hacer efecto. */
+    min-width: 0;
 }
 
 .s3 .p1{
@@ -386,24 +429,145 @@
     margin-top: 1rem;
 }
 
-@media (max-width: 900px) {
-    .almacen-panel {
-        flex-direction: column;
+/* Modal de confirmación al eliminar un producto */
+.confirmar-eliminar-texto {
+    margin: 0 0 1.2rem;
+    font-size: 0.95rem;
+    color: #4c5675;
+    line-height: 1.5;
+}
+.confirmar-eliminar-acciones {
+    display: flex;
+    gap: 0.6rem;
+}
+/* Los dos botones ocupan el ancho completo en partes iguales, en vez de
+   quedar los dos pegados a la derecha con espacio vacío a la izquierda. */
+.confirmar-eliminar-acciones button {
+    flex: 1;
+}
+
+/* Toggle Listado/Formulario, solo se ve en mobile/tablet (ver más abajo) -
+   arriba de todo el panel, mismo look que .segmented-bar. En escritorio no
+   se renderiza nada distinto: las dos secciones siguen mostrándose juntas,
+   lado a lado, como siempre. */
+.almacen-mobile-tabs {
+    display: none;
+}
+
+@media (max-width: 1024px) {
+    .almacen-container {
+        /* Antes centraba el panel con un margen arriba - en mobile/tablet
+           el panel ES la pantalla (ver height acá abajo), así que ni el
+           centrado ni el margen tienen nada que hacer. */
+        margin-top: 0;
+        height: 100%;
     }
-    .almacen-list-section {
+    .almacen-panel {
+        /* height (no min-height): el panel nunca crece más allá de la
+           pantalla - así el que se desborda con contenido largo es cada
+           sección por su cuenta (ver almacen-list-scroll/almacen-form-section
+           más abajo), con su propio scroll interno, en vez de la página
+           entera. */
+        height: 100%;
+        flex-direction: column;
+        max-width: none;
+    }
+
+    /* Toggle Listado/Formulario pegado siempre abajo de la pantalla (ver
+       orden real en almacen.jsx: va DESPUÉS de las dos secciones) - con la
+       sección visible en flex:1 arriba, esta barra de ancho fijo queda
+       empujada al fondo sola. */
+    .almacen-mobile-tabs {
+        display: grid;
+        grid-auto-flow: column;
+        grid-auto-columns: 1fr;
+        flex-shrink: 0;
+        border-top: 1px solid #eef0f7;
+    }
+    .almacen-mobile-tabs button {
+        border: none;
+        background-color: #ffffff;
+        color: #6b7597;
+        font-family: var(--font-body);
+        font-weight: 700;
+        font-size: 0.85rem;
+        padding: 0.85rem;
+        cursor: pointer;
+        transition: background-color 0.15s ease, color 0.15s ease;
+    }
+    .almacen-mobile-tabs button.active {
+        background-color: #eef2fc;
+        color: #4f8cff;
+    }
+
+    /* Solo una de las dos secciones a la vez - cuál, lo decide el toggle de
+       abajo (ver vistaMobile en almacen.jsx). En vez de recortar
+       ambas mitades apretadas una al lado de la otra (lo que rompía el
+       layout entero en un teléfono angosto), cada una ocupa la pantalla
+       completa cuando le toca. */
+    .almacen-panel:not(.almacen-mostrar-form) .almacen-form-section {
+        display: none;
+    }
+    .almacen-panel:not(.almacen-mostrar-lista) .almacen-list-section {
+        display: none;
+    }
+
+    /* La sección visible llena el alto entero del panel (entre el
+       encabezado propio y la barra de tabs de abajo) - min-height:0 es lo
+       que permite que, siendo un ítem flex en columna, pueda MEDIR menos
+       que su contenido en vez de crecer siempre a la altura del contenido
+       (lo que dejaría sin efecto el scroll interno de acá abajo). */
+    .almacen-list-section,
+    .almacen-form-section {
+        flex: 1;
+        min-height: 0;
         border-right: none;
-        border-bottom: 1px solid #eef0f7;
     }
     .almacen-form-section {
         width: 100%;
+        /* Único bloque (no tiene encabezado fijo + lista separados como el
+           listado) - el que scrollea, si el formulario no entra entero, es
+           la sección completa. */
+        overflow-y: auto;
     }
-    .almacen-list {
-        grid-template-columns: 1fr;
+
+    /* El encabezado (título + buscador) NO scrollea - solo la lista de
+       abajo, en su propio contenedor angosto (almacen-list-scroll, ver
+       markup en almacen.jsx). Antes toda la sección hacía scroll junto
+       (encabezado incluido) porque no había ningún límite de alto real: el
+       panel podía crecer sin techo y el scroll terminaba pasando por
+       .dashboard-content (la pantalla entera), no por la lista. */
+    .almacen-list-scroll {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
     }
-    .almacen-search-row {
+    /* SmoothHeight (ver SmoothHeight.jsx) fija un alto inline igual al del
+       contenido entero, siempre - lo cual está pensado para animar
+       transiciones de alto en un layout de página que fluye libremente,
+       pero acá adentro anula el scroll interno de arriba (el contenedor
+       jamás mediría menos que su contenido, así que nunca se activaría su
+       overflow-y). Se lo neutraliza solo acá dentro: la lista larga scrollea
+       sin más, sin el salto/animación de alto (aceptable - ya se está
+       scrolleando, un reacomodo de alto ahí adentro no llama la atención
+       como si pasara en el flujo normal de la página). */
+    .almacen-list-scroll .smooth-height {
+        height: auto !important;
+        min-height: 0 !important;
+    }
+
+    /* Este encabezado no scrollea (ver almacen-list-scroll más arriba),
+       solo la lista de abajo - el paso a columna cuando no entra en fila
+       ya lo resuelve el container query de más arriba (ver almacen-list). */
+    .almacen-list-head {
+        flex-shrink: 0;
+    }
+
+    /* Precio/Cant./botón Lotes en una sola fila sin lugar de sobra
+       empujaban contenido fuera de la tarjeta (se veía cortado a la
+       derecha) - con wrap pasan a una segunda línea en vez de desbordar. */
+    .s3 {
         flex-wrap: wrap;
-    }
-    .almacen-search, .almacen-filtro-categoria {
-        width: 100%;
+        row-gap: 0.4rem;
     }
 }

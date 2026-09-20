@@ -20,6 +20,31 @@
     width: 100%;
 }
 
+/* En mobile .lobby-panel ya no tiene una altura fija (crece con su
+   contenido para entrar en un VH, ver el @media en lobby.css) - un
+   height:100% acá no tiene de qué "100%" agarrarse (queda indefinido) y
+   .auth-panel más abajo no puede repartirse un sobrante que no existe.
+   Con height:auto el alto sale directo del contenido, como corresponde. */
+@media (max-width: 640px) {
+    .auth-screen {
+        height: auto;
+        /* En escritorio el espacio entre el botón y .auth-panel sale solo
+           (el height:100% de arriba + justify-content:center de
+           .auth-panel lo centran en el resto del alto) - acá, con
+           height:auto, .auth-panel no tiene sobrante para centrarse y
+           quedaba pegado justo debajo del botón. */
+        gap: 1.25rem;
+    }
+}
+
+/* Ventana mobile además baja (ver el mismo umbral en lobby.css) - un poco
+   menos de gap para seguir entrando en un VH sin necesitar scroll. */
+@media (max-width: 640px) and (max-height: 700px) {
+    .auth-screen {
+        gap: 0.9rem;
+    }
+}
+
 /* Toma el resto del alto que deja el botón de arriba, y centra su propio
    contenido (ícono, título, form, pregunta) ahí en el medio. */
 .auth-panel {
@@ -110,6 +135,13 @@
     outline: none;
     border-color: #4f8cff;
 }
+/* Login: los campos vienen precargados con la cuenta de prueba y
+   bloqueados (ver login.jsx) - atenuados para que se lean como "de solo
+   lectura" en vez de un campo roto que no responde al tipeo. */
+.auth-input:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
 
 .auth-password-field {
     position: relative;
@@ -138,6 +170,10 @@
 .auth-submit {
     height: 2.9rem;
     width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
     border: none;
     border-radius: 6px;
     color: #fff;

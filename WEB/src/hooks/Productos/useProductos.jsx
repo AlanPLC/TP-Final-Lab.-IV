@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { API_BASE_URL } from '../../config/api.js'
 
 export default function useProductos() {
     const [loading, setLoading] = useState(false)
@@ -8,7 +9,7 @@ export default function useProductos() {
         setLoading(true)
         const token = localStorage.getItem('token')
         try {
-            const response = await fetch("http://localhost:3000/administrador/",{
+            const response = await fetch(`${API_BASE_URL}/administrador/`,{
                 headers: {
                     Authorization: "Bearer " + token,
                 }
@@ -36,7 +37,7 @@ export default function useProductos() {
         setLoading(true)
         const token = localStorage.getItem('token')
         try {
-            const response = await fetch('http://localhost:3000/ventas/', {
+            const response = await fetch(`${API_BASE_URL}/ventas/`, {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json',

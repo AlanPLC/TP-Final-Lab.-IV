@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { API_BASE_URL } from '../../config/api.js'
 
 export default function useRegister(){
     const [error, setError] = useState([])
@@ -9,7 +10,7 @@ export default function useRegister(){
         setLoading(true)
         setError([])
         try {
-            const response = await fetch("http://localhost:3000/usuarios/",{
+            const response = await fetch(`${API_BASE_URL}/usuarios/`,{
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json'

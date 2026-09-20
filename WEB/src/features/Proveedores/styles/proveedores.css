@@ -24,6 +24,13 @@
     min-width: 0;
     padding: 1.5rem;
     border-right: 1px solid #eef0f7;
+    /* Container query (ver más abajo): el título+buscador pasan a columna
+       cuando ESTA sección se queda sin ancho real para mostrarlos en fila,
+       sin importar si es porque la ventana es angosta (mobile) o porque el
+       ancho de escritorio ya lo consume el sidebar + la sección de
+       alta/edición (una laptop, no solo un teléfono). */
+    container-type: inline-size;
+    container-name: prov-lista;
 }
 .prov-lista-head {
     display: flex;
@@ -50,9 +57,31 @@
     padding-left: 2.1rem;
 }
 
+/* Título + buscador no entran cómodos en una sola fila por debajo de este
+   ancho - pasan a columna en vez de amontonarse. Va DESPUÉS del ancho fijo
+   de acá arriba a propósito: con la misma especificidad, gana la regla que
+   aparece último en el archivo - si quedara antes, el "width: 13rem" de la
+   regla base la pisaría siempre, sin importar si el container query
+   matchea o no. */
+@container prov-lista (max-width: 31rem) {
+    .prov-lista-head {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .prov-search {
+        width: 100%;
+    }
+}
+
 .prov-lista{
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    /* auto-fit/minmax en vez de un número fijo de columnas: cada tarjeta
+       pide un mínimo de 300px (18.75rem) y la grilla decide sola cuántas
+       entran - por debajo de ese mínimo pasa directo a una sola columna a
+       todo el ancho, en vez de achicar 2 columnas apretadas con contenido
+       tapado. Se adapta igual tanto en mobile como en un desktop más chico
+       (sidebar + sección de alta/edición dejándole poco lugar a esto). */
+    grid-template-columns: repeat(auto-fit, minmax(18.75rem, 1fr));
     align-items: start;
     gap: 0.7rem;
     margin: 0;
@@ -69,6 +98,11 @@
     width: 100%;
     background-color: #fbfcfe;
     border-radius: 10px;
+    /* Ítem de grid sin esto: su "tamaño mínimo automático" lo define el
+       ancho mínimo de todo su contenido interno (no el del track que le
+       toca) - con un nombre/descripción larga sin corte, eso puede empujar
+       la tarjeta (y la grilla completa) más ancha que su columna real. */
+    min-width: 0;
 }
 .proveedor{
     display: flex;
@@ -181,18 +215,100 @@
     margin-top: 1rem;
 }
 
-@media (max-width: 900px) {
-    .proveedores-panel {
-        flex-direction: column;
+/* Toggle Listado/Formulario, solo se ve en mobile/tablet (ver más abajo) -
+   arriba de todo el panel, mismo look que .segmented-bar. En escritorio no
+   se renderiza nada distinto: las dos secciones siguen mostrándose juntas,
+   lado a lado, como siempre. */
+.proveedores-mobile-tabs {
+    display: none;
+}
+
+@media (max-width: 1024px) {
+    .proveedor-main-container {
+        /* Antes centraba el panel con un margen arriba - en mobile/tablet
+           el panel ES la pantalla (ver min-height acá abajo), así que ni el
+           centrado ni el margen tienen nada que hacer. */
+        margin-top: 0;
+        height: 100%;
     }
-    .prov-lista-section {
+    .proveedores-panel {
+        /* height (no min-height): el panel nunca crece más allá de la
+           pantalla - así el que se desborda con contenido largo es cada
+           sección por su cuenta (ver prov-lista-scroll/prov-edit-section
+           más abajo), con su propio scroll interno, en vez de la página
+           entera. */
+        height: 100%;
+        flex-direction: column;
+        max-width: none;
+    }
+
+    /* Toggle Listado/Formulario pegado siempre abajo de la pantalla (ver
+       orden real en proveedores.jsx: va DESPUÉS de las dos secciones) - con
+       la sección visible en flex:1 arriba, esta barra de ancho fijo queda
+       empujada al fondo sola. */
+    .proveedores-mobile-tabs {
+        display: grid;
+        grid-auto-flow: column;
+        grid-auto-columns: 1fr;
+        flex-shrink: 0;
+        border-top: 1px solid #eef0f7;
+    }
+    .proveedores-mobile-tabs button {
+        border: none;
+        background-color: #ffffff;
+        color: #6b7597;
+        font-family: var(--font-body);
+        font-weight: 700;
+        font-size: 0.85rem;
+        padding: 0.85rem;
+        cursor: pointer;
+        transition: background-color 0.15s ease, color 0.15s ease;
+    }
+    .proveedores-mobile-tabs button.active {
+        background-color: #eef2fc;
+        color: #4f8cff;
+    }
+
+    /* Solo una de las dos secciones a la vez - cuál, lo decide el toggle de
+       abajo (ver vistaMobile en proveedores.jsx). Cada una ocupa la
+       pantalla completa cuando le toca, en vez de apilarse una arriba de
+       la otra. */
+    .proveedores-panel:not(.proveedores-mostrar-form) .prov-edit-section {
+        display: none;
+    }
+    .proveedores-panel:not(.proveedores-mostrar-lista) .prov-lista-section {
+        display: none;
+    }
+
+    /* La sección visible llena el alto entero del panel (entre su propio
+       encabezado y la barra de tabs de abajo) - min-height:0 es lo que
+       permite que, siendo un ítem flex en columna, pueda MEDIR menos que su
+       contenido en vez de crecer siempre a la altura del contenido (lo que
+       dejaría sin efecto el scroll interno de acá abajo). */
+    .prov-lista-section,
+    .prov-edit-section {
+        flex: 1;
+        min-height: 0;
         border-right: none;
-        border-bottom: 1px solid #eef0f7;
     }
     .prov-edit-section {
         width: 100%;
+        /* Único bloque (no tiene encabezado fijo + lista separados como el
+           listado) - el que scrollea, si el formulario no entra entero, es
+           la sección completa. */
+        overflow-y: auto;
     }
-    .prov-lista {
-        grid-template-columns: 1fr;
+
+    /* El encabezado (título + buscador) NO scrollea - solo la lista de
+       abajo, en su propio contenedor (prov-lista-scroll, ver markup en
+       proveedores.jsx). El paso a columna cuando no entra en fila ya lo
+       resuelve el container query de más arriba (ver prov-lista). */
+    .prov-lista-head {
+        flex-shrink: 0;
+    }
+    .prov-lista-scroll {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
     }
 }
