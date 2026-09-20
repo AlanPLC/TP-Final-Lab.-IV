@@ -1,126 +1,290 @@
+/* Historial de Ventas: mismo panel blanco (.panel-card, ver
+   dashboardPanels.css) que el resto del Dashboard - acá es una sola
+   sección (no hay formulario, es solo lectura), a todo el ancho.
+   A diferencia del resto de las pantallas de gestión, esta ocupa toda la
+   altura disponible (.dashboard-content ya viene con overflow-y:auto como
+   red de seguridad, pero acá el scroll real pasa a ser el de .ventas-scroll,
+   adentro de la propia ficha) - con muchas ventas tiene sentido que
+   scrollee la lista, no la pantalla entera. */
+
 .ventas-main-container{
     display: flex;
-    align-items: center;
     justify-content: center;
-    flex-direction: column;
+    /* -1rem (no -0.5rem): con margin-top:0.5rem, deja otros 0.5rem libres
+       abajo (mismo margen arriba y abajo dentro de .dashboard-content). */
+    height: calc(100% - 1rem);
+    margin-top: 0.5rem;
+}
+
+.ventas-panel {
     width: 100%;
-}
-
-/* H1 */
-.ventas-titulo{
-    margin: 0.5rem;
-    color: #ffff;
-    font-weight: bolder;
-    border-bottom: 4px solid #ffff;
-    border-bottom-left-radius: 2px;
-    border-bottom-right-radius: 2px;
-    margin: 1rem auto 1.5rem;
-    text-align: center;
-    max-width: fit-content;
-    text-shadow:#000000 2px 2px;
-    box-shadow: #000000 0 2px;er-bottom: 3px solid #ffffff;
-}
-
-.lista-container{
+    max-width: 74rem;
     display: flex;
     flex-direction: column;
-    width: 44rem;
+    min-height: 0;
+}
+
+.ventas-list-section {
+    width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    padding: 1.5rem;
+    /* Container query (ver más abajo): el título+filtros pasan a columna
+       cuando ESTA sección se queda sin ancho real para mostrarlos en fila,
+       sin importar si es porque la ventana es angosta (mobile) o porque el
+       ancho de escritorio ya lo consume el sidebar (una laptop, no solo un
+       teléfono). */
+    container-type: inline-size;
+    container-name: ventas-list;
+}
+
+.ventas-list-head {
+    display: flex;
     align-items: center;
-    justify-content: flex-start;
-    height: 36rem;
-    overflow-y: auto; /* Habilita el scroll vertical */
-    border: 3px solid #000000;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+    justify-content: space-between;
+    gap: 1rem;
+    flex-shrink: 0;
     margin-bottom: 1rem;
-    background: rgb(37,43,66);
-    background: linear-gradient(90deg, rgba(37,43,66,1) 0%, rgba(42,49,75,1) 20%, rgba(49,57,88,1) 40%, rgba(49,57,88,1) 60%, rgba(42,49,75,1) 80%, rgba(37,43,64,1) 100%);
-    margin-top: 2rem;
-    padding-bottom: 2rem;
 }
-/* Estilo Scrollbar en container Ventas  */
-.lista-container::-webkit-scrollbar {
-    width: 1rem;      
-}
-
-.lista-container::-webkit-scrollbar-thumb {
-    border: 2px solid #ffff;
-    background-color: #252B42;
-    border-radius: 4px;   
+/* Título + barra de filtros no entran cómodos en una sola fila por debajo
+   de este ancho - pasan a columna en vez de que el título se parta en
+   varias líneas apretado contra la barra de filtros. align-items:stretch
+   ya alcanza para que el título Y la barra de filtros (hijos DIRECTOS de
+   este contenedor) ocupen el 100% del ancho en columna, sin necesidad de
+   un width:100% aparte en cada uno. */
+@container ventas-list (max-width: 49rem) {
+    .ventas-list-head {
+        flex-direction: column;
+        align-items: stretch;
+    }
 }
 
-.lista-container::-webkit-scrollbar-thumb:hover {
-    background-color: #8d8d8d; 
+/* Una sola barra para los 4 filtros rápidos + el botón de calendario (rango
+   custom, ver FiltroFechaModal) + el de orden asc/desc - mismo look que
+   .segmented-bar (dashboardPanels.css) pero en flex, no grid, porque acá
+   cada botón tiene un ancho de contenido distinto (los filtros son cortos,
+   "Más viejo primero" no) en vez de repartirse el espacio en partes iguales. */
+.ventas-filtros-bar {
+    display: flex;
+    flex-wrap: wrap;
+    border: 1px solid #d8dce8;
+    border-radius: 8px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+.ventas-filtros-bar button {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    border: none;
+    border-right: 1px solid #d8dce8;
+    background-color: #ffffff;
+    color: #151a2e;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 0.65rem 0.9rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+.ventas-filtros-bar button:last-child {
+    border-right: none;
+}
+.ventas-filtros-bar button:hover:not(:disabled):not(.active) {
+    background-color: #f0f3fb;
+}
+.ventas-filtros-bar button.active {
+    background-color: #4f8cff;
+    color: #ffffff;
+}
+.ventas-filtros-bar button svg {
+    flex-shrink: 0;
 }
 
-.lista-container::-webkit-scrollbar-track {
-    background-color: #ccc; 
+.ventas-calendario-rango {
+    font-size: 0.85rem;
+    font-weight: 700;
 }
-/* 1er UL */
+
+/* El scroll real de la pantalla: todo lo de arriba (heading + filtro) queda
+   fijo, y solo esto se desplaza cuando el historial no entra completo. */
+.ventas-scroll {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+}
+
 .lista{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    align-items: start;
+    gap: 0.6rem;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.lista .panel-empty {
+    grid-column: 1 / -1;
+}
+
+.venta-item {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
-    width: 36rem;
-    margin: 0;
-    padding-left: 0;
-}
-.lista > li {
-    display: flex;
-    flex-direction: row;
-    gap: 1rem;
-    border: #000 solid 1px;
+    gap: 0.6rem;
+    border: 1px solid #eef0f7;
     padding: 1rem;
     width: 100%;
-    margin: 0 auto;
-    background-color: #ffff;
-    border-radius: 5px;
-
+    background-color: #fbfcfe;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.venta-item:hover,
+.venta-item:focus-visible {
+    border-color: #4f8cff;
+    box-shadow: 0 4px 14px rgba(79, 140, 255, 0.12);
+    outline: none;
 }
 .venta{
     display: flex;
-    flex-direction: column;
-    font-size: 16px;
-}
-
-.venta p{
-    margin: 0.4rem
-}
-.venta div{
-    display: flex;
     flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+.venta p{
+    margin: 0;
+}
+.venta-total {
+    text-align: right;
+    flex-shrink: 0;
+}
+
+.venta-fecha-hora {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 0;
+}
+.venta-fecha-hora-row {
+    display: flex;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 0.6rem;
 }
 
-.p1, .p3, .p5{
-    font-weight: bolder;
+.p1{
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-family: var(--font-display);
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #151a2e;
+}
+.p1 svg {
+    flex-shrink: 0;
+    color: #9aa2bf;
+}
+.p2{
+    font-size: 0.8rem;
+    color: #9aa2bf;
+    margin-top: 0.1rem;
+}
+.p4{
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #7c86a8;
+}
+.p5{
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #2a9d5c;
 }
 
-/* 2do UL */
+/* Detalle de productos de cada venta (acá solo se ven los primeros - ver
+   PRODUCTOS_VISIBLES_EN_TARJETA en ventas.jsx; el detalle completo está en
+   VentaDetalleModal, al hacer click en la tarjeta) */
 .lista-productos{
     display: flex;
     flex-direction: column;
-    gap: 0;
+    gap: 0.35rem;
     align-items: flex-start;
+    margin: 0;
+    padding: 0.6rem 0 0;
+    border-top: 1px solid #eef0f7;
+    list-style: none;
+    width: 100%;
 }
 .producto{
     display: flex;
     flex-direction: row;
-    border: none;
-    font-style: italic;
-    gap: 0.2rem;
-    font-size: 16px;
+    gap: 0.7rem;
+    width: 100%;
+    font-size: 0.82rem;
+    color: #4c5675;
+}
+.producto-nombre {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-.p-id{
-    font-weight: bolder;
+.venta-mas-productos {
+    margin: 0;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #4f8cff;
 }
-.producto p {
-    margin  : 0.2rem; /* Elimina márgenes predeterminados */
-    line-height: 1rem; /* Ajusta la altura de línea si es necesario */
-}
-.producto hr{
-    height:15px;
-    margin-top:4px;
-    padding: 0;
+
+@media (max-width: 1024px) {
+    .ventas-main-container {
+        /* Antes centraba el panel con un margen arriba/abajo - en
+           mobile/tablet el panel ES la pantalla, así que ni el centrado ni
+           el margen tienen nada que hacer. */
+        margin-top: 0;
+        height: 100%;
+    }
+    .lista {
+        grid-template-columns: 1fr;
+    }
+    /* El paso del encabezado (título + filtros) a columna cuando no entra
+       en fila ya lo resuelve el container query de más arriba (ver
+       ventas-list) - acá solo queda el rediseño de la barra de filtros en
+       sí, pensado para mobile/tablet en particular (ver comentario
+       siguiente). */
+    /* En flex-wrap (ver base más arriba) cada botón mide solo lo que pide
+       su contenido - al envolver a una segunda fila, esa fila queda con
+       espacio vacío a la derecha en vez de ocupar el ancho completo (se ve
+       "desfasada" respecto a la fila de arriba). Con grid de 2 columnas
+       cada botón pasa a ocupar la mitad real del ancho disponible, así que
+       las dos filas resultantes (4 filtros + calendario + orden = 6
+       botones, ambas filas completas) quedan simétricas. */
+    .ventas-filtros-bar {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        width: 100%;
+    }
+    .ventas-filtros-bar button {
+        justify-content: center;
+        white-space: normal;
+        text-align: center;
+        border-right: 1px solid #d8dce8;
+        border-bottom: 1px solid #d8dce8;
+    }
+    /* Columna derecha (par): sin borde a la derecha, ya es el borde del
+       contenedor. Última fila: sin borde abajo, ídem. */
+    .ventas-filtros-bar button:nth-child(2n) {
+        border-right: none;
+    }
+    .ventas-filtros-bar button:nth-last-child(-n+2) {
+        border-bottom: none;
+    }
 }

@@ -1,104 +1,486 @@
-.lobby-container{
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    height: 91.2vh; 
-    width: 100%; 
-    margin: 0;
-    background-image: url("./shopping.gif");
-    background-size: cover;
-    background-repeat: no-repeat; 
-    background-position: center; 
+.lobby-container {
     position: relative;
+    width: 100vw;
+    height: 100vh;
+    /* dvh seguí el alto real disponible cuando la barra de direcciones del
+       navegador se muestra/oculta - ver el mismo fallback en
+       rootTransition.css. */
+    height: 100dvh;
+    overflow: hidden;
+}
 
+/* El gif ocupa TODO el viewport (no solo el área que quedaba libre de la
+   navbar, que ahora está oculta en esta ruta). El degradé va sobre su propia
+   capa para no pisar el filter/position del fondo. */
+.lobby-bg {
+    position: absolute;
+    inset: 0;
+    background-image: url("/shopping.gif");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
 }
-.lobby-container::before {
-    content: ""; /* Pseudoelemento vacío para aplicar el filtro */
-    position: absolute; 
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5); 
-    z-index: 1;
+
+.lobby-bg::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    /* Oscurece progresivamente hacia la derecha: el gif se ve nítido del lado
+       izquierdo y se funde con el panel de la sidebar, en vez de un overlay
+       parejo en toda la pantalla. */
+    background: linear-gradient(
+        90deg,
+        rgba(10, 12, 20, 0.15) 0%,
+        rgba(10, 12, 20, 0.4) 55%,
+        rgba(10, 12, 20, 0.94) 100%
+    );
 }
-.pre-presentacion-container{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
+
+/* Marca flotando sobre el gif, arriba a la izquierda. Lleva su propio chip
+   semitransparente (en vez de depender solo de text-shadow) porque el gif
+   de fondo tiene colores muy variados y un logo "pelado" pierde contraste
+   según qué franja del gif quede detrás. */
+.lobby-brand {
+    position: absolute;
+    top: 2.5rem;
+    left: 3rem;
     z-index: 2;
-    gap: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.7rem 1.2rem;
+    color: #fff;
+    background: rgba(10, 12, 20, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    /* Sombra leve para separar el chip del gif, además del fondo semitransparente */
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
 }
-.presentacion-container{
-    margin-top: 4rem;
-    text-align: center;
-    width: 38rem;
+
+.lobby-brand h1 {
+    font-family: var(--font-display);
+    font-size: 2.1rem;
+    letter-spacing: 0.06rem;
+    margin: 0;
+    line-height: 1.2;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.6);
+}
+
+/* El título "de mobile" (integrado arriba del panel con blur, ver más abajo)
+   solo se muestra por debajo de 640px de ancho - en escritorio se usa el de
+   arriba (.lobby-brand-desktop), flotando afuera de la sidebar. */
+.lobby-brand-mobile {
+    display: none;
+}
+
+.lobby-sidebar {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+    width: min(26rem, 100%);
+    background: rgba(15, 17, 26, 0.5);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border-left: 1px solid rgba(255, 255, 255, 0.12);
+    z-index: 2;
+    /* Recorta el slide de los paneles (Welcome/Login/Register) a los
+       límites de la sidebar: la animación no se ve fuera de esta franja. */
+    overflow: hidden;
+}
+
+/* Contenedor relativo donde se ve el slide entre paneles (ver lobby.jsx). */
+.lobby-sidebar-viewport {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+/* Cada panel (Welcome/Login/Register) ocupa toda la sidebar y define su
+   propio layout interno en 3 bloques (top/mid/bottom) separados con
+   space-between, igual que antes cuando esto vivía directo en .lobby-sidebar. */
+.lobby-panel {
+    position: absolute;
+    inset: 0;
     display: flex;
     flex-direction: column;
-    flex-wrap: wrap;
-    border: 4px solid #252B42;
-    padding: 1rem 2rem;
-    border-radius: 15px;
-    background-color: rgba(0, 0, 0, 0.7);
-    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.5);
-}
-.lobby-container div h1{
-    letter-spacing: 0.2rem;
-    color: #ffff;
-    font-weight: bolder;
-    border: none;
-    font-size: 40px;
-    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
-    margin-top: 1rem;
-    margin-bottom: 1rem;
+    /* Antes space-between: repartía el sobrante de alto entre las
+       secciones, separándolas cada vez más en pantallas altas. Ahora van
+       apiladas y pegadas entre sí (gap chico) - el botón es la única
+       excepción, empujado al final con margin-top:auto (ver
+       .lobby-panel-bottom). */
+    gap: 0.6rem;
+    padding: 3rem 2.5rem;
+    overflow-y: auto;
+    transform: translateX(0);
+    opacity: 1;
+    transition: transform 0.35s ease-in-out, opacity 0.25s ease-in-out;
 }
 
-.desc{
-    color: #ffff;
+.lobby-panel-bottom {
+    margin-top: auto;
+}
+
+/* Saliendo: la transition de la clase base sigue activa, así que esto anima. */
+.lobby-panel-out-left {
+    transform: translateX(-100%);
+    opacity: 0;
+}
+.lobby-panel-out-right {
+    transform: translateX(100%);
+    opacity: 0;
+}
+
+/* Entrando: arranca "teletransportado" afuera sin animar (transition: none);
+   recién cuando se le saca esta clase anima hacia el centro. */
+.lobby-panel-in-from-right {
+    transform: translateX(100%);
+    opacity: 0;
+    transition: none;
+}
+.lobby-panel-in-from-left {
+    transform: translateX(-100%);
+    opacity: 0;
+    transition: none;
+}
+
+.desc {
+    color: #f2f2f2;
     font-weight: normal;
-    border: none;
-    text-align: start;
-    text-indent: 1rem;
-    font-size: 17px;
-    font-style:oblique;
+    /* clamp atado al alto de pantalla (no al ancho): por debajo de ~730px de
+       alto se va achicando hasta el piso en vez de forzar scroll vertical;
+       por encima de eso llega al techo (un poco más chico que el 1.05rem de
+       antes) y no sigue creciendo aunque sobre espacio de sobra. */
+    font-size: clamp(0.75rem, 1.9vh, 1rem);
+    line-height: 1.6;
+    font-style: normal;
+    text-align: left;
+    /* Sangría: solo afecta el primer renglón del párrafo, no todo el bloque. */
+    text-indent: 2rem;
 }
 
-.lobby-container ul{
+.lobby-nota {
+    color: #a9b4d4;
+    font-size: clamp(0.6rem, 1.6vh, 0.8rem);
+    font-style: italic;
+    /* Pegada al párrafo que la precede (a lo que hace referencia) - el
+       margin-bottom es lo que separa a esta sección de la siguiente
+       (Colaboradores), ya que su línea es más chica y ajustada que la de
+       .desc y si no quedaba visualmente más cerca de la próxima sección que
+       las demás. */
+    margin: 0.2rem 0 0.5rem;
+}
+
+.lobby-subtitle {
+    color: #4f8cff;
+    font-family: var(--font-display);
+    /* Mismo tamaño de siempre (0.9rem) en pantallas normales - el clamp solo
+       entra a jugar en una ventana baja, para no forzar scroll vertical. */
+    font-size: clamp(0.75rem, 1.7vh, 0.9rem);
+    font-weight: 600;
+    letter-spacing: 0.15rem;
+    text-transform: uppercase;
+    margin: 0 0 0.5rem;
+}
+
+.lobby-sidebar ul {
     list-style-type: none;
     padding: 0;
     margin: 0;
-}
-
-.nombres{
     display: flex;
+    flex-direction: column;
+    /* navbar.css define un selector `ul` global sin scope con
+       align-items: center; sin este reset explícito, esa regla se filtra
+       acá y centra cada fila según el largo del nombre. */
+    align-items: stretch;
+    gap: 0.7rem;
+}
+
+.colaborador-item {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.7rem;
+}
+
+/* Marcador cuadrado (no un bullet redondo) para mantener el lenguaje visual
+   "squared" del resto de la pantalla (sidebar, botón). */
+.colaborador-marker {
+    flex-shrink: 0;
+    width: 0.55rem;
+    height: 0.55rem;
+    background-color: #4f8cff;
+}
+
+.nombres {
+    text-align: left;
+    color: #fff;
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin: 0;
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.6);
+    cursor: default;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.colaborador-item:hover .nombres {
+    color: #4f8cff;
+    transform: translateX(4px);
+}
+
+/* Botón "estilo Destino Turístico": transparente y cuadrado (radius 0), con
+   la fuente de acento (Space Grotesk) en vez de la fuente de Destino
+   Turístico (Plus Jakarta Sans) o la fuente de cuerpo del sitio (Montserrat).
+   Es la ÚNICA fuente/tamaño que NO se agrandó junto con el resto. */
+.lobby-cta {
+    display: flex;
+    align-items: center;
     justify-content: center;
-    text-align: center;
-    color: #ffff;
-    font-weight: bolder;
-    font-size: larger;
-    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
-    margin-bottom: 1rem;
-    cursor: pointer;
-}
-
-.nombres:hover {
-    transform: scale(1.2); 
-    color: #ffd500; 
-}
-.pre-presentacion-container a{
+    gap: 0.6rem;
+    width: 100%;
+    padding: 0.95rem 1.5rem;
+    background: transparent;
+    border: 2px solid #ffffff;
+    border-radius: 0;
+    color: #ffffff;
     text-decoration: none;
-    color: #ffff;
-    font-weight: bolder;
-    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
-    text-align: center;
-    font-size: 30px;
-    z-index: 2;
-    letter-spacing: 0.1rem;
-}
-.pre-presentacion-container a:hover{
-    transform: scale(1.2); 
-    color: #ffd500; 
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.95rem;
+    letter-spacing: 0.12rem;
+    text-transform: uppercase;
+    transition: background-color 0.2s ease, color 0.2s ease;
 }
 
+.lobby-cta:hover {
+    background-color: #ffffff;
+    color: #15161f;
+}
+
+.lobby-version {
+    margin: 0.6rem 0 0;
+    color: #7c86a8;
+    font-size: clamp(0.6rem, 1.4vh, 0.75rem);
+    text-align: center;
+    letter-spacing: 0.05rem;
+}
+
+/* Ventana baja (notebook chica, zoom del navegador, etc.): el clamp de
+   .desc/.lobby-subtitle ya achica la letra, pero en una ventana MUY baja
+   hace falta ceder también el padding/los gaps para que todo siga entrando
+   sin scroll. 900px (no 700px): con el padding/gap de escritorio a secas,
+   el contenido real (Introducción + Remodelación + Colaboradores + botón)
+   se pasa por un puñado de px de una ventana de 800px de alto - una altura
+   nada inusual en un notebook con la barra del navegador restando espacio -
+   y aparecía un scroll aunque a simple vista pareciera entrar todo. */
+@media (max-height: 900px) {
+    .lobby-panel {
+        gap: 0.35rem;
+        padding: 1.5rem 2.5rem;
+    }
+    .lobby-sidebar ul {
+        gap: 0.4rem;
+    }
+    .lobby-nota {
+        margin: 0.15rem 0 0.3rem;
+    }
+}
+
+/* Un escalón más para ventanas muy bajas (por debajo de esto, los pisos de
+   los clamp de fuente ya no dan más margen y hace falta ceder del todo el
+   espaciado). */
+@media (max-height: 600px) {
+    .lobby-panel {
+        gap: 0.2rem;
+        padding: 1rem 2.5rem;
+    }
+    .lobby-sidebar ul {
+        gap: 0.25rem;
+    }
+    .lobby-nota {
+        margin: 0.1rem 0 0.2rem;
+    }
+}
+
+@media (max-width: 640px) {
+    /* En pantallas chicas la sidebar pasa a ocupar el 100% del ancho, así
+       que ya no queda lugar para el logo flotando por encima del gif sin
+       taparse con ella: en vez de superponerse, pasan a apilarse en flujo
+       normal (logo arriba, sidebar debajo) y se permite scroll vertical. */
+    .lobby-container {
+        height: auto;
+        min-height: 100vh;
+        min-height: 100dvh;
+        overflow: visible;
+    }
+
+    /* Sin position:fixed acá (a diferencia de antes): .root-transition-pane
+       (el wrapper que anima el slide entre Lobby/Dashboard) tiene su propio
+       transform + scroll interno para poder crecer más allá de 100vh (ver
+       rootTransition.css) - un transform en un ancestro convierte a
+       cualquier position:fixed adentro en relativo A ESE ancestro, así que
+       "fixed" ya no quedaba fijo a la pantalla real: se desplazaba con el
+       scroll y dejaba un hueco gris abajo. Con position:absolute (la base,
+       heredada) el fondo cubre todo .lobby-container - que ya crece con el
+       contenido - y scrollea junto con él, sin huecos. */
+
+    /* Fade a pantalla completa (no el degradé horizontal de escritorio,
+       pensado para el gif y la sidebar lado a lado) - acá todo se apila en
+       una sola columna, así que el oscurecido tiene que cubrir parejo tanto
+       al título de arriba como al contenido de abajo. */
+    .lobby-bg::after {
+        background: linear-gradient(
+            180deg,
+            rgba(10, 12, 20, 0.75) 0%,
+            rgba(10, 12, 20, 0.55) 45%,
+            rgba(10, 12, 20, 0.88) 100%
+        );
+    }
+
+    /* El de escritorio (flotando afuera, sobre el gif) se oculta - en mobile
+       el único fondo visible tiene que ser el gif con su fade, sin que se
+       vea nada del title suelto por encima ni ningún otro fondo detrás. */
+    .lobby-brand-desktop {
+        display: none;
+    }
+
+    /* Integrado arriba del todo del panel con blur (dentro de
+       .lobby-sidebar, ver lobby.jsx) - mismo fade que el resto del
+       contenido, sin chip propio (fondo/borde/blur/sombra: todo none). */
+    .lobby-brand-mobile {
+        /* La base (.lobby-brand, pensada para el chip flotante de
+           escritorio) la deja position:absolute - sin pisarlo acá quedaba
+           sacada del flujo, flotando arriba de todo (superpuesta con
+           Introducción) en vez de empujar al resto hacia abajo. */
+        position: static;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        width: 100%;
+        flex-shrink: 0;
+        padding: 0.75rem 1rem 0;
+        margin: 0;
+        color: #fff;
+        background: none;
+        border: none;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        box-shadow: none;
+    }
+    .lobby-brand-mobile h1 {
+        /* clamp por ancho (vw) - a diferencia del resto del contenido, que
+           clampea por alto (vh): este título es una sola línea que nunca
+           fuerza scroll vertical por sí solo, lo que sí puede desbordar es
+           el ANCHO en un teléfono angosto. */
+        font-size: clamp(1rem, 5.5vw, 1.4rem);
+    }
+
+    /* Antes flotaba afuera con su propio padding/altura fijos (calc(100vh -
+       5rem)); ahora el título vive ADENTRO (ver arriba), así que la sidebar
+       pasa a ser la única "tarjeta" de la pantalla, con su alto real
+       saliendo de su contenido (título + panel), piso en 100vh. */
+    .lobby-sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+        min-height: 100vh;
+        min-height: 100dvh;
+        border-left: none;
+        display: flex;
+        flex-direction: column;
+        /* Sin esto seguía recortando el contenido (ver .lobby-panel más
+           abajo): overflow:hidden acá era para no dejar ver el slide de los
+           paneles saliendo por afuera de la franja de la sidebar en
+           escritorio, pero en mobile el panel ya no se desliza (queda fijo,
+           ver abajo) y hace falta que la sidebar crezca con su contenido. */
+        overflow: visible;
+    }
+
+    /* En escritorio el slide entre Welcome/Login/Register se anima con
+       position:absolute + transform (los paneles se superponen mientras
+       entra uno y sale el otro). Eso depende de que .lobby-sidebar-viewport
+       tenga una altura DEFINIDA vía height:100% - pero acá .lobby-sidebar
+       mide su alto con height:auto (para poder crecer con el contenido), y
+       un height:100% sobre un padre auto no tiene de qué % agarrarse: queda
+       en 0, y el panel (position:absolute;inset:0) colapsaba a la altura de
+       su propio padding, recortando toda la Introducción. La solución es
+       sacar a los paneles del posicionamiento absoluto en mobile (que su
+       alto salga de su contenido real) y mostrar solo el que está entrando
+       - sin el slide, que total en una pantalla angosta esa animación
+       horizontal apenas se alcanza a ver. */
+    .lobby-sidebar-viewport {
+        height: auto;
+        flex: 1;
+    }
+    .lobby-panel {
+        position: relative;
+        inset: auto;
+        overflow-y: visible;
+        /* Menos aire que en escritorio, a los costados (2.5rem->1rem, un
+           teléfono angosto no necesita tanto margen) y arriba/abajo (3rem -
+           el título integrado ahora suma su propia altura al mismo VH, así
+           que hay que ceder ahí para seguir entrando sin scroll). Gap entre
+           secciones también más chico. */
+        padding: 1.25rem 1rem;
+        gap: 0.4rem;
+    }
+    .lobby-sidebar ul {
+        gap: 0.5rem;
+    }
+    .lobby-panel-out-left,
+    .lobby-panel-out-right {
+        display: none;
+    }
+
+    /* Un poco más de aire antes del botón que el gap parejo entre el resto
+       de las secciones - con margin-top:auto (lo que usa escritorio) quedaba
+       pegado a Colaboradores porque acá casi no sobra alto libre para
+       repartir. Achicar un poco las fuentes de abajo (ver .desc/
+       .lobby-subtitle/.lobby-nota/.lobby-version) deja el margen para esto
+       sin volver a necesitar scroll. */
+    .lobby-panel-bottom {
+        margin-top: 0.9rem;
+    }
+
+    /* Un toque más chicas que en escritorio a este ancho - no por falta de
+       espacio (ya entraba), sino para que se vea menos apretado y sobre
+       lugar para el gap de arriba. */
+    .desc {
+        font-size: clamp(0.7rem, 1.75vh, 0.9rem);
+    }
+    .lobby-subtitle {
+        font-size: clamp(0.7rem, 1.55vh, 0.82rem);
+    }
+    .lobby-nota {
+        font-size: clamp(0.55rem, 1.45vh, 0.72rem);
+    }
+    .lobby-version {
+        font-size: clamp(0.55rem, 1.25vh, 0.68rem);
+    }
+}
+
+/* Teléfono angosto Y bajo a la vez (ej. un iPhone SE de 1ra gen, 320x568) -
+   combinada a propósito (no alcanza con sumar las reglas de max-width y
+   max-height por separado: cualquiera de las dos que caiga después en el
+   archivo pisa por completo el padding/gap de la otra). Va al final del
+   archivo para ganarle a ambas sin depender de en qué orden quedaron. */
+@media (max-width: 640px) and (max-height: 600px) {
+    .lobby-brand-mobile {
+        padding-top: 0.4rem;
+    }
+    .lobby-panel {
+        padding: 0.6rem 1rem;
+        gap: 0.2rem;
+    }
+    .lobby-sidebar ul {
+        gap: 0.3rem;
+    }
+    .lobby-nota {
+        margin: 0.1rem 0 0.15rem;
+    }
+    .lobby-panel-bottom {
+        margin-top: 0.4rem;
+    }
+}

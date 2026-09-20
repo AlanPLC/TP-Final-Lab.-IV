@@ -10,7 +10,7 @@ export const validateBody = [
     .isLength({min: 3, max: 20}).withMessage('El usuario debe contener de 3 a 20 carácteres.')
     // Verifica si el usuario ya existe, lógica pensada para que en un PUT se pueda mantener el mismo nombre.
     .custom(async (user, {req})=>{
-        const [existente] = await db.execute("SELECT * FROM usuarios WHERE user = ?",[user]);
+        const { rows: existente } = await db.query('SELECT * FROM usuarios WHERE "user" = $1', [user]);
 
         if (existente.length > 0 && existente[0].id !== parseInt(req.params.id)) {
             throw new Error('Este usuario ya existe.');
@@ -25,9 +25,12 @@ export const validateBody = [
         .matches(/[A-Z]/).withMessage('Debe contener al menos una mayúscula')
         .matches(/\d/).withMessage('Debe contener al menos un número'),
 
+    // El rol "admin" distingue qué cuentas escriben de verdad en la DB de
+    // las que solo simulan sus cambios en localStorage (ver requireAdmin.js
+    // y el apiInterceptor.js del front) - no otorga permisos de UI extra.
     body('rol')
         .optional()
-        .isIn(['administrador', 'vendedor']).withMessage('El rol debe ser "administrador" o "vendedor".'),
+        .isIn(['vendedor', 'admin']).withMessage('El rol debe ser "vendedor" o "admin".'),
 
     (req,res,next)=>{
         const errors = validationResult(req);

@@ -1,0 +1,17 @@
+{
+  "name": "tp-final-lab-iv",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Raiz del TP: levanta la API (backend) y la WEB (frontend) en simultaneo",
+  "scripts": {
+    "dev": "concurrently -k -n API,WEB -c blue,magenta \"npm run dev --prefix API\" \"npm run dev --prefix WEB\"",
+    "start": "concurrently -k -n API,WEB -c blue,magenta \"npm start --prefix API\" \"npm run dev --prefix WEB\"",
+    "dev:api": "npm run dev --prefix API",
+    "dev:web": "npm run dev --prefix WEB",
+    "install:all": "npm install && npm install --prefix API && npm install --prefix WEB",
+    "build": "npm run build --prefix WEB"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+}

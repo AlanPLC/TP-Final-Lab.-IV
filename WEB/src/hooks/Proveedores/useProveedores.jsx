@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { API_BASE_URL } from '../../config/api.js'
 
 export default function useProveedores(){
     const [error, setError] = useState([])
@@ -7,7 +8,7 @@ export default function useProveedores(){
     const getProveedor = async() =>{
         const token = localStorage.getItem('token')
         try {
-            const response = await fetch("http://localhost:3000/proveedores/",{
+            const response = await fetch(`${API_BASE_URL}/proveedores/`,{
                 headers: {
                     Authorization: "Bearer " + token,
                 }
@@ -32,7 +33,7 @@ export default function useProveedores(){
     const postProveedor = async(proveedor) =>{
         try {
             const token = localStorage.getItem('token')
-            const response = await fetch("http://localhost:3000/proveedores/",{
+            const response = await fetch(`${API_BASE_URL}/proveedores/`,{
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json',
@@ -60,7 +61,7 @@ export default function useProveedores(){
     const deleteProveedor = async(id) =>{
         try {
             const token = localStorage.getItem('token')
-            const response = await fetch(`http://localhost:3000/proveedores/${id}`,{
+            const response = await fetch(`${API_BASE_URL}/proveedores/${id}`,{
                 method: "DELETE",
                 headers: {
                     'Content-Type': 'application/json',
@@ -87,7 +88,7 @@ export default function useProveedores(){
     const updateProveedor = async(proveedor) =>{
         try {
             const token = localStorage.getItem('token')
-            const response = await fetch(`http://localhost:3000/proveedores/${proveedor.id}`,{
+            const response = await fetch(`${API_BASE_URL}/proveedores/${proveedor.id}`,{
                 method: "PUT",
                 headers: {
                     'Content-Type': 'application/json',

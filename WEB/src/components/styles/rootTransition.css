@@ -1,0 +1,56 @@
+.root-transition-viewport {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    /* dvh (alto de viewport DINÁMICO) sigue el tamaño real disponible a
+       medida que la barra de direcciones de Chrome/Safari se
+       muestra/oculta al scrollear - 100vh a secas se queda con un valor
+       fijo (el de cuando cargó la página) y no se entera de ese cambio,
+       lo que corría el contenido o dejaba tiras del fondo real a la
+       vista. Sigue con el vh de arriba como fallback en navegadores sin
+       soporte (la propiedad inválida se ignora, no pisa nada). */
+    height: 100dvh;
+    overflow: hidden;
+}
+
+.root-transition-pane {
+    position: absolute;
+    inset: 0;
+    /* El viewport que envuelve a esto (.root-transition-viewport) queda
+       fijo en 100vh con overflow:hidden a propósito, para que el slide de
+       pantalla completa no se vea recortando por fuera de la ventana. Pero
+       eso mismo recortaba en mobile a la Introducción (más alta que 100vh,
+       ver lobby.css) sin dejarla scrollear - acá adentro, en cambio, un
+       overflow-y:auto no rompe la animación (el pane sigue midiendo 100vh)
+       y le da a su contenido lugar para scrollear cuando no entra entero. */
+    overflow-y: auto;
+    /* Sin esto, el rebote elástico de Android/iOS al tocar el tope (o el
+       instante de layout apenas carga la página) deja ver un hilo del fondo
+       real de atrás (el patrón claro del body) por debajo de este panel -
+       overscroll-behavior contiene ese rebote a este mismo scrollable en
+       vez de propagarlo. */
+    overscroll-behavior-y: contain;
+    transform: translateX(0);
+    transition: transform 0.4s ease-in-out;
+}
+
+/* Saliendo: anima desde el centro hacia afuera (la transition de la clase
+   base sigue activa, así que esto sí se anima). */
+.rt-out-left {
+    transform: translateX(-100%);
+}
+.rt-out-right {
+    transform: translateX(100%);
+}
+
+/* Entrando: arranca "teletransportado" afuera de la pantalla, SIN animar
+   (transition: none) - recién cuando se le saca esta clase (queda solo
+   .root-transition-pane, que sí tiene transition) anima hacia el centro. */
+.rt-in-from-right {
+    transform: translateX(100%);
+    transition: none;
+}
+.rt-in-from-left {
+    transform: translateX(-100%);
+    transition: none;
+}

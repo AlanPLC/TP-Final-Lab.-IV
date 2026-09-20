@@ -1,125 +1,177 @@
-/* Estilos Generales */
+/* Gestionar Inventario: un solo panel blanco (.panel-card, ver
+   dashboardPanels.css) dividido en dos secciones internas - listado a la
+   izquierda, alta de producto / carga de stock a la derecha. Antes eran
+   dos contenedores separados (uno oscuro, uno blanco); ahora comparten
+   fondo, tipografía y paleta con el resto del Dashboard. */
+
 .almacen-container {
     display: flex;
-    flex-direction: row;
-    gap: 1rem;
     justify-content: center;
-    margin-top: 1rem;
-    font-family: Arial, sans-serif;
-    color: #ffffff;
+    margin-top: 0.5rem;
 }
 
+.almacen-panel {
+    width: 100%;
+    max-width: 74rem;
+    align-items: stretch;
+}
 
-/* Primer Contenedor */
-.contenedor-listado {
-    background: rgb(37,43,66);
-    background: linear-gradient(90deg, rgba(37,43,66,1) 0%, rgba(42,49,75,1) 20%, rgba(49,57,88,1) 40%, rgba(49,57,88,1) 60%, rgba(42,49,75,1) 80%, rgba(37,43,64,1) 100%);
+/* Sección de listado */
+.almacen-list-section {
+    flex: 1;
     display: flex;
     flex-direction: column;
-    width: 54rem;
-    height: 40rem;
-    overflow-y: auto;
-    border: 3px solid #000000;
-    border-radius: 10px;
-    padding: 1rem;
-    gap: 0.5rem;
-    list-style-type: none; 
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+    min-width: 0;
+    padding: 1.5rem;
+    border-right: 1px solid #eef0f7;
+    /* Container query (ver más abajo): el título+buscador+filtro pasan a
+       columna quiando ESTA sección se queda sin ancho real para
+       mostrarlos en fila, sin importar si es porque la ventana es angosta
+       (mobile) o porque el ancho de escritorio ya lo consume el sidebar +
+       la sección de formulario (una laptop, no solo un teléfono). */
+    container-type: inline-size;
+    container-name: almacen-list;
 }
 
-.contenedor-listado .head {
+.almacen-list-head {
     display: flex;
-    justify-content: center; 
     align-items: center;
+    justify-content: space-between;
     gap: 1rem;
-    position: relative;
-    width: 100%;
-    margin-bottom: 0.5rem;
-  }
-  
-  .contenedor-listado .head input {
-    padding: 1rem;
-    border: 3px solid #000000;
-    border-radius: 10px;
-    height: 2.2rem;
-    width: 14rem;
-    position: absolute; 
-    right: 0;
-    top: 50%; 
-    transform: translateY(-50%);
-    font-weight: bold;
-    align-self: center;
-  }
-  .contenedor-listado .head input:focus {
-    background-color: #f0f0f0;
-    outline: none;
-  }
-  
-  .contenedor-listado h1 {
-    color: #ffff;
-    font-weight: bolder;
-    border-bottom: 4px solid #ffff;
-    border-bottom-left-radius: 2px;
-    border-bottom-right-radius: 2px;
-    text-align: center;
-    max-width: fit-content;
-    text-shadow: #000000 2px 2px;
-    box-shadow: #000000 0 2px;
-    flex-grow: 1;
-  }
+    margin-bottom: 1rem;
+}
 
-.contenedor-listado li {
+.almacen-search-row {
     display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    padding: 0;
-    width: 100%;
-    margin: 0;
-}
-.contenedor-listado hr{
-    height: 0.15rem;
-    background-color: rgb(0, 0, 0,0.4); 
-    border: none;
-    width: 100%;
-    margin: 0.6 ;
-    display: center;
+    align-items: center;
+    gap: 0.6rem;
 }
 
-.contenedor-listado img {
-    width: 100px;
-    height: 100px;
-    object-fit: cover;
+.almacen-search {
+    position: relative;
+    width: 13rem;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    color: #9aa2bf;
+}
+.almacen-search svg {
+    position: absolute;
+    left: 0.7rem;
+    pointer-events: none;
+}
+.almacen-search .panel-search {
+    padding-left: 2.1rem;
+}
+
+.almacen-filtro-categoria {
+    width: 14rem;
+    flex-shrink: 0;
+}
+/* SelectField trae su propio margin-bottom (pensado para cuando se apila
+   arriba de otro campo) - acá va en una fila horizontal junto al buscador,
+   así que ese margen sobra y corre el centrado vertical de la fila. */
+.almacen-filtro-categoria .select-field {
+    margin-bottom: 0;
+}
+
+/* Título + buscador + filtro de categoría no entran cómodos en una sola
+   fila por debajo de este ancho - pasan a columna en vez de amontonarse o
+   forzar al título a partirse en varias líneas. Va DESPUÉS de los anchos
+   fijos de acá arriba a propósito: con la misma especificidad, gana la
+   regla que aparece último en el archivo - si quedara antes, el
+   "width: 13rem/14rem" de las reglas base la pisaría siempre, sin importar
+   si el container query matchea o no. */
+@container almacen-list (max-width: 54rem) {
+    .almacen-list-head {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .almacen-search-row {
+        flex-wrap: wrap;
+    }
+    .almacen-search, .almacen-filtro-categoria {
+        width: 100%;
+    }
+}
+
+.almacen-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    /* auto-fit/minmax en vez de un número fijo de columnas: la grilla
+       decide sola cuántas entran (2, 1...) según el ancho real de esta
+       sección, sea porque la ventana es angosta o porque el sidebar + la
+       sección de formulario le dejan poco lugar en un desktop más chico -
+       antes con "repeat(2, 1fr)" fijo, en ese caso las tarjetas se
+       achicaban de más y su contenido quedaba tapado. */
+    grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+    align-items: start;
+    gap: 0.6rem;
+    /* Se remonta (key=filtroCategoria, ver almacen.jsx) cada vez que cambia
+       el filtro de categoría, para que la lista nueva entre con este fade
+       en vez de reemplazar la anterior de golpe - el cambio de alto del
+       contenedor ya lo anima SmoothHeight por afuera. */
+    animation: almacen-list-fade-in 0.18s ease;
+}
+@keyframes almacen-list-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+.almacen-list .panel-empty {
+    grid-column: 1 / -1;
+}
+
+.almacen-item {
+    border: 1px solid #eef0f7;
+    border-radius: 10px;
+    padding: 0.75rem;
+    /* Sin esto, el "tamaño mínimo automático" del ítem de grid lo define el
+       ancho mínimo de TODO su contenido interno (no el del track que le
+       toca) - con textos largos sin cortar en algún lado de la tarjeta, eso
+       la empuja (y a la grilla completa) más ancha que su columna real. */
+    min-width: 0;
+}
+
+.producto-icono {
+    width: 3.4rem;
+    height: 3.4rem;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border-radius: 8px;
-    border: 4px solid #545454;
-    box-shadow: 2px 2px rgba(0, 0, 0, 0.6);
-    background-color: #ffffff;
+    background-color: #f0f3fb;
+    color: #4f8cff;
 }
 .pre-general{
     display: flex;
     flex-direction: row;
     width: 100%;
-    gap: 1rem;
+    gap: 0.9rem;
 }
 
 .s-general {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.35rem;
     align-items: stretch;
     width: 100%;
+    min-width: 0;
 }
 .s1{
     display: flex;
     flex-direction: row;
     gap: 0.5rem;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
     width: 100%;
 }
 .s2, .s3 {
     display: flex;
     flex-direction: row;
-    gap: 0.2rem;
+    gap: 0.3rem;
     align-items: center;
     width: 100%;
 }
@@ -127,301 +179,395 @@
 .s1 p, .s2 p, .s3 p {
     margin: 0;
 }
-/* Primera fila información de productos  */
-.s1 .p1{
-    font-weight: bolder;
-    font-size: 20px;
-}
 .s1 .p2{
-    font-size: 20px;
-    font-weight: bold;
-    letter-spacing: 0.1rem
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #151a2e;
 }
 .s1 .p3{
-    font-size: 18;
-    font-weight: bold;
-    border: 1px solid #000000;
-    color: #4CAF50;
-    padding: 0.3rem;
-    border-radius: 5px;
-    background-color: #000000;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #4f8cff;
+    background-color: #eef2fc;
+    padding: 0.2rem 0.55rem;
+    border-radius: 6px;
 }
-.s1 div:first-of-type{
+.nombre-categoria{
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 0.4rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    min-width: 0;
 }
 .s1 .buttons{
     display: flex;
     flex-direction: row;
-    gap: 0.5rem;
+    gap: 0.4rem;
     align-items: center;
     margin: 0;
+    flex-shrink: 0;
 }
-/* Segunda fila información de productos  */
+
 .s2 p{
-    font-weight: normal;
-    font-size: 18px;
-    font-style: italic;
-    color: #ccc;
+    font-weight: 400;
+    font-size: 0.92rem;
+    color: #6b7597;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    /* Sin esto, este párrafo (que no corta línea) nunca se achica por
+       debajo de su ancho de texto completo aunque tenga overflow/ellipsis
+       puestos - con min-width:0 sí puede angostarse hasta el espacio real
+       disponible y el "…" pasa a hacer efecto. */
+    min-width: 0;
 }
-/* Tercera fila información de productos  */
+
 .s3 .p1{
-    font-weight: normal;
-    font-size: 18px;
-    font-style: italic;
-    color: #ccc;
-    margin-right: 0;
+    margin-left: 0.6rem;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #9aa2bf;
 }
 .s3 .p2{
-    font-weight: bolder;
-    font-size: 18px;
-    color: #ffffff;
-    margin-left: 0;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: #151a2e;
 }
 .s3 .p3{
-    margin-left: 0.5rem;
-    font-weight: bolder;
-    font-size: 20px;
-    color: #4CAF50;
-    text-shadow:#000000 1.5px 1.5px;
+    font-weight: 700;
+    font-size: 1rem;
+    color: #2a9d5c;
 }
-.contenedor-listado button{
-    background-color:rgb(255, 255, 255, 0);
-    filter: invert(1);
-    width: 1.5rem;
-    height: 1.5rem;
-    cursor: pointer;
-}
-.contenedor-listado button:disabled{
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-.contenedor-listado button:hover{
-    transform: scale(1.2);
+.s3 .p3.sin-precio{
+    color: #9aa2bf;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 0.85rem;
 }
 
-.contenedor-listado .modificar{
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat; 
-    border: none;
-    background-image: url('../../../../public/edit.png');
-}
-.contenedor-listado .eliminar{
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat; 
-    border: none;
-    background-image: url('../../../../public/delete.png');
+.precio-hint {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #4f8cff;
+    background-color: #eef2fc;
+    border-radius: 6px;
+    padding: 0.4rem 0.6rem;
+    margin: 0 0 0.4rem;
 }
 
-/* Scrollbar Estilizado */
-.contenedor-listado::-webkit-scrollbar {
-    width: 1rem;      
-}
-
-.contenedor-listado::-webkit-scrollbar-thumb {
-    border: 2px solid #ffff;
-    background-color: #252B42;
-    border-radius: 4px;   
-}
-
-.contenedor-listado::-webkit-scrollbar-thumb:hover {
-    background-color: #8d8d8d; 
-}
-
-.contenedor-listado::-webkit-scrollbar-track {
-    background-color: #ccc; 
-}
-
-/* Segundo Contenedor */
-.contenedor-entradas {
-    background-color: #ffffff;
-    border: 3px solid #000000;
-    padding: 1rem;
-    border-radius: 10px;
+.lotes-button {
     display: flex;
-    flex-direction: column;
-    justify-content: flex-start;;
-    gap: 0;
-    max-height: 40rem;
-    width: 17rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
-}
-.contenedor-entradas h3{
-    margin: 0.5rem;
-    color: #000000;
-    font-weight: bolder;
-    text-align: center;
-    margin-bottom: 1rem;
-    margin-top: 0.2rem;
-    font-size: 20px;
-}
-.contenedor-entradas form {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-}
-
-.contenedor-entradas label {
-    font-size: 0.9rem;
-    color: #000000;
-    font-weight: bold;
-    margin: 0;
-}
-
-.contenedor-entradas input,
-.contenedor-entradas select{
-    width: 100%;
-    padding: 0.5rem;
-    border: 2px solid #818181;
-    border-radius: 5px;
-    background-color: light-dark(rgb(232, 240, 254), rgba(70, 90, 126, 0.4));
-    color: #000000;
-    font-size: 0.9rem;
-    margin-bottom: 0.5rem;
-}
-
-.contenedor-entradas button{
-    background-color: #252B42;
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    width: 100%;
-    font-weight: bolder;
-    margin-top: 0.5rem;
-    margin-bottom: 0.2rem;
-}
-.contenedor-entradas button:disabled{
-    background-color: #ccc;
-    border: 2px solid #000000;
-    cursor: not-allowed;
-}
-.buttons-cont{
-    width: 100%;
-    display: flex;
-    gap: 1rem;
-}
-.buttons-cont .b2{
-    background-color: #ccc;
-    color: #000000;
-    border: 2px solid #000000;
-}
-
-.errores{
-    margin-top: 0.5rem;
-    height: 9rem;
-    max-width: 16rem;
-    overflow-y: scroll;
-    color: #000000;
-    border: 1px solid #000000;
     align-items: center;
-    border-radius: 10px;
-}
-.errores hr {
-    height: 0.15rem;
-    background-color: rgb(0, 0, 0,0.2); 
-    border: none;
-    width: 90%;
-    margin: 0.6 ;
-    display: center;
-}
-.p-c{
-    gap: 0.5rem;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    margin-bottom: 0.5rem;
-}
-.p-c input{
-    text-align: center;
-    margin: 0;
-}
-.p-c-1{
-    display: flex;
-    flex-direction: column;
-    gap: 0.2rem;
-}
-.p-c-1 input{
-    width: 6rem;
-}
-.p-c-2{
-    text-align: center;
-    display: flex;
-    flex-direction: column;
+    gap: 0.3rem;
     margin-left: auto;
-    gap: 0.2rem;
-    height: 100%;
-    width: 100%;
+    border: 1px solid #d8dce8;
+    border-radius: 6px;
+    background-color: #f7f8fc;
+    color: #4f8cff;
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 0.3rem 0.55rem;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
 }
-.p-c-2 .p-c-cant{
-    align-items: center;
+.lotes-button:hover {
+    border-color: #4f8cff;
+    background-color: #eef2fc;
+}
+.lotes-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Sección de formulario (Producto / Cargar Stock) */
+.almacen-form-section {
+    width: 19rem;
+    flex-shrink: 0;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
+    gap: 0;
+    padding: 1.5rem;
+}
+
+.almacen-tabs {
+    margin-bottom: 1.2rem;
+}
+
+.almacen-form-section form {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+.almacen-form-section .panel-heading {
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+.almacen-form-section .panel-label {
+    margin-top: 0.7rem;
+}
+.almacen-form-section .panel-label:first-of-type {
+    margin-top: 0;
+}
+.almacen-form-section .panel-label-row {
+    margin-top: 0.7rem;
+}
+.almacen-form-section .panel-label-row .panel-label {
+    margin-top: 0;
+}
+
+.almacen-submit {
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.buttons-cont{
+    margin-top: 1rem;
+}
+
+/* "$" fijo delante del precio: vive afuera del input (no es texto editable),
+   así que no se puede borrar ni se manda en el body del fetch - el value
+   sigue siendo solo el número, esto es 100% visual. */
+.price-input-wrap {
+    position: relative;
+}
+.price-prefix {
+    position: absolute;
+    left: 0.85rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6b7597;
+    font-weight: 700;
+    font-size: 0.9rem;
+    pointer-events: none;
+}
+.price-input {
+    padding-left: 2rem;
+}
+
+.categoria-nueva-toggle {
+    display: flex;
+    align-items: center;
     justify-content: center;
-    gap: 0.1rem;
+    width: 1.3rem;
+    height: 1.3rem;
+    flex-shrink: 0;
+    border: 1px solid #d8dce8;
+    border-radius: 6px;
+    background-color: #f7f8fc;
+    color: #4f8cff;
+    cursor: pointer;
+    padding: 0;
 }
-.p-c-2 input{
-    width: 3rem;
-}
-
-.p-c-2 .b1{
-    height: 20px;
-    width: 20px;
-    background-color: rgb(0, 0, 0, 0);
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat; 
-    border: none;
-    background-image: url('../../../../public/arrow.png');
-    transform: rotate(180deg);
-    margin: 0;
-}
-.p-c-2 .b1:disabled{
-    height: 20px;
-    width: 20px;
-    background-color: rgb(0, 0, 0, 0);
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat; 
-    border: none;
-    background-image: url('../../../../public/arrow.png');
-    transform: rotate(180deg);
-    margin: 0;
-    opacity: 0.5;
-}
-.p-c-2 .b2{
-    height: 20px;
-    width: 20px;
-    background-color: rgb(0, 0, 0, 0);
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    border: none;
-    background-image: url('../../../../public/arrow.png');
-    margin: 0;
+.categoria-nueva-toggle:hover {
+    background-color: #eef2fc;
+    border-color: #4f8cff;
 }
 
-/* Estilo Scroll contenedor errores  */
-.errores::-webkit-scrollbar {
-    width: 1rem;      
+.categoria-nueva-form {
+    display: flex;
+    gap: 0.4rem;
+    margin-bottom: 0.5rem;
+}
+.categoria-nueva-form .panel-input {
+    margin-bottom: 0;
+}
+.categoria-nueva-form .panel-button {
+    flex-shrink: 0;
+    padding: 0.6rem 0.8rem;
+    font-size: 0.8rem;
 }
 
-.errores::-webkit-scrollbar-thumb {
-    border: 2px solid #ffff;
-    background-color: #252B42;
-    border-radius: 4px;   
+.icon-picker {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.4rem;
+    margin-top: 0.4rem;
 }
 
-.errores::-webkit-scrollbar-thumb:hover {
-    background-color: #8d8d8d; 
+/* Select de categoría propia, que aparece solo al elegir el logo "Otro"
+   (ver mostrarCategoriaPropia en almacen.jsx). */
+.categoria-propia {
+    margin-top: 0.6rem;
+}
+.categoria-propia .panel-label-row {
+    margin-top: 0;
+}
+.icon-picker-option {
+    width: 100%;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f7f8fc;
+    border: 1px solid #d8dce8;
+    border-radius: 8px;
+    color: #4c5675;
+    cursor: pointer;
+    padding: 0;
+    transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+.icon-picker-option:hover {
+    border-color: #4f8cff;
+}
+.icon-picker-option.selected {
+    background-color: #4f8cff;
+    border-color: #4f8cff;
+    color: #ffffff;
 }
 
-.errores::-webkit-scrollbar-track {
-    background-color: #ccc; 
+.limite-productos {
+    color: #c22b2b;
+    font-size: 0.78rem;
+    font-weight: 700;
+    margin: 0.6rem 0 0;
+}
+
+.almacen-errors {
+    margin-top: 1rem;
+}
+
+/* Modal de confirmación al eliminar un producto */
+.confirmar-eliminar-texto {
+    margin: 0 0 1.2rem;
+    font-size: 0.95rem;
+    color: #4c5675;
+    line-height: 1.5;
+}
+.confirmar-eliminar-acciones {
+    display: flex;
+    gap: 0.6rem;
+}
+/* Los dos botones ocupan el ancho completo en partes iguales, en vez de
+   quedar los dos pegados a la derecha con espacio vacío a la izquierda. */
+.confirmar-eliminar-acciones button {
+    flex: 1;
+}
+
+/* Toggle Listado/Formulario, solo se ve en mobile/tablet (ver más abajo) -
+   arriba de todo el panel, mismo look que .segmented-bar. En escritorio no
+   se renderiza nada distinto: las dos secciones siguen mostrándose juntas,
+   lado a lado, como siempre. */
+.almacen-mobile-tabs {
+    display: none;
+}
+
+@media (max-width: 1024px) {
+    .almacen-container {
+        /* Antes centraba el panel con un margen arriba - en mobile/tablet
+           el panel ES la pantalla (ver height acá abajo), así que ni el
+           centrado ni el margen tienen nada que hacer. */
+        margin-top: 0;
+        height: 100%;
+    }
+    .almacen-panel {
+        /* height (no min-height): el panel nunca crece más allá de la
+           pantalla - así el que se desborda con contenido largo es cada
+           sección por su cuenta (ver almacen-list-scroll/almacen-form-section
+           más abajo), con su propio scroll interno, en vez de la página
+           entera. */
+        height: 100%;
+        flex-direction: column;
+        max-width: none;
+    }
+
+    /* Toggle Listado/Formulario pegado siempre abajo de la pantalla (ver
+       orden real en almacen.jsx: va DESPUÉS de las dos secciones) - con la
+       sección visible en flex:1 arriba, esta barra de ancho fijo queda
+       empujada al fondo sola. */
+    .almacen-mobile-tabs {
+        display: grid;
+        grid-auto-flow: column;
+        grid-auto-columns: 1fr;
+        flex-shrink: 0;
+        border-top: 1px solid #eef0f7;
+    }
+    .almacen-mobile-tabs button {
+        border: none;
+        background-color: #ffffff;
+        color: #6b7597;
+        font-family: var(--font-body);
+        font-weight: 700;
+        font-size: 0.85rem;
+        padding: 0.85rem;
+        cursor: pointer;
+        transition: background-color 0.15s ease, color 0.15s ease;
+    }
+    .almacen-mobile-tabs button.active {
+        background-color: #eef2fc;
+        color: #4f8cff;
+    }
+
+    /* Solo una de las dos secciones a la vez - cuál, lo decide el toggle de
+       abajo (ver vistaMobile en almacen.jsx). En vez de recortar
+       ambas mitades apretadas una al lado de la otra (lo que rompía el
+       layout entero en un teléfono angosto), cada una ocupa la pantalla
+       completa cuando le toca. */
+    .almacen-panel:not(.almacen-mostrar-form) .almacen-form-section {
+        display: none;
+    }
+    .almacen-panel:not(.almacen-mostrar-lista) .almacen-list-section {
+        display: none;
+    }
+
+    /* La sección visible llena el alto entero del panel (entre el
+       encabezado propio y la barra de tabs de abajo) - min-height:0 es lo
+       que permite que, siendo un ítem flex en columna, pueda MEDIR menos
+       que su contenido en vez de crecer siempre a la altura del contenido
+       (lo que dejaría sin efecto el scroll interno de acá abajo). */
+    .almacen-list-section,
+    .almacen-form-section {
+        flex: 1;
+        min-height: 0;
+        border-right: none;
+    }
+    .almacen-form-section {
+        width: 100%;
+        /* Único bloque (no tiene encabezado fijo + lista separados como el
+           listado) - el que scrollea, si el formulario no entra entero, es
+           la sección completa. */
+        overflow-y: auto;
+    }
+
+    /* El encabezado (título + buscador) NO scrollea - solo la lista de
+       abajo, en su propio contenedor angosto (almacen-list-scroll, ver
+       markup en almacen.jsx). Antes toda la sección hacía scroll junto
+       (encabezado incluido) porque no había ningún límite de alto real: el
+       panel podía crecer sin techo y el scroll terminaba pasando por
+       .dashboard-content (la pantalla entera), no por la lista. */
+    .almacen-list-scroll {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+    }
+    /* SmoothHeight (ver SmoothHeight.jsx) fija un alto inline igual al del
+       contenido entero, siempre - lo cual está pensado para animar
+       transiciones de alto en un layout de página que fluye libremente,
+       pero acá adentro anula el scroll interno de arriba (el contenedor
+       jamás mediría menos que su contenido, así que nunca se activaría su
+       overflow-y). Se lo neutraliza solo acá dentro: la lista larga scrollea
+       sin más, sin el salto/animación de alto (aceptable - ya se está
+       scrolleando, un reacomodo de alto ahí adentro no llama la atención
+       como si pasara en el flujo normal de la página). */
+    .almacen-list-scroll .smooth-height {
+        height: auto !important;
+        min-height: 0 !important;
+    }
+
+    /* Este encabezado no scrollea (ver almacen-list-scroll más arriba),
+       solo la lista de abajo - el paso a columna cuando no entra en fila
+       ya lo resuelve el container query de más arriba (ver almacen-list). */
+    .almacen-list-head {
+        flex-shrink: 0;
+    }
+
+    /* Precio/Cant./botón Lotes en una sola fila sin lugar de sobra
+       empujaban contenido fuera de la tarjeta (se veía cortado a la
+       derecha) - con wrap pasan a una segunda línea en vez de desbordar. */
+    .s3 {
+        flex-wrap: wrap;
+        row-gap: 0.4rem;
+    }
 }

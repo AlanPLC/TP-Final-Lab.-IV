@@ -1,0 +1,57 @@
+.proveedor-modal-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+.proveedor-modal-producto {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    border: 1px solid #eef0f7;
+    border-radius: 10px;
+    padding: 0.6rem 0.8rem;
+    background-color: #fbfcfe;
+}
+.proveedor-modal-producto .producto-icono {
+    width: 2.6rem;
+    height: 2.6rem;
+    flex-shrink: 0;
+}
+.proveedor-modal-producto-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    min-width: 0;
+    flex: 1;
+}
+.proveedor-modal-producto-nombre {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.92rem;
+    color: #151a2e;
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.proveedor-modal-producto-categoria {
+    align-self: flex-start;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #4f8cff;
+    background-color: #eef2fc;
+    padding: 0.15rem 0.5rem;
+    border-radius: 6px;
+}
+.proveedor-modal-producto-precio {
+    flex-shrink: 0;
+    font-weight: 700;
+    color: #2a9d5c;
+    font-size: 0.9rem;
+}
+.proveedor-modal-producto-sin-precio {
+    flex-shrink: 0;
+    font-size: 0.78rem;
+    font-style: italic;
+    color: #9aa2bf;
+}

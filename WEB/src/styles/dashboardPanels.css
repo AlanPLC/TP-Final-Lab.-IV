@@ -1,0 +1,326 @@
+/* Sistema visual compartido por las pantallas de gestión del Dashboard
+   (Almacen, Productos/Realizar Venta, Proveedores): antes cada una tenía
+   dos contenedores separados (uno oscuro para el listado, uno blanco para
+   el formulario/acciones) - ahora es UN solo contenedor blanco por
+   pantalla, dividido en secciones internas. Misma paleta azul (#4f8cff)
+   y tipografías (Space Grotesk / Montserrat) que ya usan
+   Login/Register/Dashboard, con el radio "cuadrado, no píldora" de
+   Destino Turístico (8-12px, nunca full-round salvo círculos reales).
+
+   `.panel-*` = la ficha genérica. Cada pantalla puede agregar sus propias
+   clases para el layout interno (grillas, listas), pero color/tipografía/
+   radio salen siempre de acá para que las tres pantallas se sientan una
+   misma familia. */
+
+.panel-card {
+    background-color: #ffffff;
+    border: 1px solid #e3e6f0;
+    border-radius: 12px;
+    /* Más pronunciada que antes (0.08 -> 0.18, más blur/spread) para que el
+       panel blanco contraste mejor contra el fondo con textura del
+       Dashboard, en vez de casi fundirse con él. */
+    box-shadow: 0 10px 32px rgba(21, 26, 46, 0.18);
+    display: flex;
+    overflow: hidden;
+}
+
+.panel-heading {
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: #151a2e;
+    margin: 0;
+}
+
+.panel-subtext {
+    color: #7c86a8;
+    font-size: 0.85rem;
+    margin: 0;
+}
+
+.panel-search,
+.panel-input,
+.panel-select,
+.panel-textarea {
+    width: 100%;
+    border: 1px solid #d8dce8;
+    border-radius: 8px;
+    padding: 0.6rem 0.85rem;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: #151a2e;
+    background-color: #f7f8fc;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+.panel-textarea {
+    resize: none;
+}
+.panel-search:focus,
+.panel-input:focus,
+.panel-select:focus,
+.panel-textarea:focus {
+    outline: none;
+    border-color: #4f8cff;
+    box-shadow: 0 0 0 3px rgba(79, 140, 255, 0.15);
+    background-color: #ffffff;
+}
+.panel-search::placeholder,
+.panel-input::placeholder,
+.panel-textarea::placeholder {
+    color: #a4abc4;
+}
+
+.panel-label {
+    display: block;
+    font-family: var(--font-body);
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #7c86a8;
+    margin: 0 0 0.35rem;
+}
+
+/* Label con un tick al lado (ej. "¿tiene vencimiento?") en vez de en su
+   propia línea - el checkbox comparte la fila con el label. */
+.panel-label-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.35rem;
+}
+.panel-label-row .panel-label {
+    margin: 0;
+}
+.panel-label-optional {
+    text-transform: none;
+    font-weight: 400;
+    letter-spacing: normal;
+    color: #a4abc4;
+}
+
+.panel-checkbox {
+    width: 1.05rem;
+    height: 1.05rem;
+    accent-color: #4f8cff;
+    cursor: pointer;
+}
+
+.calendar-wrap {
+    margin-bottom: 0.5rem;
+}
+
+.panel-button {
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 0.9rem;
+    border-radius: 8px;
+    padding: 0.7rem 1.1rem;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+.panel-button-primary {
+    background-color: #4f8cff;
+    color: #ffffff;
+}
+.panel-button-primary:hover:not(:disabled) {
+    opacity: 0.9;
+}
+.panel-button-primary:disabled {
+    background-color: #d6dcee;
+    color: #94a0c2;
+    cursor: not-allowed;
+}
+.panel-button-secondary {
+    background-color: #f0f3fb;
+    color: #4c5675;
+    border: 1px solid #d8dce8;
+}
+.panel-button-secondary:hover:not(:disabled) {
+    background-color: #eef0f7;
+    border-color: #9aa2bf;
+}
+
+/* Loader dentro de un botón (ver panel-spinner en los ícono Loader2 de las
+   pantallas de gestión) mientras espera la respuesta de una petición. */
+.panel-spinner {
+    animation: panel-spin 0.7s linear infinite;
+}
+@keyframes panel-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Reset de <fieldset> para poder deshabilitar TODOS los campos/botones de un
+   formulario de una sola vez (disabled en un fieldset cascada de forma
+   nativa a cualquier input/button/select descendiente, sin tener que
+   repetirlo campo por campo) sin que el fieldset meta su borde/padding por
+   defecto ni rompa el layout en flex-column del form. */
+.panel-fieldset {
+    display: flex;
+    flex-direction: column;
+    gap: inherit;
+    min-width: 0;
+    border: none;
+    margin: 0;
+    padding: 0;
+}
+
+.panel-icon-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 6px;
+    border: 1px solid #e3e6f0;
+    background-color: #ffffff;
+    color: #6b7597;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+.panel-icon-button:hover:not(:disabled) {
+    background-color: #eef2fc;
+    border-color: #4f8cff;
+    color: #4f8cff;
+}
+.panel-icon-button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+.panel-icon-button.danger:hover:not(:disabled) {
+    background-color: #fdecec;
+    border-color: #e05555;
+    color: #e05555;
+}
+
+/* Barra de acciones "segmentada": un solo contenedor con borde y
+   divisores internos, en vez de botones sueltos con gap - un par
+   Modificar/Cancelar, Guardar/Cancelar, o un switch de 2 pestañas se lee
+   como "un control con N opciones", no como botones sueltos flotando. */
+.segmented-bar {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    border: 1px solid #d8dce8;
+    border-radius: 8px;
+    overflow: hidden;
+    /* Sin esto, un .segmented-bar dentro de un contenedor flex en columna
+       (el form-section de Almacen/Proveedores) colapsa a ~0px: al tener
+       overflow != visible, su "automatic minimum size" como ítem flex pasa
+       a ser 0 en vez del alto de su contenido (spec de flexbox), y con
+       flex-shrink:1 por default el navegador lo encoge a ese mínimo. */
+    flex-shrink: 0;
+}
+.segmented-bar button {
+    border: none;
+    border-right: 1px solid #d8dce8;
+    background-color: #ffffff;
+    color: #151a2e;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 0.65rem;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+.segmented-bar button:last-child {
+    border-right: none;
+}
+.segmented-bar button:hover:not(:disabled):not(.active) {
+    background-color: #f0f3fb;
+}
+.segmented-bar button.active {
+    background-color: #4f8cff;
+    color: #ffffff;
+}
+.segmented-bar button:disabled {
+    color: #b6bcd4;
+    cursor: not-allowed;
+}
+
+.panel-error-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    background-color: #fdecec;
+    border: 1px solid #f3c6c6;
+    border-radius: 8px;
+    padding: 0.6rem 0.8rem;
+    max-height: 8rem;
+    overflow-y: auto;
+}
+.panel-error-list p {
+    margin: 0;
+    color: #c22b2b;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.panel-empty {
+    color: #9aa2bf;
+    font-size: 0.9rem;
+    text-align: center;
+    padding: 2rem 0;
+}
+
+/* Estado de carga de un listado (Almacen/Productos/Proveedores/Ventas) -
+   reemplaza a la lista/grilla entera mientras se espera la respuesta (no va
+   anidado adentro, ver cada feature) para poder centrarlo en las dos
+   direcciones dentro del espacio que ocuparía el contenido: flex:1 lo hace
+   ocupar el resto del alto disponible en las secciones que ya son
+   flex-column (Almacen, Productos, Proveedores); min-height es el piso para
+   cuando el contenedor padre no fuerza una altura mayor (Ventas, que es una
+   sola sección sin split). */
+.panel-loading-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 12rem;
+}
+.panel-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    color: #9aa2bf;
+    font-size: 0.9rem;
+}
+
+/* Scroll fino y discreto, mismo criterio que el resto de Destino
+   Turístico: un detalle, no un protagonista. */
+.panel-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: #c7cfe6 transparent;
+}
+.panel-scroll::-webkit-scrollbar {
+    width: 8px;
+}
+.panel-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+.panel-scroll::-webkit-scrollbar-thumb {
+    background-color: #c7cfe6;
+    border-radius: 8px;
+}
+.panel-scroll::-webkit-scrollbar-thumb:hover {
+    background-color: #4f8cff;
+}
+
+/* Mobile/tablet: el contenido ya ocupa la pantalla entera por su cuenta
+   (ver el toggle menú/contenido en dashboard.css) - una ficha con esquinas
+   redondeadas y sin llegar a los bordes se siente fuera de lugar ahí, no
+   como una "página" de verdad. Sin padding lateral (ver .dashboard-content
+   en dashboard.css) y sin radio, el panel pasa a ocupar el 100% del ancho
+   de punta a punta. */
+@media (max-width: 1024px) {
+    .panel-card {
+        border-radius: 0;
+        /* Efecto "glass": menos opaco que el blanco sólido de escritorio,
+           con blur de lo que quede detrás (el fondo con textura de
+           .dashboard-content) en vez de tapiarlo del todo. */
+        background-color: rgba(255, 255, 255, 0.72);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+    }
+}

@@ -5,20 +5,20 @@ import jwt from "jsonwebtoken";
 // y productos (según id de producto: nombre, precio) | Date: año-mes-dias
 export const getVentas = async (req, res) => {
     try {
-        const [ventas] = await db.execute(
-        'SELECT \
-            ventas.id AS venta_id, \
-            ventas.fecha, \
-            usuarios.user AS usuario, \
-            ventadetallada.producto_id, \
-            ventadetallada.cantidad_producto, \
-            productos.nombre AS producto_nombre, \
-            productos.precio AS producto_precio \
-        FROM ventas \
-        JOIN ventadetallada ON ventas.id = ventadetallada.ventas_id \
-        JOIN productos ON ventadetallada.producto_id = productos.id \
-        JOIN usuarios ON ventas.usuario_id = usuarios.id \
-        ORDER BY ventas.id;');
+        const { rows: ventas } = await db.query(
+        `SELECT
+            ventas.id AS venta_id,
+            ventas.fecha,
+            usuarios."user" AS usuario,
+            ventadetallada.producto_id,
+            ventadetallada.cantidad_producto,
+            productos.nombre AS producto_nombre,
+            COALESCE(ventadetallada.precio_unitario, productos.precio) AS producto_precio
+        FROM ventas
+        JOIN ventadetallada ON ventas.id = ventadetallada.ventas_id
+        JOIN productos ON ventadetallada.producto_id = productos.id
+        JOIN usuarios ON ventas.usuario_id = usuarios.id
+        ORDER BY ventas.id DESC, ventadetallada.id`);
 
         res.status(200).json({ ventas });
     } catch (error) {
@@ -26,9 +26,14 @@ export const getVentas = async (req, res) => {
     }
 };
 
+// Error controlado (no es un bug del servidor) para diferenciarlo del catch
+// genérico de abajo - ver su uso en el bucle de consumo de lotes.
+class VentaInvalida extends Error {}
+
 export const createVentas = async(req, res) => {
+    let client;
     try {
-        // Extraigo el token del header, lo decodifico y coloco el id 
+        // Extraigo el token del header, lo decodifico y coloco el id
         // extraido del payload en una variable para utilizarlo en el post.
         const authHeader = req.headers.authorization;
         if (!authHeader) {
@@ -38,48 +43,81 @@ export const createVentas = async(req, res) => {
         const secretKey = process.env.SECRET_KEY; // Llave secreta para verificar el token.
 
         const decoded = jwt.verify(token, secretKey);
-        const usuarioId = decoded.id; 
+        const usuarioId = decoded.id;
 
         // Insertamos productos como array de objetos, teniendo cada uno el id del producto y la cantidad.
         const { productos } = req.body;
-     
+
         // Inicio transacción para peticiones Post.
-        await db.beginTransaction();
-        const [result] = await db.query('INSERT INTO ventas (usuario_id, fecha) VALUES (?,NOW())', [usuarioId]);
+        client = await db.connect();
+        await client.query('BEGIN');
+        const { rows } = await client.query('INSERT INTO ventas (usuario_id, fecha) VALUES ($1, NOW()) RETURNING id', [usuarioId]);
 
-        const ventaId = result.insertId;
+        const ventaId = rows[0].id;
 
-        // Recorro el array de objetos insertando un registro por cada producto en ventadetallada.
-        const promesaDetalles = productos.map((producto) =>
-            db.query(
-              'INSERT INTO ventadetallada (ventas_id, producto_id, cantidad_producto) VALUES (?, ?, ?)',
-              [ventaId, producto.producto_id, producto.cantidad_producto]
-            )
-          );
-      
-          // Esperar a que todas las inserciones se completen.
-          await Promise.all(promesaDetalles);
+        // Por cada línea de venta: se fija el precio de venta actual (queda
+        // congelado en la venta) y se descuenta el stock tomando lotes en
+        // orden FEFO (el que vence antes primero; sin vencimiento o a
+        // igualdad, el que entró antes) - partiendo entre varios lotes si
+        // hace falta para cubrir la cantidad pedida.
+        for (const { producto_id, cantidad_producto } of productos) {
+            const { rows: prodRows } = await client.query('SELECT precio FROM productos WHERE id = $1', [producto_id]);
+            if (prodRows.length === 0) {
+                throw new VentaInvalida(`El producto Nº${producto_id} no existe.`);
+            }
+            const precioUnitario = prodRows[0].precio;
 
-        await db.commit();
-        res.status(201).json({ message: "Venta creada exitosamente." });
-    } catch (error) {
-        await db.rollback();
-        res.status(500).json({ errors: [{ msg: "Error de servidor al crear ventas." }], error: error.message});
-    }
-}
+            // FOR UPDATE: bloquea esas filas de lotes hasta el COMMIT, para
+            // que dos ventas simultáneas no puedan descontar del mismo
+            // stock dos veces.
+            const { rows: lotesDisponibles } = await client.query(
+                `SELECT id, cantidad_restante, precio_costo FROM lotes
+                 WHERE producto_id = $1 AND cantidad_restante > 0
+                 ORDER BY fecha_vencimiento ASC NULLS LAST, fecha_ingreso ASC
+                 FOR UPDATE`,
+                [producto_id]
+            );
 
-export const controlStock = async(req,res)=>{
-    const producto_id = req.params.id;
-    const { cantidad_disponible } = req.body;
-    try {
-        const result = await db.execute('UPDATE producto_stock SET cantidad_disponible = ? WHERE producto_id = ?',[cantidad_disponible, producto_id]);
-        if(result.affectedRows === 0){
-            return res.status(404).json({ errors: [{ msg: "Producto no encontrado" }] });
+            let pendiente = cantidad_producto;
+            const consumos = [];
+            for (const lote of lotesDisponibles) {
+                if (pendiente <= 0) break;
+                const tomar = Math.min(pendiente, lote.cantidad_restante);
+                consumos.push({ loteId: lote.id, cantidad: tomar, precioCosto: lote.precio_costo });
+                pendiente -= tomar;
+            }
+
+            if (pendiente > 0) {
+                throw new VentaInvalida(`Stock insuficiente para el producto Nº${producto_id}.`);
+            }
+
+            const { rows: detalleRows } = await client.query(
+                'INSERT INTO ventadetallada (ventas_id, producto_id, cantidad_producto, precio_unitario) VALUES ($1, $2, $3, $4) RETURNING id',
+                [ventaId, producto_id, cantidad_producto, precioUnitario]
+            );
+            const ventaDetalladaId = detalleRows[0].id;
+
+            for (const consumo of consumos) {
+                await client.query('UPDATE lotes SET cantidad_restante = cantidad_restante - $1 WHERE id = $2', [consumo.cantidad, consumo.loteId]);
+                await client.query(
+                    'INSERT INTO ventadetallada_lotes (ventadetallada_id, lote_id, cantidad, precio_costo) VALUES ($1, $2, $3, $4)',
+                    [ventaDetalladaId, consumo.loteId, consumo.cantidad, consumo.precioCosto]
+                );
+            }
         }
-        res.status(200).json({ message: "Stock del producto actualizado." });
 
+        await client.query('COMMIT');
+        // Se devuelve el id de la venta para que el frontend arme un
+        // número de ticket único y estable (igual que un POS real, donde el
+        // número de comprobante es el id de la venta en la base).
+        res.status(201).json({ message: "Venta creada exitosamente.", id: ventaId });
     } catch (error) {
-        console.error(error)
-        res.status(500).json({ errors: [{ msg: "Error de servidor al actualizar stock." }], error: error.message});
+        if (client) await client.query('ROLLBACK');
+        if (error instanceof VentaInvalida) {
+            return res.status(400).json({ errors: [{ msg: error.message }] });
+        }
+        res.status(500).json({ errors: [{ msg: "Error de servidor al crear ventas." }], error: error.message});
+    } finally {
+        if (client) client.release();
     }
 }

@@ -1,39 +1,49 @@
 import express from 'express';
-import {getProductosConDetalles, getCategoria, getProductosConDetallesByID, createProductoConDetalles, updateProductoConDetalles, deleteProductoConDetalles} from '../controllers/productosConDetallesController.js'
-import { validateBody } from '../validations/productosConDetallesValidations.js';
+import {getProductosConDetalles, getCategoria, createCategoria, getProductosConDetallesByID, createProductoConDetalles, updateProductoConDetalles, deleteProductoConDetalles} from '../controllers/productosConDetallesController.js'
+import { validateBody, validateCategoriaBody } from '../validations/productosConDetallesValidations.js';
 import { validateID } from '../middlewares/idValidator.js';
-import passport from "passport"
+import { requireAuth } from '../middlewares/requireAuth.js'
+import { requireAdmin } from '../middlewares/requireAdmin.js'
 
 const productosConDetalles = express.Router();
 
 productosConDetalles.get('/administrador',
-    passport.authenticate("jwt", { session: false }),
+    ...requireAuth,
     getProductosConDetalles)
 
-productosConDetalles.get('/categorias', 
-    passport.authenticate("jwt", { session: false }),
+productosConDetalles.get('/categorias',
+    ...requireAuth,
     getCategoria)
 
+productosConDetalles.post('/categorias',
+    ...requireAuth,
+    requireAdmin,
+    validateCategoriaBody,
+    createCategoria)
 
-productosConDetalles.get('/administrador/:id', 
-    passport.authenticate("jwt", { session: false }),
+
+productosConDetalles.get('/administrador/:id',
+    ...requireAuth,
     validateID,
     getProductosConDetallesByID)
 
-productosConDetalles.post('/administrador', 
-    passport.authenticate("jwt", { session: false }),
+productosConDetalles.post('/administrador',
+    ...requireAuth,
+    requireAdmin,
     validateBody,
     createProductoConDetalles)
 
 productosConDetalles.put('/administrador/:id',
-    passport.authenticate("jwt", { session: false }),
+    ...requireAuth,
+    requireAdmin,
     validateID,
     validateBody,
     updateProductoConDetalles,
 )
 
-productosConDetalles.delete('/administrador/:id', 
-    passport.authenticate("jwt", { session: false }),
+productosConDetalles.delete('/administrador/:id',
+    ...requireAuth,
+    requireAdmin,
     validateID,
     deleteProductoConDetalles)
 

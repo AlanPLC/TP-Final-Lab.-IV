@@ -1,8 +1,13 @@
 import { db } from '../../config/db.js';
 
+// Tope de proveedores: la app es para un minimarket chico, no hace falta más.
+const MAX_PROVEEDORES = 5;
+
+const FK_VIOLATION = '23503';
+
 export const getOnlyProveedores = async(req,res)=>{
     try {
-        const [proveedores] = await db.execute('SELECT * FROM proveedores');
+        const { rows: proveedores } = await db.query('SELECT * FROM proveedores');
         res.status(200).json({ proveedores });
     } catch (error) {
         res.status(500).json({ errors: [{ msg: "Error al mostrar los proveedores." }], error: error.message});
@@ -10,16 +15,32 @@ export const getOnlyProveedores = async(req,res)=>{
 }
 export const getProveedoresConProductos = async(req,res)=>{
     try {
-        const [proveedor] = await db.execute(
-        `SELECT 
+        // Un proveedor ya no está vinculado a un producto directamente, sino
+        // a través de los lotes que le cargaron (ver schema.sql) - "sus
+        // productos" son los que tienen al menos un lote de ese proveedor.
+        // El precio que importa acá es lo que ESE proveedor cobró por unidad
+        // (precio_costo del lote más reciente que le cargaron), no el precio
+        // de venta del producto - dos proveedores del mismo producto pueden
+        // tener costos distintos.
+        const { rows: proveedor } = await db.query(
+        `SELECT
                 proveedores.id AS proveedor_id,
                 proveedores.nombre AS proveedor_nombre,
                 proveedores.descripcion AS proveedor_descripcion,
                 productos.id AS producto_id,
-                productos.nombre AS producto_nombre
+                productos.nombre AS producto_nombre,
+                ultimo_lote.precio_costo AS producto_costo_unitario,
+                productos.imagen_url AS producto_imagen_url,
+                productos_categorias.nombre AS producto_categoria_nombre
             FROM proveedores
-            LEFT JOIN productos ON proveedores.id = productos.proveedor_id
-            ORDER BY proveedores.id, productos.id`);
+            LEFT JOIN (
+                SELECT DISTINCT ON (producto_id, proveedor_id) producto_id, proveedor_id, precio_costo
+                FROM lotes
+                ORDER BY producto_id, proveedor_id, fecha_ingreso DESC
+            ) ultimo_lote ON ultimo_lote.proveedor_id = proveedores.id
+            LEFT JOIN productos ON productos.id = ultimo_lote.producto_id
+            LEFT JOIN productos_categorias ON productos.categoria_id = productos_categorias.id
+            ORDER BY proveedores.id DESC, productos.id`);
 
         res.status(200).json({ proveedor });
     } catch (error) {
@@ -30,8 +51,8 @@ export const getProveedoresConProductos = async(req,res)=>{
 export const getProveedorByID = async(req,res)=>{
     const id = req.params.id
     try {
-        const [proveedor] = await db.execute(
-            'SELECT * FROM proveedores WHERE id =?',
+        const { rows: proveedor } = await db.query(
+            'SELECT * FROM proveedores WHERE id = $1',
             [id]);
         if (proveedor.length === 0) {
             return res.status(404).json({ errors: [{ msg: "Proveedor no encontrado." }] });
@@ -45,8 +66,13 @@ export const getProveedorByID = async(req,res)=>{
 export const createProveedores = async(req, res)=>{
     const {nombre, descripcion} = req.body
     try {
-        await db.execute(
-        'INSERT INTO proveedores (nombre, descripcion) VALUES (?,?)',
+        const { rows: countRows } = await db.query('SELECT COUNT(*) FROM proveedores');
+        if (Number(countRows[0].count) >= MAX_PROVEEDORES) {
+            return res.status(400).json({ errors: [{ msg: `Se alcanzó el máximo de ${MAX_PROVEEDORES} proveedores.` }] });
+        }
+
+        await db.query(
+        'INSERT INTO proveedores (nombre, descripcion) VALUES ($1, $2)',
         [nombre, descripcion]);
         res.status(201).json({ message: "Proveedor creado." });
     } catch (error) {
@@ -57,12 +83,17 @@ export const createProveedores = async(req, res)=>{
 export const deleteProveedor = async(req, res)=>{
     const id = req.params.id
     try {
-        const [result] = await db.execute('DELETE FROM proveedores WHERE id =?', [id]);
-        if(result.affectedRows === 0){
+        const result = await db.query('DELETE FROM proveedores WHERE id = $1', [id]);
+        if(result.rowCount === 0){
             return res.status(404).json({ errors: [{ msg: "Proveedor no encontrado." }] });
         }
         res.status(200).json({ message: "Proveedor eliminado." });
     } catch (error) {
+        // lotes.proveedor_id es RESTRICT (ver schema.sql): no se puede borrar
+        // un proveedor que ya tiene lotes cargados.
+        if (error.code === FK_VIOLATION) {
+            return res.status(400).json({ errors: [{ msg: "No se puede eliminar: el proveedor tiene lotes cargados." }] });
+        }
         res.status(500).json({ errors: [{ msg: "Error al eliminar proveedor." }], error: error.message});
     }
 }
@@ -71,8 +102,8 @@ export const updateProveedor = async(req, res)=>{
     const id = req.params.id
     const {nombre, descripcion} = req.body
     try {
-        const [result] = await db.execute('UPDATE proveedores SET nombre = ?, descripcion = ? WHERE id = ?', [nombre, descripcion, id]);
-        if(result.affectedRows === 0){
+        const result = await db.query('UPDATE proveedores SET nombre = $1, descripcion = $2 WHERE id = $3', [nombre, descripcion, id]);
+        if(result.rowCount === 0){
             return res.status(404).json({ errors: [{ msg: "Proveedor no encontrado." }] });
         }
         res.status(200).json({ message: "Proveedor actualizado." });

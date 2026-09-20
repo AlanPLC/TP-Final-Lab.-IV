@@ -1,0 +1,336 @@
+/* Resumen de estadísticas de Inicio: tarjetas blancas (mismo look que
+   .panel-card del resto del Dashboard) sobre el fondo transparente de
+   .dashboard-home, en vez de plantarle un panel-card entero encima (esto
+   es un resumen de lectura, no una sección de gestión con listado+form). */
+
+/* Filas explícitas en vez de un único grid con auto-placement: así se
+   controla a mano qué tarjetas van juntas (Ventas + Productos más vendidos
+   en una fila; Stock bajo + Vencimientos + Ganancias en la otra) en vez de
+   depender de que el algoritmo de acomodo automático las agrupe bien. */
+.stats-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    /* Mismo valor que el gap de acá arriba - antes era 1.75rem, dejando más
+       aire entre la tarjeta de bienvenida y la primera fila que el que hay
+       entre el resto de las filas. */
+    margin-top: 1rem;
+}
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+    align-items: start;
+    gap: 1rem;
+}
+/* Sin esto, una tarjeta con contenido ancho (p.ej. nombres de producto
+   largos en Productos más vendidos) empuja su columna de grid más allá de
+   su fracción (1fr), robándole ancho a las demás columnas de la fila -
+   mismo problema que min-width:auto en flex, pero para grid items. El
+   overflow horizontal de tablas ya lo maneja .stat-table-scroll. */
+.stats-row > .stat-card {
+    min-width: 0;
+}
+/* Fila superior (Ventas | Productos más vendidos): mitad y mitad para las
+   dos tarjetas, sin sesgo hacia ninguna. En pantallas angostas eso le deja
+   menos ancho a Ventas, así que su tabla y su gráfico van a caer más seguido
+   en el apilado (ver useLadoALado en dashboardHome.jsx, que decide de
+   verdad si entran lado a lado o no) - es lo esperado, no un bug: más vale
+   apilados y legibles que lado a lado y apretados. */
+.stats-row-top {
+    grid-template-columns: 1fr 1fr;
+    /* Ventas y Productos más vendidos parejas en alto (por defecto cada
+       tarjeta de la fila queda con su alto de contenido - ver align-items:
+       start en .stats-row) - la más baja (Ventas) estira su tarjeta al
+       alto de la más alta y centra su contenido en el espacio de sobra. */
+    align-items: stretch;
+}
+.stats-row-top > .stat-card {
+    display: flex;
+    flex-direction: column;
+}
+/* La tarjeta más corta de la fila (Ventas o Productos más vendidos, según
+   cuánto contenido tenga cada una) estira su .stat-chart-layout al alto de
+   la más alta (align-items:stretch arriba) y centra su contenido ahí en vez
+   de quedar pegado arriba con un hueco abajo. */
+.stats-row-top > .stat-card > .stat-chart-layout {
+    flex: 1;
+    align-items: center;
+}
+@media (max-width: 60rem) {
+    .stats-row-top {
+        grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+    }
+}
+
+/* Fila final: Ganancias + Stock bajo + Vencimientos unificadas en UNA sola
+   tarjeta con tres secciones en fila, separadas por una línea vertical
+   (.stat-section + .stat-section), en vez de tres tarjetas con su propio
+   borde/sombra repetidos. */
+.stat-card-sections {
+    display: flex;
+    flex-wrap: wrap;
+}
+.stat-section {
+    flex: 1 1 14rem;
+    min-width: 0;
+    padding: 0 1.5rem;
+}
+.stat-section:first-child {
+    padding-left: 0;
+}
+.stat-section:last-child {
+    padding-right: 0;
+}
+.stat-section + .stat-section {
+    border-left: 1px solid #eef0f7;
+}
+
+/* Ganancias es solo dos filas (Bruta/Neta) - con el mismo flex:1 que Stock
+   bajo/Vencimientos (tablas con varias columnas, que sí aprovechan el
+   ancho) quedaba con espacio de sobra sin usar. flex-grow:0 la deja en su
+   ancho base en vez de estirarse pareja con las otras dos, que absorben
+   ese espacio de más. */
+.stat-section-ganancias {
+    flex: 0 1 13rem;
+}
+.stat-section-ganancias .stat-table td {
+    font-size: 1.05rem;
+}
+/* Separación explícita entre la etiqueta (Bruta/Neta) y el monto - sin
+   esto quedaba librado a que la columna del monto se estirara de más
+   (el "resto" del ancho de la tabla, ver table-layout auto), dando una
+   distancia chica e inconsistente entre una fila y otra según cuántos
+   dígitos tuviera cada monto. */
+.stat-section-ganancias .stat-table td:first-child {
+    padding-right: 1.5rem;
+}
+@media (max-width: 48rem) {
+    .stat-section {
+        flex-basis: 100%;
+        padding: 1rem 0 0;
+    }
+    .stat-section:first-child {
+        padding-top: 0;
+    }
+    .stat-section + .stat-section {
+        border-left: none;
+        border-top: 1px solid #eef0f7;
+    }
+}
+
+.stat-card {
+    background-color: #ffffff;
+    border: 1px solid #e3e6f0;
+    border-radius: 12px;
+    /* Misma sombra más pronunciada que .panel-card (ver dashboardPanels.css)
+       - ambas son la misma "ficha blanca" del Dashboard. */
+    box-shadow: 0 10px 32px rgba(21, 26, 46, 0.18);
+    padding: 1.25rem 1.4rem;
+}
+
+.stat-card-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #151a2e;
+    margin: 0 0 0.9rem;
+}
+.stat-card-title svg {
+    color: #4f8cff;
+    flex-shrink: 0;
+}
+
+/* Tabla clave/valor (Ventas totales, Ganancias, últimos 7 días) */
+.stat-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.stat-table td {
+    padding: 0.45rem 0;
+    font-size: 0.88rem;
+    border-bottom: 1px solid #f0f3fb;
+}
+.stat-table tr:last-child td {
+    border-bottom: none;
+}
+.stat-table td:first-child {
+    color: #7c86a8;
+    font-weight: 600;
+}
+.stat-table td:last-child {
+    text-align: right;
+    font-weight: 700;
+    color: #151a2e;
+}
+
+/* Tabla con encabezado (top productos, stock bajo, vencimientos) - el
+   scroll horizontal (para no forzar el ancho de la tarjeta) va en un DIV
+   que envuelve a la tabla (ver .stat-table-scroll), no en la tabla misma:
+   ponerle display:block a la tabla y display:table por separado a thead y
+   tbody los separaba en dos layouts de tabla independientes, cada uno
+   calculando sus propios anchos de columna sin compartirlos - por eso el
+   encabezado y los datos quedaban desfasados entre sí. Con la tabla como
+   tabla de verdad (sin overrides de display), el navegador arma UN solo
+   layout de columnas compartido entre thead y tbody, como corresponde. */
+.stat-table-scroll {
+    overflow-x: auto;
+}
+.stat-table-cols th {
+    text-align: left;
+    padding: 0 0 0.5rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #9aa2bf;
+    border-bottom: 1px solid #eef0f7;
+    white-space: nowrap;
+}
+.stat-table-cols td {
+    padding: 0.45rem 0;
+    font-size: 0.85rem;
+    color: #151a2e;
+    border-bottom: 1px solid #f0f3fb;
+    white-space: nowrap;
+}
+.stat-table-cols tbody tr:last-child td {
+    border-bottom: none;
+}
+.stat-table-cols th:not(:first-child),
+.stat-table-cols td:not(:first-child) {
+    padding-left: 0.6rem;
+}
+/* .stat-table (tabla clave/valor) alinea su primera/última celda distinto
+   (etiqueta gris a la izquierda, valor en negrita a la derecha) - estas
+   tablas llevan esa clase A LA VEZ que .stat-table-cols (para el ancho
+   100%/border-collapse compartidos), así que sin este reset esos estilos
+   se filtran acá y desalinean la primera/última columna respecto al resto
+   (que sí queda a la izquierda vía .stat-table-cols td arriba). */
+.stat-table-cols td:first-child,
+.stat-table-cols td:last-child {
+    text-align: left;
+}
+
+/* Gráfico + tabla lado a lado, mitad y mitad (Ventas, Productos más
+   vendidos). La decisión de si entran juntos o hay que apilarlos NO es CSS
+   puro: se probó con flex-wrap + min-width:max-content, pero la única forma
+   de no desbordar la tarjeta cuando ni apilado entra - min-width:
+   min(max-content, 100%) - no la resuelve bien este navegador (la propiedad
+   queda en "auto", como si no existiera). En vez de eso, useLadoALado en
+   dashboardHome.jsx mide con ResizeObserver el ancho real que pide cada uno
+   y agrega/saca .stat-chart-layout-apilado - acá solo se estilan los dos
+   modos resultantes. */
+.stat-chart-layout {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 1.5rem;
+    align-items: flex-start;
+}
+.stat-chart-layout > .stat-table,
+.stat-chart-layout > .stat-table-scroll,
+.stat-chart-layout > .bar-chart {
+    /* 50% del ancho DESCONTANDO el gap, no 50% a secas - dos ítems al 50%
+       más el gap entre ellos suman 100% + gap, pasándose siempre del 100%
+       disponible por el ancho del gap. */
+    flex: 1 1 calc(50% - 0.75rem);
+    min-width: 0;
+}
+/* Apilados (ver useLadoALado): columna en vez de fila, cada uno al 100% del
+   ancho de la tarjeta - así el gráfico siempre termina con el mismo ancho
+   que la tabla, ya sea a la mitad (lado a lado) o completo (apilados). */
+.stat-chart-layout-apilado {
+    flex-direction: column;
+}
+.stat-chart-layout-apilado > .stat-table,
+.stat-chart-layout-apilado > .stat-table-scroll,
+.stat-chart-layout-apilado > .bar-chart {
+    width: 100%;
+}
+/* La tabla/su wrapper no crecen si sobra alto (p.ej. la tarjeta estirada
+   para igualar a Ventas) - no hay nada útil que hacer con ese espacio de
+   más ahí. Ese sobrante se lo queda el gráfico entero (ver .bar-chart-hrow
+   en ui.css, que es quien realmente lo aprovecha creciendo hasta un 50%). */
+.stat-chart-layout-apilado > .stat-table,
+.stat-chart-layout-apilado > .stat-table-scroll {
+    flex: 0 0 auto;
+}
+.stat-chart-layout-apilado > .bar-chart {
+    flex: 1 1 auto;
+}
+
+/* La tabla de Ventas no se achica de su ancho de contenido (min-width:
+   max-content arriba) - el texto de cada celda no tiene que saltar de
+   línea, solo pedir el ancho que necesite. Más separación entre columnas
+   (etiqueta y valor quedaban pegados sin padding-left propio). */
+.stat-table-toggle td {
+    white-space: nowrap;
+}
+.stat-table-toggle td:not(:first-child) {
+    padding-left: 1.5rem;
+}
+
+/* La primera columna (checkbox) no lleva el padding-left ni el color/peso
+   que .stat-table/.stat-table-cols le dan por defecto a su primera celda -
+   esos estilos pasan a la SEGUNDA columna (la etiqueta real). */
+.stat-table-toggle td:first-child {
+    width: 1.6rem;
+    padding-right: 0;
+    padding-left: 0;
+    color: inherit;
+    font-weight: normal;
+}
+.stat-table.stat-table-toggle td:nth-child(2) {
+    color: #7c86a8;
+    font-weight: 600;
+}
+
+/* Toda la fila activa/desactiva el checkbox (texto y números incluidos),
+   no solo el tilde en sí - más área para tocar. */
+.stat-row-toggle {
+    cursor: pointer;
+}
+.stat-row-toggle:hover td {
+    background-color: #f7f9fd;
+}
+
+.stat-valor-alerta {
+    color: #c98a1a;
+    font-weight: 700;
+}
+.stat-valor-critico {
+    color: #c22b2b;
+    font-weight: 700;
+}
+
+.stat-badge {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.2rem 0.55rem;
+    border-radius: 6px;
+    background-color: #fdf3e0;
+    color: #c98a1a;
+    white-space: nowrap;
+}
+.stat-badge-critico {
+    background-color: #fdecec;
+    color: #c22b2b;
+}
+
+/* Mobile/tablet: mismo criterio que .panel-card (ver dashboardPanels.css) -
+   sin padding lateral en .dashboard-content y sin radio, cada tarjeta ocupa
+   el 100% del ancho de punta a punta en vez de quedar como una ficha
+   flotando con aire a los costados. */
+@media (max-width: 1024px) {
+    .stat-card {
+        border-radius: 0;
+        /* Mismo efecto "glass" que .panel-card (ver dashboardPanels.css) -
+           ambas son la misma "ficha blanca" del Dashboard. */
+        background-color: rgba(255, 255, 255, 0.72);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+    }
+}
