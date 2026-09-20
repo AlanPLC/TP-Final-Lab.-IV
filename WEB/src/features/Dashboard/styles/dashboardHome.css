@@ -93,7 +93,7 @@
    entera. Con un alto máximo + scroll propio, cada lista se contiene sola
    y el techo de la fila queda fijo sin importar cuántos registros haya. */
 .stat-card-sections .stat-table-scroll {
-    max-height: 10rem;
+    max-height: 9rem;
     overflow-y: auto;
 }
 /* El encabezado (Producto/Categoría/Disponible, etc.) queda visible al
