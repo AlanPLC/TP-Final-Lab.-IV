@@ -16,7 +16,7 @@ conectarDB();
 console.log("Conectado a base de datos");
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 // interpretar JSON en body
 app.use(express.json());
@@ -38,6 +38,15 @@ app.use(proveedoresRouter);
 app.use(productosConDetalles)
 app.use(lotesRouter)
 app.use(estadisticasRouter)
-app.listen(port, () => {
-  console.log(`La aplicacion esta funcionando en: ${port}`);
-});
+
+// En Vercel no hay proceso propio escuchando un puerto - la plataforma
+// invoca directamente el handler exportado más abajo (ver api/index.js) en
+// cada request, así que levantar el listener acá sobraría. VERCEL es una
+// env var que la propia plataforma define sola en build y en runtime.
+if (!process.env.VERCEL) {
+  app.listen(port, () => {
+    console.log(`La aplicacion esta funcionando en: ${port}`);
+  });
+}
+
+export default app;
