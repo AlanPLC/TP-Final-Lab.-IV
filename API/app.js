@@ -10,6 +10,7 @@ import proveedoresRouter from "./src/routes/proveedoresRoutes.js";
 import productosConDetalles from "./src/routes/productosConDetallesRoutes.js";
 import lotesRouter from "./src/routes/lotesRoutes.js";
 import estadisticasRouter from "./src/routes/estadisticasRoutes.js";
+import demoRouter from "./src/routes/demoRoutes.js";
 
 // Conectar a DB
 conectarDB();
@@ -38,6 +39,7 @@ app.use(proveedoresRouter);
 app.use(productosConDetalles)
 app.use(lotesRouter)
 app.use(estadisticasRouter)
+app.use(demoRouter)
 
 // En Vercel no hay proceso propio escuchando un puerto - la plataforma
 // invoca directamente el handler exportado más abajo (ver api/index.js) en
